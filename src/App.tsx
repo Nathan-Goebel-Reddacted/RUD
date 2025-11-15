@@ -1,10 +1,21 @@
-import './App.css'
+import "@/App.css";
+import { useNavigate } from "react-router";
+import { useEffect } from "react";
+import { useProfile } from "@/contexts/ProfileContext";
 
 function App() {
-  
-  return(
-    <p>this should never be read</p>
-  )
+  const navigate = useNavigate();
+  const { profile } = useProfile();
+
+  useEffect(() => {
+    if (profile) {
+      navigate("/dashboard");
+    } else {
+      navigate("/no-profile");
+    }
+  }, [profile, navigate]);
+
+  return <p>Redirection en cours...</p>;
 }
 
-export default App
+export default App;
