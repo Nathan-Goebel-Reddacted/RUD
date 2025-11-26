@@ -1,4 +1,5 @@
 import ActionResult from "../services/resultAction"
+import { Language, type Language as LanguageType } from "@/enum/language";
 
 class Profile{
     private profileName: string = ""
@@ -11,7 +12,7 @@ class Profile{
 
     private roleForEditProfile: string = "" //not implemented
 
-    private language: string = "english" //not implemented
+    private language: LanguageType = Language.EN
 
     //private TimeZone
 
@@ -43,16 +44,18 @@ class Profile{
     public IsProfileValid(): ActionResult {
         let actionResult = new ActionResult("")
         if (!this.IsProfileNameValid(this.profileName).isSuccess()){
-            actionResult.addReason("Profile.invalid","the profile is not valid")
+            actionResult.addReason("Profile.invalid","profile.invalid")
         }
-
+        if (this.language !== Language.EN && this.language !== Language.FR){
+            actionResult.addReason("Profile.invalidLanguage","profile.invalidLanguage")
+        }
         return actionResult
     }
 
     private IsProfileNameValid(ProfileName:string ): ActionResult {
         let actionResult = new ActionResult("")
         if(ProfileName.length < 5){
-            actionResult.addReason("Profile.name.tooShort","a profile name need at least 5 character")
+            actionResult.addReason("Profile.name.tooShort","profile.invalidName")
         }
         return actionResult
     } 
@@ -75,6 +78,14 @@ class Profile{
 
     public setConnectionNeeded(isConnectionNeeded: boolean){
         this.connectionNeeded = isConnectionNeeded
+    }
+
+    public setLanguage(language: LanguageType){
+        this.language = language
+    }
+    
+    public getLanguage(): LanguageType{
+        return this.language
     }
 }
 

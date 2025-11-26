@@ -1,0 +1,22 @@
+{
+    "noProfile": {
+        "importProfile": "Importer un profil",
+        "createProfile": "Créer un profil"
+    },
+
+    "profileSettings": {
+        "profileName": "Nom du profil",
+        "roleForEditDashboard": "Rôle pour éditer le tableau de bord",
+        "roleForEditProfile": "Rôle pour éditer le profil",
+        "language": "Langue",
+        "loadProfile": "Charger ce profil"
+    },
+
+    "profile": {
+        "invalid": "Le profil n'est pas valide",
+        "invalidLanguage": "La langue du profil n'est pas valide",
+        "invalidName": "Le nom du profil n'est pas valide"
+    },
+
+    "redirecting": "Redirection..."
+}

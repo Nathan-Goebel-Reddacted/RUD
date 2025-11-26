@@ -19,7 +19,6 @@ export const ProfileProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-// petit hook pratique
 export const useProfile = () => {
   const ctx = useContext(ProfileContext);
   if (!ctx) {

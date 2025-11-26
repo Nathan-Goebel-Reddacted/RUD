@@ -6,7 +6,7 @@ import '@/index.css'
 import App from '@/App.tsx'
 import NoProfile from '@/pages/noProfile.tsx'
 import Dashboard from '@/pages/dashboard.tsx'
-
+import "@/translations/i18n";
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

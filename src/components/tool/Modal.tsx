@@ -177,7 +177,6 @@ const contentStyles: React.CSSProperties = {
   display: "grid",
   placeItems: "center",
   zIndex: 9999,
-  // backdrop + tint moved here
   backdropFilter: "blur(2px)",
   background: "rgba(0,0,0,0.35)",
   animation: prefersReducedMotion ? "none" : "modalFade 150ms ease-out",

@@ -1,0 +1,22 @@
+{
+    "noProfile": {
+        "importProfile": "Import a profile",
+        "createProfile": "Create a profile"
+    },
+
+    "profileSettings": {
+        "profileName": "Profile name",
+        "roleForEditDashboard": "RRole to edit the dashboard",
+        "roleForEditProfile": "RRole to edit the profile",
+        "language": "Language",
+        "loadProfile": "Load this profile"
+    },
+
+    "profile": {
+        "invalid": "The profile is not valid",
+        "invalidLanguage": "The profile language is not valid",
+        "invalidName": "The profile name is not valid"
+    },
+
+    "redirecting": "Redirecting..."
+}
