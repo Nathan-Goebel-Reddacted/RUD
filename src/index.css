@@ -87,6 +87,12 @@ button:focus-visible {
 .w-full      { width: 100%; }
 .text-center { text-align: center; }
 
+/* Pages avec navbar — padding pour ne pas etre masque par la zone trigger */
+.page-with-nav {
+  padding-top: 1rem;
+  width: 100%;
+}
+
 /* Retrocompatibilite (utilisees dans ProfilSettings.tsx) */
 .display-block { display: block; }
 .margin-10     { margin: 10px; }

@@ -1,10 +1,9 @@
 import { useProfile } from "@/contexts/ProfileContext";
 
-
 function Dashboard() {
     const { profile } = useProfile();
     return (
-        <div>
+        <div className="page-with-nav">
         <h1>Dashboard Page</h1>
          {profile ? (
                 <p>Active profile: {profile.getProfileName()}</p>
