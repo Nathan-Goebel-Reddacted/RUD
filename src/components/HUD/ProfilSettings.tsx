@@ -5,12 +5,17 @@ import { useProfile } from "@/contexts/ProfileContext";
 import { useNavigate } from "react-router";
 import { Language, type Language as LanguageType } from "@/enum/language";
 import { useTranslation } from "react-i18next";
+import { applyColors } from "@/utils/colors";
 
 function ProfileSettings({ onClose }: { onClose: () => void }) {
   const [profileName, setProfileName] = useState("");
   const [roleForEditDashboard, setRoleForEditDashboard] = useState("");
   const [roleForEditProfile, setRoleForEditProfile] = useState("");
   const [language, setLanguage] = useState<LanguageType>(Language.EN);
+  const [backgroundColor, setBackgroundColor] = useState<string>("#242424");
+  const [borderColor,     setBorderColor]     = useState<string>("#888888");
+  const [textColor,       setTextColor]       = useState<string>("#646cff");
+  const [textHoverColor,  setTextHoverColor]  = useState<string>("#535bf2");
   const { setProfile } = useProfile();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -24,7 +29,13 @@ function ProfileSettings({ onClose }: { onClose: () => void }) {
     newProfile.createAProfile(
       profileName,
       false);
+    newProfile.setLanguage(language);
+    newProfile.setBackgroundColor(backgroundColor);
+    newProfile.setBorderColor(borderColor);
+    newProfile.setTextColor(textColor);
+    newProfile.setTextHoverColor(textHoverColor);
     if (newProfile.IsProfileValid().isSuccess()){
+      applyColors(newProfile);
       setProfile(newProfile);
       console.log("Created Profile:", newProfile);
       onClose();
@@ -70,6 +81,24 @@ function ProfileSettings({ onClose }: { onClose: () => void }) {
             <option value={Language.EN}>English</option>
             <option value={Language.FR}>Français</option>
           </select>
+          <div className="d-flex flex-col gap-2 margin-10">
+            <label className="d-flex align-center gap-2">
+              <input type="color" value={backgroundColor} onChange={(e) => setBackgroundColor(e.target.value)} />
+              {t("profileSettings.colors.background")}
+            </label>
+            <label className="d-flex align-center gap-2">
+              <input type="color" value={borderColor} onChange={(e) => setBorderColor(e.target.value)} />
+              {t("profileSettings.colors.border")}
+            </label>
+            <label className="d-flex align-center gap-2">
+              <input type="color" value={textColor} onChange={(e) => setTextColor(e.target.value)} />
+              {t("profileSettings.colors.text")}
+            </label>
+            <label className="d-flex align-center gap-2">
+              <input type="color" value={textHoverColor} onChange={(e) => setTextHoverColor(e.target.value)} />
+              {t("profileSettings.colors.textHover")}
+            </label>
+          </div>
           <button type="submit" className="display-block margin-10">Load this Profile</button>
         </form>
       </div>

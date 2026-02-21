@@ -9,7 +9,13 @@
         "roleForEditDashboard": "Rôle pour éditer le tableau de bord",
         "roleForEditProfile": "Rôle pour éditer le profil",
         "language": "Langue",
-        "loadProfile": "Charger ce profil"
+        "loadProfile": "Charger ce profil",
+        "colors": {
+            "background": "Couleur de fond",
+            "border": "Couleur de bordure",
+            "text": "Couleur d'accentuation",
+            "textHover": "Couleur d'accentuation au survol"
+        }
     },
 
     "profile": {

@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3:*)",
+      "Bash(gh api:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(gh:*)",
+      "Bash(jq:*)",
+      "Bash(winget install:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(python -c \"\nimport sys\nsys.path.insert\\(0, str\\(__import__\\(''pathlib''\\).Path.home\\(\\) / ''.claude/extensions/MCP/analyze/src''\\)\\)\nfrom analyzers.indexer import SymfonyIndexer\nfrom pathlib import Path\n\nindexer = SymfonyIndexer\\(Path\\(''.''\\)\\)\nindexer.build_indexes\\(\\)\n\")",
+      "Bash(python -c \"\nimport sys\nsys.path.insert\\(0, str\\(__import__\\(''pathlib''\\).Path.home\\(\\) / ''.claude/extensions/MCP/analyze/src''\\)\\)\nfrom analyzers.indexer import PHPIndexer\nfrom pathlib import Path\n\nindexer = PHPIndexer\\(Path\\(''.''\\)\\)\nindexer.build_indexes\\(\\)\n\n# Test Fix 1: get_entity\nprint\\(''\\\\n=== TEST FIX 1: get_entity fields ===''\\)\nfor name, entity in indexer.entities.items\\(\\):\n    fields_info = [\\(f[''name''], f[''type'']\\) for f in entity.fields]\n    if fields_info:\n        print\\(f''{name}: {fields_info[:5]}''\\)\n\n# Test Fix 3: routes YAML\nprint\\(''\\\\n=== TEST FIX 3: routes YAML ===''\\)\nfor r in indexer.routes[:15]:\n    print\\(f''{r.name}: {r.methods} {r.path} -> {r.controller}::{r.action}''\\)\n\")",
+      "Bash(python -c \"\nimport sys, asyncio\nsys.path.insert\\(0, str\\(__import__\\(''pathlib''\\).Path.home\\(\\) / ''.claude/extensions/MCP/analyze/src''\\)\\)\nfrom analyzers.indexer import PHPIndexer\nfrom pathlib import Path\n\nasync def main\\(\\):\n    indexer = PHPIndexer\\(Path\\(''.''\\)\\)\n    await indexer.build_indexes\\(\\)\n\n    # Test Fix 1: get_entity fields\n    print\\(''\\\\n=== TEST FIX 1: get_entity fields ===''\\)\n    for name, entity in indexer.entities.items\\(\\):\n        fields_info = [\\(f[''name''], f[''type'']\\) for f in entity.fields]\n        print\\(f''{name}: {fields_info[:5]}''\\)\n\n    # Test Fix 3: routes YAML\n    print\\(''\\\\n=== TEST FIX 3: routes YAML ===''\\)\n    for r in indexer.routes[:15]:\n        print\\(f''{r.name}: {r.methods} {r.path} -> {r.controller}::{r.action}''\\)\n\n    print\\(f''\\\\nTotal: {len\\(indexer.entities\\)} entities, {len\\(indexer.routes\\)} routes''\\)\n\nasyncio.run\\(main\\(\\)\\)\n\")",
+      "Bash(PYTHONIOENCODING=utf-8 python:*)",
+      "Bash(python:*)",
+      "Bash(ls:*)",
+      "Bash(echo:*)"
+    ]
+  }
+}

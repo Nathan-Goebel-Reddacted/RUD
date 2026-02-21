@@ -14,6 +14,11 @@ class Profile{
 
     private language: LanguageType = Language.EN
 
+    private backgroundColor: string = "#242424"
+    private borderColor: string     = "#888888"
+    private textColor: string       = "#646cff"
+    private textHoverColor: string  = "#535bf2"
+
     //private TimeZone
 
     //private Daboards: Array<Dashboard>
@@ -83,9 +88,31 @@ class Profile{
     public setLanguage(language: LanguageType){
         this.language = language
     }
-    
+
     public getLanguage(): LanguageType{
         return this.language
+    }
+
+    private isHexColorValid(color: string): boolean {
+        return /^#[0-9a-fA-F]{6}$/.test(color)
+    }
+
+    public getBackgroundColor(): string { return this.backgroundColor }
+    public getBorderColor(): string     { return this.borderColor }
+    public getTextColor(): string       { return this.textColor }
+    public getTextHoverColor(): string  { return this.textHoverColor }
+
+    public setBackgroundColor(color: string): void {
+        if (this.isHexColorValid(color)) this.backgroundColor = color
+    }
+    public setBorderColor(color: string): void {
+        if (this.isHexColorValid(color)) this.borderColor = color
+    }
+    public setTextColor(color: string): void {
+        if (this.isHexColorValid(color)) this.textColor = color
+    }
+    public setTextHoverColor(color: string): void {
+        if (this.isHexColorValid(color)) this.textHoverColor = color
     }
 }
 

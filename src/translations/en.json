@@ -9,7 +9,13 @@
         "roleForEditDashboard": "RRole to edit the dashboard",
         "roleForEditProfile": "RRole to edit the profile",
         "language": "Language",
-        "loadProfile": "Load this profile"
+        "loadProfile": "Load this profile",
+        "colors": {
+            "background": "Background color",
+            "border": "Border color",
+            "text": "Accent color",
+            "textHover": "Accent hover color"
+        }
     },
 
     "profile": {

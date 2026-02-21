@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { useEffect } from "react";
 import { useProfile } from "@/contexts/ProfileContext";
 import { applyLanguage } from "@/translations/i18n";
+import { applyColors } from "@/utils/colors";
 import { Language } from "@/enum/language";
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
       applyLanguage(Language.EN);
     }
     if (profile) {
+      applyColors(profile);
       navigate("/dashboard");
     } else {
       navigate("/no-profile");
