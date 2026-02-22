@@ -5,7 +5,7 @@
 **RUD005 — Persistance du profil (localStorage)** ✅
 Sauvegarder le profil dans `localStorage` à chaque `setProfile`, le recharger au démarrage. Aujourd'hui le profil est perdu à chaque rechargement.
 
-**RUD006 — Guard de route**
+**RUD006 — Guard de route** ✅
 Rediriger vers `/no-profile` si aucun profil n'est chargé et que l'utilisateur accède à `/dashboard`, `/api-config` ou `/display` directement.
 
 **RUD007 — Feedback d'erreur dans le formulaire de profil**
