@@ -8,8 +8,10 @@ class Profile{
 
     //private ConnectionRoute: Route
 
+    // @ts-ignore — not implemented yet
     private roleForEditDashboard: string = "" //not implemented
 
+    // @ts-ignore — not implemented yet
     private roleForEditProfile: string = "" //not implemented
 
     private language: LanguageType = Language.EN
@@ -113,6 +115,39 @@ class Profile{
     }
     public setTextHoverColor(color: string): void {
         if (this.isHexColorValid(color)) this.textHoverColor = color
+    }
+
+    public toJSON(): object {
+        return {
+            profileName:      this.profileName,
+            connectionNeeded: this.connectionNeeded,
+            language:         this.language,
+            backgroundColor:  this.backgroundColor,
+            borderColor:      this.borderColor,
+            textColor:        this.textColor,
+            textHoverColor:   this.textHoverColor,
+        }
+    }
+
+    public static fromJSON(data: unknown): Profile | null {
+        try {
+            if (!data || typeof data !== "object") return null
+            const d = data as Record<string, unknown>
+            const p = new Profile()
+            p.createAProfile(
+                typeof d.profileName === "string" ? d.profileName : "",
+                typeof d.connectionNeeded === "boolean" ? d.connectionNeeded : false
+            )
+            if (typeof d.language === "string") p.setLanguage(d.language as LanguageType)
+            if (typeof d.backgroundColor === "string") p.setBackgroundColor(d.backgroundColor)
+            if (typeof d.borderColor === "string") p.setBorderColor(d.borderColor)
+            if (typeof d.textColor === "string") p.setTextColor(d.textColor)
+            if (typeof d.textHoverColor === "string") p.setTextHoverColor(d.textHoverColor)
+            if (!p.IsProfileValid().isSuccess()) return null
+            return p
+        } catch {
+            return null
+        }
     }
 }
 

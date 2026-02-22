@@ -58,6 +58,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Refresh interval for live data on the display screen?
 - How to handle paginated API responses?
 
+## Ticket Tracking
+
+All tickets are stored in `TICKETS.md` at the root of the project. **On every commit, update `TICKETS.md`**: mark completed tickets with `✅`, and add any new tickets that emerge from the work done.
+
 ## Commands
 
 ```bash
