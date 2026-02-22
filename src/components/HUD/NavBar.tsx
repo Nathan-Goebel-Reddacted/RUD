@@ -1,9 +1,15 @@
 import { useNavigate, useLocation } from "react-router";
+import { useProfile } from "@/contexts/ProfileContext";
+import { openModal, closeModal } from "@/components/tool/Modal";
+import ProfileSettings from "@/components/HUD/ProfilSettings";
 import "./NavBar.css";
+
+const EDIT_MODAL_ID = "ProfileEdit";
 
 function NavBar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { profile, setProfile } = useProfile();
 
   const hiddenPaths = ["/", "/no-profile"];
   if (hiddenPaths.includes(location.pathname)) return null;
@@ -13,6 +19,11 @@ function NavBar() {
     { label: "Dashboard Editor", path: "/dashboard"  },
     { label: "Display",          path: "/display"    },
   ];
+
+  const handleDeleteProfile = () => {
+    setProfile(null);
+    navigate("/no-profile");
+  };
 
   return (
     <div className="nav-wrapper">
@@ -30,7 +41,20 @@ function NavBar() {
             </button>
           );
         })}
+        <div className="nav-bar__actions">
+          <button className="nav-btn" onClick={() => openModal(EDIT_MODAL_ID)}>
+            Edit Profile
+          </button>
+          <button className="nav-btn nav-btn--danger" onClick={handleDeleteProfile}>
+            Delete Profile
+          </button>
+        </div>
       </nav>
+      <ProfileSettings
+        modalId={EDIT_MODAL_ID}
+        initialProfile={profile ?? undefined}
+        onClose={() => closeModal(EDIT_MODAL_ID)}
+      />
     </div>
   );
 }

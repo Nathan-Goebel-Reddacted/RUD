@@ -10,6 +10,7 @@
         "roleForEditProfile": "Rôle pour éditer le profil",
         "language": "Langue",
         "loadProfile": "Charger ce profil",
+        "saveProfile": "Enregistrer le profil",
         "colors": {
             "background": "Couleur de fond",
             "border": "Couleur de bordure",

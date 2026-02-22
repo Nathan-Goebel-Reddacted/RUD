@@ -10,6 +10,7 @@
         "roleForEditProfile": "RRole to edit the profile",
         "language": "Language",
         "loadProfile": "Load this profile",
+        "saveProfile": "Save profile",
         "colors": {
             "background": "Background color",
             "border": "Border color",

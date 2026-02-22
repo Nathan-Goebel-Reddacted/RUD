@@ -7,16 +7,16 @@ import { Language, type Language as LanguageType } from "@/enum/language";
 import { useTranslation } from "react-i18next";
 import { applyColors } from "@/utils/colors";
 
-function ProfileSettings({ onClose }: { onClose: () => void }) {
-  const [profileName, setProfileName] = useState("");
+function ProfileSettings({ onClose, initialProfile, modalId = "ProfileSetting" }: { onClose: () => void; initialProfile?: Profile; modalId?: string }) {
+  const [profileName, setProfileName] = useState(initialProfile?.getProfileName() ?? "");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [roleForEditDashboard, setRoleForEditDashboard] = useState("");
   const [roleForEditProfile, setRoleForEditProfile] = useState("");
-  const [language, setLanguage] = useState<LanguageType>(Language.EN);
-  const [backgroundColor, setBackgroundColor] = useState<string>("#242424");
-  const [borderColor,     setBorderColor]     = useState<string>("#888888");
-  const [textColor,       setTextColor]       = useState<string>("#646cff");
-  const [textHoverColor,  setTextHoverColor]  = useState<string>("#535bf2");
+  const [language, setLanguage] = useState<LanguageType>(initialProfile?.getLanguage() ?? Language.EN);
+  const [backgroundColor, setBackgroundColor] = useState<string>(initialProfile?.getBackgroundColor() ?? "#242424");
+  const [borderColor,     setBorderColor]     = useState<string>(initialProfile?.getBorderColor()     ?? "#888888");
+  const [textColor,       setTextColor]       = useState<string>(initialProfile?.getTextColor()       ?? "#646cff");
+  const [textHoverColor,  setTextHoverColor]  = useState<string>(initialProfile?.getTextHoverColor()  ?? "#535bf2");
   const { setProfile } = useProfile();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -41,7 +41,7 @@ function ProfileSettings({ onClose }: { onClose: () => void }) {
       applyColors(newProfile);
       setProfile(newProfile);
       onClose();
-      navigate("/dashboard");
+      if (!initialProfile) navigate("/dashboard");
     } else {
       const errs: Record<string, string> = {};
       result.getAllReason().forEach(r => {
@@ -52,7 +52,7 @@ function ProfileSettings({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <Modal id="ProfileSetting">
+    <Modal id={modalId}>
       <div className="profileSettings">
         <form onSubmit={handleSubmit}>
           <input
@@ -112,7 +112,9 @@ function ProfileSettings({ onClose }: { onClose: () => void }) {
               {t("profileSettings.colors.textHover")}
             </label>
           </div>
-          <button type="submit" className="display-block margin-10">Load this Profile</button>
+          <button type="submit" className="display-block margin-10">
+            {initialProfile ? t("profileSettings.saveProfile") : t("profileSettings.loadProfile")}
+          </button>
         </form>
       </div>
     </Modal>

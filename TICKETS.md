@@ -11,7 +11,7 @@ Rediriger vers `/no-profile` si aucun profil n'est chargé et que l'utilisateur 
 **RUD007 — Feedback d'erreur dans le formulaire de profil** ✅
 `IsProfileValid()` retourne des `ActionResult` avec des codes d'erreur mais rien n'est affiché dans l'UI. Afficher les messages sous les champs concernés.
 
-**RUD007b — Édition et réinitialisation du profil**
+**RUD007b — Édition et réinitialisation du profil** ✅
 Ajouter un bouton "Modifier le profil" accessible depuis le dashboard (navbar ou menu). Permet de modifier les champs du profil existant (nom, langue, couleurs) sans repartir de zéro. Ajouter également un bouton "Supprimer le profil" qui vide le localStorage et redirige vers `/no-profile`.
 
 ---

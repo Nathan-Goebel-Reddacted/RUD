@@ -45,3 +45,18 @@
   opacity: 0.4;
   cursor: default;
 }
+
+.nav-bar__actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.nav-btn--danger {
+  color: #e05252;
+}
+
+.nav-btn--danger:hover:not(:disabled) {
+  border-color: #e05252;
+  background-color: rgba(224, 82, 82, 0.1);
+}
