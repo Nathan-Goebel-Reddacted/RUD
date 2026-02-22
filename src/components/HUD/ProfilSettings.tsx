@@ -9,6 +9,7 @@ import { applyColors } from "@/utils/colors";
 
 function ProfileSettings({ onClose }: { onClose: () => void }) {
   const [profileName, setProfileName] = useState("");
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [roleForEditDashboard, setRoleForEditDashboard] = useState("");
   const [roleForEditProfile, setRoleForEditProfile] = useState("");
   const [language, setLanguage] = useState<LanguageType>(Language.EN);
@@ -34,14 +35,20 @@ function ProfileSettings({ onClose }: { onClose: () => void }) {
     newProfile.setBorderColor(borderColor);
     newProfile.setTextColor(textColor);
     newProfile.setTextHoverColor(textHoverColor);
-    if (newProfile.IsProfileValid().isSuccess()){
+    const result = newProfile.IsProfileValid();
+    if (result.isSuccess()) {
+      setErrors({});
       applyColors(newProfile);
       setProfile(newProfile);
-      console.log("Created Profile:", newProfile);
       onClose();
       navigate("/dashboard");
+    } else {
+      const errs: Record<string, string> = {};
+      result.getAllReason().forEach(r => {
+        errs[r.getreasonCode()] = r.getreasonMessage();
+      });
+      setErrors(errs);
     }
-
   };
 
   return (
@@ -57,6 +64,9 @@ function ProfileSettings({ onClose }: { onClose: () => void }) {
             className="display-block margin-10"
             required
           />
+          {errors["Profile.name.tooShort"] && (
+            <span className="form-error">{t(errors["Profile.name.tooShort"])}</span>
+          )}
           <input
             name="Role For Editing Dashboard"
             value={roleForEditDashboard}
@@ -81,6 +91,9 @@ function ProfileSettings({ onClose }: { onClose: () => void }) {
             <option value={Language.EN}>English</option>
             <option value={Language.FR}>Français</option>
           </select>
+          {errors["Profile.invalidLanguage"] && (
+            <span className="form-error">{t(errors["Profile.invalidLanguage"])}</span>
+          )}
           <div className="d-flex flex-col gap-2 margin-10">
             <label className="d-flex align-center gap-2">
               <input type="color" value={backgroundColor} onChange={(e) => setBackgroundColor(e.target.value)} />

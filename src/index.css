@@ -96,3 +96,11 @@ button:focus-visible {
 /* Retrocompatibilite (utilisees dans ProfilSettings.tsx) */
 .display-block { display: block; }
 .margin-10     { margin: 10px; }
+
+/* Form errors */
+.form-error {
+  display: block;
+  color: #e05252;
+  font-size: 0.8rem;
+  margin: -6px 10px 6px;
+}

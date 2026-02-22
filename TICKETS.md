@@ -8,7 +8,7 @@ Sauvegarder le profil dans `localStorage` à chaque `setProfile`, le recharger a
 **RUD006 — Guard de route** ✅
 Rediriger vers `/no-profile` si aucun profil n'est chargé et que l'utilisateur accède à `/dashboard`, `/api-config` ou `/display` directement.
 
-**RUD007 — Feedback d'erreur dans le formulaire de profil**
+**RUD007 — Feedback d'erreur dans le formulaire de profil** ✅
 `IsProfileValid()` retourne des `ActionResult` avec des codes d'erreur mais rien n'est affiché dans l'UI. Afficher les messages sous les champs concernés.
 
 **RUD007b — Édition et réinitialisation du profil**
