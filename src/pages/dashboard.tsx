@@ -1,7 +1,7 @@
-import { useProfile } from "@/contexts/ProfileContext";
+import { useProfileStore } from "@/stores/profileStore";
 
 function Dashboard() {
-    const { profile } = useProfile();
+    const profile = useProfileStore((state) => state.profile);
     return (
         <div className="page-with-nav">
         <h1>Dashboard Page</h1>

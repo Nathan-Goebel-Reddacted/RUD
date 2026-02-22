@@ -1,7 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes,Route } from "react-router";
-import { ProfileProvider } from "@/contexts/ProfileContext";
 import NavBar from "@/components/HUD/NavBar";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import App from '@/App.tsx'
@@ -15,17 +14,15 @@ import '@/assets/Color.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ProfileProvider>
-      <BrowserRouter>
-        <NavBar />
-        <Routes>
-          <Route path="/" element={<App />} />
-          <Route path="/no-profile" element={<NoProfile/>}/>
-          <Route path="/dashboard" element={<ProtectedRoute><Dashboard/></ProtectedRoute>}/>
-          <Route path="/api-config" element={<ProtectedRoute><ApiConfig/></ProtectedRoute>}/>
-          <Route path="/display" element={<ProtectedRoute><DisplayDashboard/></ProtectedRoute>}/>
-        </Routes>
-      </BrowserRouter>
-    </ProfileProvider>
+    <BrowserRouter>
+      <NavBar />
+      <Routes>
+        <Route path="/" element={<App />} />
+        <Route path="/no-profile" element={<NoProfile/>}/>
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard/></ProtectedRoute>}/>
+        <Route path="/api-config" element={<ProtectedRoute><ApiConfig/></ProtectedRoute>}/>
+        <Route path="/display" element={<ProtectedRoute><DisplayDashboard/></ProtectedRoute>}/>
+      </Routes>
+    </BrowserRouter>
   </StrictMode>,
 )

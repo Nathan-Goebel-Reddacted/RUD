@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Profile from "@/class/Profiles";
 import Modal from "@/components/tool/Modal";
-import { useProfile } from "@/contexts/ProfileContext";
+import { useProfileStore } from "@/stores/profileStore";
 import { useNavigate } from "react-router";
 import { Language, type Language as LanguageType } from "@/enum/language";
 import { useTranslation } from "react-i18next";
@@ -17,7 +17,7 @@ function ProfileSettings({ onClose, initialProfile, modalId = "ProfileSetting" }
   const [borderColor,     setBorderColor]     = useState<string>(initialProfile?.getBorderColor()     ?? "#888888");
   const [textColor,       setTextColor]       = useState<string>(initialProfile?.getTextColor()       ?? "#646cff");
   const [textHoverColor,  setTextHoverColor]  = useState<string>(initialProfile?.getTextHoverColor()  ?? "#535bf2");
-  const { setProfile } = useProfile();
+  const setProfile = useProfileStore((state) => state.setProfile);
   const navigate = useNavigate();
   const { t } = useTranslation();
   
