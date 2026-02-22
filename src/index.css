@@ -24,8 +24,6 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -89,13 +87,22 @@ button:focus-visible {
 
 /* Pages avec navbar — padding pour ne pas etre masque par la zone trigger */
 .page-with-nav {
-  padding-top: 1rem;
+  padding-top: 4rem;
   width: 100%;
 }
 
 /* Retrocompatibilite (utilisees dans ProfilSettings.tsx) */
 .display-block { display: block; }
 .margin-10     { margin: 10px; }
+
+/* Form section labels */
+.form-section-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.5;
+  margin-bottom: 0.35rem;
+}
 
 /* Form errors */
 .form-error {

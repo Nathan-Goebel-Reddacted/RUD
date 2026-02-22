@@ -27,7 +27,7 @@ Créer la classe `ApiConnection` (baseUrl, headers, auth type, endpoints[]) et l
 **RUD010 — Formulaire d'ajout d'une API** ✅
 UI pour saisir : base URL, headers custom, type d'auth (Bearer / API Key / aucune). Validation + `ActionResult`.
 
-**RUD011 — Gestion des endpoints**
+**RUD011 — Gestion des endpoints** ✅
 Ajouter/supprimer des endpoints manuellement (path, méthode GET/POST, label). Liste affichée sous la config API.
 
 **RUD012 — Import Swagger/OpenAPI**

@@ -1,12 +1,16 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import ApiConnection from "@/class/ApiConnection";
+import ApiEndpoint from "@/class/ApiEndpoint";
 
 type ApiState = {
   connections: ApiConnection[];
   addConnection: (connection: ApiConnection) => void;
   updateConnection: (connection: ApiConnection) => void;
   removeConnection: (id: string) => void;
+  addEndpoint: (connectionId: string, endpoint: ApiEndpoint) => void;
+  updateEndpoint: (connectionId: string, endpoint: ApiEndpoint) => void;
+  removeEndpoint: (connectionId: string, endpointId: string) => void;
 };
 
 export const useApiStore = create<ApiState>()(
@@ -24,6 +28,34 @@ export const useApiStore = create<ApiState>()(
       removeConnection: (id) =>
         set((state) => ({
           connections: state.connections.filter((c) => c.getId() !== id),
+        })),
+      addEndpoint: (connectionId, endpoint) =>
+        set((state) => ({
+          connections: state.connections.map((c) => {
+            if (c.getId() !== connectionId) return c;
+            const updated = c.clone();
+            updated.addEndpoint(endpoint);
+            return updated;
+          }),
+        })),
+      updateEndpoint: (connectionId, endpoint) =>
+        set((state) => ({
+          connections: state.connections.map((c) => {
+            if (c.getId() !== connectionId) return c;
+            const updated = c.clone();
+            updated.removeEndpoint(endpoint.getId());
+            updated.addEndpoint(endpoint);
+            return updated;
+          }),
+        })),
+      removeEndpoint: (connectionId, endpointId) =>
+        set((state) => ({
+          connections: state.connections.map((c) => {
+            if (c.getId() !== connectionId) return c;
+            const updated = c.clone();
+            updated.removeEndpoint(endpointId);
+            return updated;
+          }),
         })),
     }),
     {

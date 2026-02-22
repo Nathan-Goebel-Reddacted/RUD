@@ -75,6 +75,16 @@ class ApiConnection {
     this.endpoints = this.endpoints.filter((e) => e.getId() !== id);
   }
 
+  public clone(): ApiConnection {
+    const c = new ApiConnection();
+    c.createAnApiConnection(this.label, this.baseUrl, this.id);
+    c.setAuthType(this.authType);
+    c.setAuthValue(this.authValue);
+    for (const [k, v] of Object.entries(this.headers)) c.setHeader(k, v);
+    for (const ep of this.endpoints) c.addEndpoint(ep);
+    return c;
+  }
+
   public toJSON(): object {
     return {
       id:        this.id,
