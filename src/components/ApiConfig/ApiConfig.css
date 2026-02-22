@@ -1,0 +1,130 @@
+.api-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  max-width: 700px;
+}
+
+.api-item {
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.api-item:first-child {
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.api-item__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0.5rem;
+  cursor: pointer;
+  user-select: none;
+  gap: 0.5rem;
+}
+
+.api-item__header:hover {
+  background: rgba(255,255,255,0.03);
+}
+
+.api-item__url {
+  flex: 1;
+  font-family: monospace;
+  font-size: 0.9rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.api-item__chevron {
+  font-size: 0.65rem;
+  transition: transform 0.2s;
+  opacity: 0.4;
+}
+.api-item__chevron--open {
+  transform: rotate(180deg);
+}
+
+.api-item__actions {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.api-item__btn {
+  background: none;
+  border: none;
+  padding: 0.2rem 0.4rem;
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: 4px;
+  opacity: 0.5;
+}
+.api-item__btn:hover {
+  opacity: 1;
+  background: rgba(255,255,255,0.06);
+}
+
+.api-item__body {
+  padding: 0.25rem 0 0.5rem 1rem;
+}
+
+.endpoint-row {
+  display: flex;
+  align-items: center;
+  padding: 0.35rem 0.5rem 0.35rem 0;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.endpoint-row:last-of-type {
+  border-bottom: none;
+}
+
+.endpoint-row__method {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  min-width: 46px;
+  text-align: center;
+  background: rgba(255,255,255,0.08);
+  letter-spacing: 0.03em;
+}
+
+.endpoint-row__path {
+  flex: 1;
+  font-family: monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.api-item__add-route {
+  margin-top: 0.4rem;
+  opacity: 0.4;
+  background: none;
+  border: none;
+  padding: 0.2rem 0;
+  font-size: 0.85rem;
+  cursor: not-allowed;
+}
+
+.api-config__add-api {
+  width: 100%;
+  max-width: 700px;
+  margin-top: 0;
+  text-align: left;
+  background: none;
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  border-radius: 0;
+  padding: 0.75rem 0.5rem;
+  opacity: 0.5;
+  font-size: 0.9rem;
+}
+.api-config__add-api:hover {
+  opacity: 1;
+  background: rgba(255,255,255,0.03);
+}

@@ -24,7 +24,7 @@ Installer Zustand et migrer `ProfileContext` vers un store Zustand (`useProfileS
 **RUD009 — Modèle de données API** ✅
 Créer la classe `ApiConnection` (baseUrl, headers, auth type, endpoints[]) et l'intégrer dans le store Zustand. Fondation de tout ce qui suit.
 
-**RUD010 — Formulaire d'ajout d'une API**
+**RUD010 — Formulaire d'ajout d'une API** ✅
 UI pour saisir : base URL, headers custom, type d'auth (Bearer / API Key / aucune). Validation + `ActionResult`.
 
 **RUD011 — Gestion des endpoints**
