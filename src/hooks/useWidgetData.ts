@@ -4,7 +4,7 @@ import { useDashboardStore } from "@/stores/dashboardStore";
 import { fetchWidgetData } from "@/services/widgetFetch";
 import type { Widget, WidgetDataState, FetchCacheEntry } from "@/types/widget";
 
-const DEFAULT_INTERVAL = 30; // seconds, used if widget has no refreshOverride
+const DEFAULT_INTERVAL = 30; // seconds
 
 export function useWidgetData(widget: Widget): WidgetDataState {
   const { connectionId, endpointId, dataPath, refreshOverride } = widget;
@@ -25,54 +25,51 @@ export function useWidgetData(widget: Widget): WidgetDataState {
     fetchedAt: null,
   });
 
-  const controllerRef = useRef<AbortController | null>(null);
+  // fetchingRef tracks an in-flight request for THIS widget instance.
+  // We do NOT use cached.loading for deduplication to avoid the StrictMode
+  // double-invoke bug (abort → cached.loading stays true → fetch never restarts).
   const fetchingRef   = useRef(false);
+  const controllerRef = useRef<AbortController | null>(null);
 
-  // Abort on unmount
+  // Abort on unmount only
   useEffect(() => {
     return () => { controllerRef.current?.abort(); };
   }, []);
 
-  // React to each tick (fires every second from DashboardClock)
+  // Driven by the global clock tick (1s base rate from DashboardClock)
   useEffect(() => {
     const conn = connections.find((c) => c.getId() === connectionId) ?? null;
     const ep   = conn?.getEndpoints().find((e) => e.getId() === endpointId) ?? null;
 
     if (!conn || !ep) {
-      setState((prev) => ({ ...prev, loading: false, error: "endpoint_not_found" }));
+      setState({ data: null, loading: false, error: "endpoint_not_found", httpCode: null, fetchedAt: null });
       return;
     }
 
     const cached: FetchCacheEntry | undefined = fetchCache[cacheKey];
 
-    // Update local state from cache if fresh
-    if (cached && !cached.loading) {
+    // If cache is fresh → sync state and skip fetch
+    if (cached) {
       const age = Date.now() - cached.fetchedAt;
-      setState({
-        data:      cached.data,
-        loading:   false,
-        error:     cached.error as WidgetDataState["error"],
-        httpCode:  null,
-        fetchedAt: cached.fetchedAt,
-      });
-      // Still stale → fall through to fetch
-      if (age < intervalMs) return;
+      if (age < intervalMs) {
+        setState({
+          data:      cached.data,
+          loading:   false,
+          error:     cached.error as WidgetDataState["error"],
+          httpCode:  null,
+          fetchedAt: cached.fetchedAt,
+        });
+        return;
+      }
     }
 
-    // Skip if already fetching this endpoint
-    if (cached?.loading || fetchingRef.current) return;
+    // Skip if this instance is already fetching
+    if (fetchingRef.current) return;
 
-    // Mark as fetching
+    // Start fetch
     fetchingRef.current = true;
-    setFetchCache(cacheKey, {
-      data:      cached?.data ?? null,
-      fetchedAt: cached?.fetchedAt ?? Date.now(),
-      error:     cached?.error ?? null,
-      loading:   true,
-    });
     setState((prev) => ({ ...prev, loading: true }));
 
-    controllerRef.current?.abort();
     const controller = new AbortController();
     controllerRef.current = controller;
 
@@ -94,13 +91,13 @@ export function useWidgetData(widget: Widget): WidgetDataState {
           fetchedAt: entry.fetchedAt,
         });
       })
-      .catch((err) => {
-        if (err instanceof DOMException && err.name === "AbortError") return;
+      .catch((_err) => {
+        if (controller.signal.aborted) return; // unmount — ignore silently
         setState((prev) => ({ ...prev, loading: false, error: "http_error" }));
       })
       .finally(() => { fetchingRef.current = false; });
 
-  // tick drives re-evaluation; intervalMs and cacheKey are stable per widget config
+  // tick is the only explicit dependency — on each 1s tick we re-evaluate
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tick]);
 

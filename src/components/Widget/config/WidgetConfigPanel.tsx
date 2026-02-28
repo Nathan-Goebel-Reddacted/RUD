@@ -55,7 +55,7 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
     (initial?.config.type as WidgetType) ?? initialType ?? WidgetType.NUMBER_CARD
   );
   const [config,       setConfig]       = useState<WidgetConfig>(
-    initial?.config ?? defaultConfig(WidgetType.NUMBER_CARD)
+    initial?.config ?? defaultConfig(initialType ?? WidgetType.NUMBER_CARD)
   );
   const [refreshOverride, setRefreshOverride] = useState<number | undefined>(initial?.refreshOverride);
   const [rawPreview,   setRawPreview]   = useState<unknown>(null);
