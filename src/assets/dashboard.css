@@ -305,7 +305,7 @@
   border: 1px solid rgba(255,255,255,0.2);
   border-radius: 6px;
   cursor: pointer;
-  color: #fff;
+  color: var(--text-color);
   transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
 .widget-card__overlay-btn svg {
