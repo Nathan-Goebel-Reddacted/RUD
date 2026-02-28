@@ -16,9 +16,10 @@ import DataPathInput from "./DataPathInput";
 import AxisKeySelector from "./AxisKeySelector";
 
 type Props = {
-  initial?: Widget;
-  onSave:   (widget: Omit<Widget, "id" | "position"> & { id?: string }) => void;
-  onCancel: () => void;
+  initial?:      Widget;
+  initialType?:  WidgetType;
+  onSave:        (widget: Omit<Widget, "id" | "position"> & { id?: string }) => void;
+  onCancel:      () => void;
 };
 
 function defaultConfig(type: WidgetType): WidgetConfig {
@@ -43,7 +44,7 @@ function extractKeys(data: unknown): string[] {
   return [];
 }
 
-export default function WidgetConfigPanel({ initial, onSave, onCancel }: Props) {
+export default function WidgetConfigPanel({ initial, initialType, onSave, onCancel }: Props) {
   const connections = useApiStore((state) => state.connections);
 
   const [label,        setLabel]        = useState(initial?.label ?? "");
@@ -51,7 +52,7 @@ export default function WidgetConfigPanel({ initial, onSave, onCancel }: Props) 
   const [endpointId,   setEndpointId]   = useState(initial?.endpointId ?? "");
   const [dataPath,     setDataPath]     = useState(initial?.dataPath ?? "");
   const [type,         setType]         = useState<WidgetType>(
-    (initial?.config.type as WidgetType) ?? WidgetType.NUMBER_CARD
+    (initial?.config.type as WidgetType) ?? initialType ?? WidgetType.NUMBER_CARD
   );
   const [config,       setConfig]       = useState<WidgetConfig>(
     initial?.config ?? defaultConfig(WidgetType.NUMBER_CARD)

@@ -80,10 +80,105 @@
   flex-direction: column;
   min-height: 100vh;
 }
+.dashboard-editor__body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
 .dashboard-editor__canvas {
   flex: 1;
   padding: 0.75rem 1rem;
-  overflow-x: auto;
+  overflow: auto;
+}
+
+/* ─── Widget Drawer ───────────────────────────────────────────────── */
+.widget-drawer {
+  position: relative;
+  display: flex;
+  flex-direction: row-reverse;
+  flex-shrink: 0;
+  border-left: 1px solid var(--border-color);
+  background: rgba(255,255,255,0.02);
+}
+.widget-drawer__toggle {
+  position: absolute;
+  top: 50%;
+  left: -16px;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 40px;
+  background: var(--background-color);
+  border: 1px solid var(--border-color);
+  border-right: none;
+  border-radius: 4px 0 0 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  color: inherit;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+  z-index: 10;
+}
+.widget-drawer__toggle:hover { opacity: 1; }
+
+.widget-drawer__content {
+  width: 200px;
+  padding: 1rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.widget-drawer__heading {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.45;
+  margin: 0 0 0.25rem 0;
+}
+.widget-drawer__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.widget-drawer__item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 0.55rem 0.7rem;
+  cursor: pointer;
+  color: inherit;
+  text-align: left;
+  transition: background 0.15s, border-color 0.15s;
+  width: 100%;
+}
+.widget-drawer__item:hover {
+  background: rgba(255,255,255,0.09);
+  border-color: var(--border-color);
+}
+.widget-drawer__item-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--text-color);
+}
+.widget-drawer__item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+.widget-drawer__item-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.widget-drawer__item-desc {
+  font-size: 0.7rem;
+  opacity: 0.5;
+  line-height: 1.3;
 }
 
 /* ─── Toolbar ─────────────────────────────────────────────────────── */
