@@ -8,15 +8,21 @@ type Props = {
 export default function NumberCard({ data, config }: Props) {
   const { unit, decimalPlaces } = config;
 
+  if (Array.isArray(data) || (typeof data === "object" && data !== null)) {
+    return (
+      <div className="widget-card__error">
+        <span className="widget-card__error-icon">⚠</span>
+        <span>Data path returns an object or array — use a path pointing to a scalar value (e.g. <code>$.total</code> or <code>$[0].id</code>)</span>
+      </div>
+    );
+  }
+
   let display = "—";
   if (data !== null && data !== undefined) {
     const num = Number(data);
-    if (!isNaN(num)) {
-      display =
-        decimalPlaces !== undefined ? num.toFixed(decimalPlaces) : String(num);
-    } else {
-      display = String(data);
-    }
+    display = !isNaN(num)
+      ? (decimalPlaces !== undefined ? num.toFixed(decimalPlaces) : String(num))
+      : String(data);
   }
 
   return (
