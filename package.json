@@ -16,6 +16,7 @@
     "i18next": "^25.6.3",
     "js-yaml": "^4.1.1",
     "jsonpath-plus": "^10.4.0",
+    "lucide-react": "^0.575.0",
     "modal": "^0.3.14",
     "popup": "^0.0.3",
     "react": "^19.1.0",
