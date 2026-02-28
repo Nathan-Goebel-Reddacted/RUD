@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useDashboardStore } from "@/stores/dashboardStore";
+import DashboardClock from "@/components/DashboardClock";
 import DashboardGrid from "@/components/Widget/DashboardGrid";
 import WidgetDrawer from "@/components/Widget/WidgetDrawer";
 import WidgetConfigPanel from "@/components/Widget/config/WidgetConfigPanel";
@@ -48,6 +49,7 @@ function Dashboard() {
 
   return (
     <div className="page-with-nav dashboard-editor">
+      <DashboardClock />
       <div className="dashboard-editor__body">
         <div className="dashboard-editor__canvas">
           <DashboardGrid

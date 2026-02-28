@@ -57,6 +57,7 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
   const [config,       setConfig]       = useState<WidgetConfig>(
     initial?.config ?? defaultConfig(WidgetType.NUMBER_CARD)
   );
+  const [refreshOverride, setRefreshOverride] = useState<number | undefined>(initial?.refreshOverride);
   const [rawPreview,   setRawPreview]   = useState<unknown>(null);
   const [dataKeys,     setDataKeys]     = useState<string[]>([]);
   const [fetching,     setFetching]     = useState(false);
@@ -109,7 +110,7 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
       endpointId,
       dataPath,
       config,
-      refreshOverride: initial?.refreshOverride,
+      refreshOverride,
     });
   }
 
@@ -292,6 +293,22 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
 
         {/* Type-specific config */}
         {renderConfigFields()}
+
+        {/* Fetch interval */}
+        <div className="form-group">
+          <label className="form-label">Fetch interval (seconds)</label>
+          <input
+            className="form-input"
+            type="number"
+            min={1}
+            placeholder="default (30 s)"
+            value={refreshOverride ?? ""}
+            onChange={(e) =>
+              setRefreshOverride(e.target.value ? Number(e.target.value) : undefined)
+            }
+          />
+          <span className="form-hint">Leave empty to use the global default (30 s).</span>
+        </div>
       </div>
 
       <div className="widget-config-panel__footer">

@@ -1,7 +1,9 @@
 import { useRef } from "react";
+import { Maximize2, Minimize2 } from "lucide-react";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import { useWidgetData } from "@/hooks/useWidgetData";
 import { useFullscreen } from "@/hooks/useFullscreen";
+import DashboardClock from "@/components/DashboardClock";
 import WidgetCard from "@/components/Widget/WidgetCard";
 import type { Widget } from "@/types/widget";
 
@@ -14,21 +16,17 @@ function ReadonlyWidget({ widget }: { widget: Widget }) {
   return <WidgetCard widget={widget} dataState={dataState} readonly />;
 }
 
-function colToPercent(x: number): string {
-  return `${(x / COLS) * 100}%`;
-}
-function widthPercent(w: number): string {
-  return `calc(${(w / COLS) * 100}% - ${COL_GAP}px)`;
-}
+function colToPercent(x: number) { return `${(x / COLS) * 100}%`; }
+function widthPercent(w: number)  { return `calc(${(w / COLS) * 100}% - ${COL_GAP}px)`; }
 
 export default function DisplayDashboard() {
-  const containerRef                    = useRef<HTMLDivElement | null>(null);
-  const currentDashboard                = useDashboardStore((s) => s.currentDashboard);
-  const { isFullscreen, enter, exit }   = useFullscreen();
+  const containerRef                  = useRef<HTMLDivElement | null>(null);
+  const currentDashboard              = useDashboardStore((s) => s.currentDashboard);
+  const { isFullscreen, enter, exit } = useFullscreen();
 
-  const maxRow = currentDashboard.widgets.reduce(
-    (max, w) => Math.max(max, w.position.y + w.position.h),
-    4
+  const hasTitle   = currentDashboard.title.trim().length > 0;
+  const maxRow     = currentDashboard.widgets.reduce(
+    (max, w) => Math.max(max, w.position.y + w.position.h), 4
   );
   const gridHeight = maxRow * (ROW_HEIGHT + COL_GAP) + COL_GAP;
 
@@ -37,20 +35,27 @@ export default function DisplayDashboard() {
       ref={containerRef}
       className={`display-dashboard${isFullscreen ? " display-dashboard--fullscreen" : ""}`}
     >
-      <div className="display-dashboard__header">
-        <h1 className="display-dashboard__title">{currentDashboard.title}</h1>
-        <div className="display-dashboard__controls">
-          <span className="display-dashboard__refresh-hint">
-            Refresh: {currentDashboard.refreshInterval}s
-          </span>
-          <button
-            className="btn btn--secondary"
-            onClick={() => isFullscreen ? exit() : enter(containerRef.current)}
-          >
-            {isFullscreen ? "⊡ Exit fullscreen" : "⛶ Fullscreen"}
-          </button>
+      <DashboardClock />
+
+      {/* Header only shown if title is set OR not in fullscreen */}
+      {(hasTitle || !isFullscreen) && (
+        <div className="display-dashboard__header">
+          {hasTitle && (
+            <h1 className="display-dashboard__title">{currentDashboard.title}</h1>
+          )}
+          <div className="display-dashboard__controls">
+            <button
+              className="btn btn--secondary display-dashboard__fs-btn"
+              onClick={() => isFullscreen ? exit() : enter(containerRef.current)}
+              title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+            >
+              {isFullscreen
+                ? <Minimize2 size={16} strokeWidth={2} />
+                : <Maximize2 size={16} strokeWidth={2} />}
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {currentDashboard.widgets.length === 0 ? (
         <div className="display-dashboard__empty">
