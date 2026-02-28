@@ -1,3 +1,4 @@
+import { Pencil, Trash2 } from "lucide-react";
 import type { Widget, WidgetDataState } from "@/types/widget";
 import WidgetSkeleton from "./WidgetSkeleton";
 import NumberCard from "./types/NumberCard";
@@ -6,10 +7,10 @@ import BarChart from "./types/BarChart";
 import LineChart from "./types/LineChart";
 
 type Props = {
-  widget:   Widget;
+  widget:    Widget;
   dataState: WidgetDataState;
-  onEdit?:  (widget: Widget) => void;
-  onDelete?:(id: string) => void;
+  onEdit?:   (widget: Widget) => void;
+  onDelete?: (id: string) => void;
   readonly?: boolean;
 };
 
@@ -18,7 +19,7 @@ function ErrorMessage({ error }: { error: string }) {
     endpoint_not_found: "Endpoint not found — check API config",
     cors:               "CORS error — the API blocked the request",
     http_error:         "HTTP error — the server returned an error",
-    parse_error:        "Parse error — the response is not valid JSON",
+    parse_error:        "Parse error — response is not valid JSON",
     no_data:            "No data matched the data path",
     invalid_path:       "Invalid JSONPath expression",
   };
@@ -34,47 +35,51 @@ function WidgetBody({ widget, dataState }: { widget: Widget; dataState: WidgetDa
   if (dataState.loading && dataState.data === null) return <WidgetSkeleton />;
   if (dataState.error) return <ErrorMessage error={dataState.error} />;
 
-  const { config } = widget;
-  switch (config.type) {
-    case "number-card":
-      return <NumberCard data={dataState.data} config={config} />;
-    case "table":
-      return <Table data={dataState.data} config={config} />;
-    case "bar-chart":
-      return <BarChart data={dataState.data} config={config} />;
-    case "line-chart":
-      return <LineChart data={dataState.data} config={config} />;
+  switch (widget.config.type) {
+    case "number-card": return <NumberCard data={dataState.data} config={widget.config} />;
+    case "table":       return <Table      data={dataState.data} config={widget.config} />;
+    case "bar-chart":   return <BarChart   data={dataState.data} config={widget.config} />;
+    case "line-chart":  return <LineChart  data={dataState.data} config={widget.config} />;
   }
 }
 
 export default function WidgetCard({ widget, dataState, onEdit, onDelete, readonly }: Props) {
   return (
     <div className="widget-card">
-      <div className="widget-card__header">
-        <span className="widget-card__label">{widget.label}</span>
-        {!readonly && (
-          <div className="widget-card__actions">
+      {/* Edit/delete overlay — appears on hover, full top strip */}
+      {!readonly && (onEdit || onDelete) && (
+        <div className="widget-card__overlay">
+          <span className="widget-card__overlay-label">{widget.label}</span>
+          <div className="widget-card__overlay-actions">
             {onEdit && (
               <button
-                className="widget-card__action-btn"
+                className="widget-card__overlay-btn"
                 title="Edit widget"
                 onClick={() => onEdit(widget)}
               >
-                ✎
+                <Pencil size={15} strokeWidth={2} />
               </button>
             )}
             {onDelete && (
               <button
-                className="widget-card__action-btn widget-card__action-btn--danger"
+                className="widget-card__overlay-btn widget-card__overlay-btn--danger"
                 title="Delete widget"
                 onClick={() => onDelete(widget.id)}
               >
-                ✕
+                <Trash2 size={15} strokeWidth={2} />
               </button>
             )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
+      {/* Readonly label (display mode) */}
+      {readonly && widget.label && (
+        <div className="widget-card__header">
+          <span className="widget-card__label">{widget.label}</span>
+        </div>
+      )}
+
       <div className="widget-card__body">
         <WidgetBody widget={widget} dataState={dataState} />
       </div>
