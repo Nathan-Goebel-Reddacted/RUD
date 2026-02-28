@@ -15,7 +15,7 @@ export function useWidgetData(widget: Widget): WidgetDataState {
   const tick          = useDashboardStore((s) => s.tick);
 
   const intervalMs = (refreshOverride ?? DEFAULT_INTERVAL) * 1000;
-  const cacheKey   = `${connectionId}::${endpointId}`;
+  const cacheKey   = `${connectionId}::${endpointId}::${dataPath}`;
 
   const [state, setState] = useState<WidgetDataState>({
     data:      null,
