@@ -33,8 +33,8 @@ Ajouter/supprimer des endpoints manuellement (path, méthode GET/POST, label). L
 **RUD011b — Formulaire endpoint style Swagger** ✅
 Refonte visuelle du formulaire de création/édition d'endpoint : badge HTTP coloré par méthode (via CSS variables), barre route proéminente, paramètres en tableau structuré (Nom / Type / Requis / Défaut), Request Body style code editor.
 
-**RUD012 — Import Swagger/OpenAPI**
-Upload d'un fichier JSON/YAML, parsing via `swagger-parser`, import automatique des endpoints dans la config. Installer `swagger-parser`.
+**RUD012 — Import Swagger/OpenAPI** ✅
+Upload d'un fichier JSON/YAML, parsing via `js-yaml`, import automatique des endpoints dans la config (base URL, auth, path params, query params, request body).
 
 **RUD013 — Test de connexion**
 Bouton "Tester" par endpoint : fait un `fetch` réel et affiche le statut HTTP + un extrait de la réponse. Message d'erreur clair si CORS.

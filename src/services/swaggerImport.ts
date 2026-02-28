@@ -115,7 +115,18 @@ function mapOperation(path: string, method: ValidMethod, operation: Operation): 
   const ep = new ApiEndpoint();
   ep.createAnApiEndpoint(path, method.toUpperCase() as HttpMethod);
 
-  const queryParams: QueryParam[] = (operation.parameters ?? [])
+  const params = operation.parameters ?? [];
+
+  const pathParams = params
+    .filter((p) => p.in === "path")
+    .map((p) => ({
+      name: p.name,
+      type: mapParamType(p.schema?.type ?? p.type),
+      defaultValue: String(p.default ?? p.schema?.default ?? ""),
+    }));
+  if (pathParams.length > 0) ep.setPathParams(pathParams);
+
+  const queryParams: QueryParam[] = params
     .filter((p) => p.in === "query")
     .map((p) => ({
       name: p.name,
