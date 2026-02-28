@@ -210,6 +210,36 @@
 .dashboard-toolbar__select { width: auto; }
 
 /* ─── Grid ────────────────────────────────────────────────────────── */
+
+/* ─── Resize handle ───────────────────────────────────────────────── */
+.widget-resize-handle {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: se-resize;
+  color: var(--text-color);
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 6;
+  transform: rotate(90deg);
+}
+.widget-resize-handle svg { pointer-events: none; }
+
+/* Show handle on widget hover (same parent as overlay) */
+[data-draggable]:hover .widget-resize-handle,
+.widget-card:hover ~ .widget-resize-handle,
+*:hover > .widget-resize-handle {
+  opacity: 0.5;
+}
+*:hover > .widget-resize-handle:hover {
+  opacity: 1;
+}
+
 .dashboard-grid__empty {
   display: flex;
   align-items: center;
