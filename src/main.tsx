@@ -11,6 +11,7 @@ import DisplayDashboard from '@/pages/displayDashboard.tsx'
 import "@/translations/i18n";
 import '@/index.css'
 import '@/assets/Color.css'
+import '@/assets/dashboard.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
