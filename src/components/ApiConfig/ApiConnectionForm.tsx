@@ -4,6 +4,8 @@ import ApiConnection from "@/class/ApiConnection";
 import { AuthType } from "@/enum/authType";
 import type { AuthType as AuthTypeValue } from "@/enum/authType";
 import { useApiStore } from "@/stores/apiStore";
+import ConfirmDeleteButton from "@/components/tool/ConfirmDeleteButton";
+import FormField from "@/components/tool/FormField";
 
 export const MODAL_CREATE_ID = "ApiConnectionCreate";
 export const MODAL_EDIT_ID   = "ApiConnectionEdit";
@@ -34,6 +36,10 @@ function ApiConnectionForm({ onClose, initialConnection }: Props) {
       ? Object.entries(initialConnection.getHeaders()).map(([key, value]) => ({ key, value }))
       : []
   );
+  const [healthCheckEndpointId, setHealthCheckEndpointId] = useState<string | null>(
+    initialConnection?.getHealthCheckEndpointId() ?? null
+  );
+  const endpoints = isEdit ? initialConnection!.getEndpoints() : [];
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const addHeaderRow = () => setHeaders((prev) => [...prev, { key: "", value: "" }]);
@@ -73,6 +79,11 @@ function ApiConnectionForm({ onClose, initialConnection }: Props) {
     if (result.isSuccess()) {
       setErrors({});
       if (isEdit) {
+        const epIds = initialConnection!.getEndpoints().map((e) => e.getId());
+        connection.setHealthCheckEndpointId(
+          healthCheckEndpointId && epIds.includes(healthCheckEndpointId)
+            ? healthCheckEndpointId : null
+        );
         updateConnection(connection);
       } else {
         addConnection(connection);
@@ -104,27 +115,25 @@ function ApiConnectionForm({ onClose, initialConnection }: Props) {
           {isEdit ? "Edit API Connection" : "Add API Connection"}
         </h2>
         <form onSubmit={handleSubmit}>
-          <input
-            className="d-block w-full m-2"
-            placeholder="Connection label (min. 3 chars)"
-            value={label}
-            onChange={(e) => setLabel(e.target.value)}
-            required
-          />
-          {errors["ApiConnection.label.tooShort"] && (
-            <span className="form-error">Label must be at least 3 characters</span>
-          )}
+          <FormField error={errors["ApiConnection.label.tooShort"] ? "Label must be at least 3 characters" : undefined}>
+            <input
+              className="d-block w-full"
+              placeholder="Connection label (min. 3 chars)"
+              value={label}
+              onChange={(e) => setLabel(e.target.value)}
+              required
+            />
+          </FormField>
 
-          <input
-            className="d-block w-full m-2"
-            placeholder="Base URL (https://api.example.com)"
-            value={baseUrl}
-            onChange={(e) => setBaseUrl(e.target.value)}
-            required
-          />
-          {errors["ApiConnection.baseUrl.invalid"] && (
-            <span className="form-error">Enter a valid http/https URL</span>
-          )}
+          <FormField error={errors["ApiConnection.baseUrl.invalid"] ? "Enter a valid http/https URL" : undefined}>
+            <input
+              className="d-block w-full"
+              placeholder="Base URL (https://api.example.com)"
+              value={baseUrl}
+              onChange={(e) => setBaseUrl(e.target.value)}
+              required
+            />
+          </FormField>
 
           <select
             className="d-block w-full m-2"
@@ -173,6 +182,23 @@ function ApiConnectionForm({ onClose, initialConnection }: Props) {
             ))}
           </div>
 
+          {isEdit && (
+            <FormField label="Health check endpoint">
+              <select
+                className="d-block w-full"
+                value={healthCheckEndpointId ?? ""}
+                onChange={(e) => setHealthCheckEndpointId(e.target.value || null)}
+              >
+                <option value="">— None —</option>
+                {endpoints.map((ep) => (
+                  <option key={ep.getId()} value={ep.getId()}>
+                    {ep.getMethod()} {ep.getPath()}
+                  </option>
+                ))}
+              </select>
+            </FormField>
+          )}
+
           <div className="d-flex gap-2 m-2">
             <button type="submit" style={{ flex: 1 }}>
               {isEdit ? "Save changes" : "Save"}
@@ -184,14 +210,11 @@ function ApiConnectionForm({ onClose, initialConnection }: Props) {
 
           {isEdit && (
             <div className="m-2">
-              <button
-                type="button"
-                onClick={handleDelete}
-                className="d-block w-full"
-                style={{ color: "#e05252", borderColor: "#e05252" }}
-              >
-                Delete this connection
-              </button>
+              <ConfirmDeleteButton
+                onConfirm={handleDelete}
+                label="Delete this connection"
+                confirmLabel="Confirm delete?"
+              />
             </div>
           )}
         </form>

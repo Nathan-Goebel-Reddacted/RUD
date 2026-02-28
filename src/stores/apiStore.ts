@@ -54,6 +54,9 @@ export const useApiStore = create<ApiState>()(
             if (c.getId() !== connectionId) return c;
             const updated = c.clone();
             updated.removeEndpoint(endpointId);
+            if (updated.getHealthCheckEndpointId() === endpointId) {
+              updated.setHealthCheckEndpointId(null);
+            }
             return updated;
           }),
         })),

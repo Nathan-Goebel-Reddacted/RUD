@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useApiStore } from "@/stores/apiStore";
 import { openModal, closeModal } from "@/components/tool/Modal";
 import ApiConnectionForm, {
@@ -9,12 +9,18 @@ import ApiEndpointForm, {
   ENDPOINT_MODAL_CREATE_ID,
   ENDPOINT_MODAL_EDIT_ID,
 } from "@/components/ApiConfig/ApiEndpointForm";
-import { sendEndpoint, testConnection } from "@/services/apiFetch";
+import SwaggerImportButton from "@/components/ApiConfig/SwaggerImportButton";
+import { sendEndpoint } from "@/services/apiFetch";
 import type { FetchStatus } from "@/services/apiFetch";
-import { AuthType } from "@/enum/authType";
 import ApiConnection from "@/class/ApiConnection";
 import ApiEndpoint from "@/class/ApiEndpoint";
 import "@/components/ApiConfig/ApiConfig.css";
+
+const PencilIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+    <path d="M11.013 1.427a1.75 1.75 0 0 1 2.474 0l1.086 1.086a1.75 1.75 0 0 1 0 2.474l-8.61 8.61c-.21.21-.47.364-.756.445l-3.251.93a.75.75 0 0 1-.927-.928l.929-3.25c.081-.286.235-.547.445-.758l8.61-8.61zm1.414 1.06a.25.25 0 0 0-.354 0L10.811 3.75l1.439 1.44 1.263-1.263a.25.25 0 0 0 0-.354l-1.086-1.086zM11.189 6.25 9.75 4.81l-6.286 6.287a.25.25 0 0 0-.064.108l-.558 1.953 1.953-.558a.25.25 0 0 0 .108-.064z"/>
+  </svg>
+);
 
 function StatusDot({ status }: { status: FetchStatus }) {
   return (
@@ -26,7 +32,8 @@ function StatusDot({ status }: { status: FetchStatus }) {
 }
 
 function ApiConfig() {
-  const connections = useApiStore((state) => state.connections);
+  const connections   = useApiStore((state) => state.connections);
+  const addConnection = useApiStore((state) => state.addConnection);
 
   const [openId,               setOpenId]               = useState<string | null>(null);
   const [editingConnection,    setEditingConnection]    = useState<ApiConnection | null>(null);
@@ -35,6 +42,21 @@ function ApiConfig() {
 
   const [endpointStatuses,   setEndpointStatuses]   = useState<Record<string, FetchStatus>>({});
   const [connectionStatuses, setConnectionStatuses] = useState<Record<string, FetchStatus>>({});
+
+  // Auto-connect health check endpoints on mount
+  useEffect(() => {
+    connections.forEach((conn) => {
+      const hcId = conn.getHealthCheckEndpointId();
+      if (!hcId) return;
+      const ep = conn.getEndpoints().find((e) => e.getId() === hcId);
+      if (!ep) return;
+      setConnectionStatuses((prev) => ({ ...prev, [conn.getId()]: "loading" }));
+      sendEndpoint(conn, ep).then((result) => {
+        setConnectionStatuses((prev) => ({ ...prev, [conn.getId()]: result }));
+      });
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const toggleOpen = (id: string) =>
     setOpenId((prev) => (prev === id ? null : id));
@@ -66,11 +88,16 @@ function ApiConfig() {
     setEndpointStatuses((prev) => ({ ...prev, [ep.getId()]: result }));
   };
 
-  const handleTestConnection = async (conn: ApiConnection, e: React.MouseEvent) => {
+  const handleConnectHealth = async (conn: ApiConnection, ep: ApiEndpoint, e: React.MouseEvent) => {
     e.stopPropagation();
     setConnectionStatuses((prev) => ({ ...prev, [conn.getId()]: "loading" }));
-    const result = await testConnection(conn);
+    const result = await sendEndpoint(conn, ep);
     setConnectionStatuses((prev) => ({ ...prev, [conn.getId()]: result }));
+  };
+
+  const handleSwaggerImport = (conn: ApiConnection) => {
+    addConnection(conn);
+    setOpenId(conn.getId());
   };
 
   const closeCreate         = () => closeModal(MODAL_CREATE_ID);
@@ -84,8 +111,9 @@ function ApiConfig() {
         {connections.map((conn) => {
           const isOpen    = openId === conn.getId();
           const endpoints = conn.getEndpoints();
-          const hasAuth   = conn.getAuthType() !== AuthType.NONE;
           const connStatus = connectionStatuses[conn.getId()] ?? "unknown";
+          const hcId = conn.getHealthCheckEndpointId();
+          const hcEp = hcId ? conn.getEndpoints().find((e) => e.getId() === hcId) ?? null : null;
 
           return (
             <li key={conn.getId()} className="api-item">
@@ -93,24 +121,24 @@ function ApiConfig() {
                 className="api-item__header"
                 onClick={() => toggleOpen(conn.getId())}
               >
-                {hasAuth && <StatusDot status={connStatus} />}
+                {hcEp && <StatusDot status={connStatus} />}
                 <span className="api-item__url">{conn.getBaseUrl()}</span>
                 <div className="api-item__actions">
-                  {hasAuth && (
+                  {hcEp && (
                     <button
                       className="api-item__btn"
-                      title="Test connection"
-                      onClick={(e) => handleTestConnection(conn, e)}
+                      title="Connect"
+                      onClick={(e) => handleConnectHealth(conn, hcEp, e)}
                     >
-                      Test
+                      Connect
                     </button>
                   )}
                   <button
-                    className="api-item__btn"
+                    className="api-item__btn api-item__btn--icon"
                     title="Edit connection"
                     onClick={(e) => openEditConnection(conn, e)}
                   >
-                    …
+                    <PencilIcon />
                   </button>
                   <span className={`api-item__chevron${isOpen ? " api-item__chevron--open" : ""}`}>
                     ▼
@@ -141,11 +169,11 @@ function ApiConfig() {
                             Send
                           </button>
                           <button
-                            className="api-item__btn"
+                            className="api-item__btn api-item__btn--icon"
                             title="Edit route"
                             onClick={(e) => openEditEndpoint(conn, ep, e)}
                           >
-                            …
+                            <PencilIcon />
                           </button>
                         </div>
                       );
@@ -170,6 +198,7 @@ function ApiConfig() {
       >
         + Add API connection
       </button>
+      <SwaggerImportButton onImported={handleSwaggerImport} />
 
       <ApiConnectionForm onClose={closeCreate} />
       {editingConnection && (

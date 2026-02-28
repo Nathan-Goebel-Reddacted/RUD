@@ -10,6 +10,7 @@ class ApiConnection {
   private authType: AuthType  = AuthType.NONE;
   private authValue: string   = "";
   private endpoints: ApiEndpoint[] = [];
+  private healthCheckEndpointId: string | null = null;
 
   constructor() {}
 
@@ -58,6 +59,8 @@ class ApiConnection {
   public setBaseUrl(baseUrl: string): void { this.baseUrl = baseUrl; }
   public setAuthType(authType: AuthType): void   { this.authType = authType; }
   public setAuthValue(authValue: string): void   { this.authValue = authValue; }
+  public getHealthCheckEndpointId(): string | null { return this.healthCheckEndpointId; }
+  public setHealthCheckEndpointId(id: string | null): void { this.healthCheckEndpointId = id; }
 
   public setHeader(key: string, value: string): void {
     this.headers[key] = value;
@@ -82,6 +85,7 @@ class ApiConnection {
     c.setAuthValue(this.authValue);
     for (const [k, v] of Object.entries(this.headers)) c.setHeader(k, v);
     for (const ep of this.endpoints) c.addEndpoint(ep);
+    c.setHealthCheckEndpointId(this.healthCheckEndpointId);
     return c;
   }
 
@@ -94,6 +98,7 @@ class ApiConnection {
       authType:  this.authType,
       authValue: this.authValue,
       endpoints: this.endpoints.map((e) => e.toJSON()),
+      healthCheckEndpointId: this.healthCheckEndpointId,
     };
   }
 
@@ -123,6 +128,9 @@ class ApiConnection {
           const endpoint = ApiEndpoint.fromJSON(raw);
           if (endpoint) c.addEndpoint(endpoint);
         }
+      }
+      if (typeof d.healthCheckEndpointId === "string") {
+        c.setHealthCheckEndpointId(d.healthCheckEndpointId);
       }
       if (!c.isApiConnectionValid().isSuccess()) return null;
       return c;

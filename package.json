@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "i18next": "^25.6.3",
+    "js-yaml": "^4.1.1",
     "modal": "^0.3.14",
     "popup": "^0.0.3",
     "react": "^19.1.0",
@@ -21,6 +22,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",
+    "@types/js-yaml": "^4.0.9",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.6.0",
