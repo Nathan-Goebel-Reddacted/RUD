@@ -15,8 +15,8 @@ import WidgetCard from "./WidgetCard";
 const COLS       = 12;
 const ROW_HEIGHT = 80; // px
 const COL_GAP    = 8;  // px
-const MIN_W      = 2;
-const MIN_H      = 2;
+const MIN_W      = 1;
+const MIN_H      = 1;
 
 function colToPercent(x: number): string {
   return `calc(${(x / COLS) * 100}% + ${COL_GAP / 2}px)`;
