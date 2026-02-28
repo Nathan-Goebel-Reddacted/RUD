@@ -52,9 +52,7 @@ function DraggableWidget({ widget, onEdit, onDelete }: DraggableWidgetProps) {
   };
 
   return (
-    <div ref={setNodeRef} style={style}>
-      {/* Drag handle — only the header is draggable */}
-      <div {...listeners} {...attributes} className="widget-drag-handle" />
+    <div ref={setNodeRef} style={{ ...style, cursor: isDragging ? "grabbing" : "grab" }} {...listeners} {...attributes}>
       <WidgetCard widget={widget} dataState={dataState} onEdit={onEdit} onDelete={onDelete} />
     </div>
   );

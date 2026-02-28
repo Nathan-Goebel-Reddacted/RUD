@@ -219,18 +219,6 @@
   font-size: 0.95rem;
 }
 
-/* ─── Widget drag handle ──────────────────────────────────────────── */
-.widget-drag-handle {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2.2rem;
-  cursor: grab;
-  z-index: 2;
-  border-radius: var(--widget-radius) var(--widget-radius) 0 0;
-}
-.widget-drag-handle:active { cursor: grabbing; }
 
 /* ─── Widget Card ─────────────────────────────────────────────────── */
 .widget-card {

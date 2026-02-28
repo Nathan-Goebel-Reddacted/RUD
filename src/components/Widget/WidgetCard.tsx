@@ -55,6 +55,7 @@ export default function WidgetCard({ widget, dataState, onEdit, onDelete, readon
               <button
                 className="widget-card__overlay-btn"
                 title="Edit widget"
+                onPointerDown={(e) => e.stopPropagation()}
                 onClick={() => onEdit(widget)}
               >
                 <Pencil size={17} strokeWidth={2} />
@@ -64,6 +65,7 @@ export default function WidgetCard({ widget, dataState, onEdit, onDelete, readon
               <button
                 className="widget-card__overlay-btn widget-card__overlay-btn--danger"
                 title="Delete widget"
+                onPointerDown={(e) => e.stopPropagation()}
                 onClick={() => onDelete(widget.id)}
               >
                 <Trash2 size={17} strokeWidth={2} />
