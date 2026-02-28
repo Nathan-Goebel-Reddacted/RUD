@@ -30,6 +30,9 @@ UI pour saisir : base URL, headers custom, type d'auth (Bearer / API Key / aucun
 **RUD011 — Gestion des endpoints** ✅
 Ajouter/supprimer des endpoints manuellement (path, méthode GET/POST, label). Liste affichée sous la config API.
 
+**RUD011b — Formulaire endpoint style Swagger** ✅
+Refonte visuelle du formulaire de création/édition d'endpoint : badge HTTP coloré par méthode (via CSS variables), barre route proéminente, paramètres en tableau structuré (Nom / Type / Requis / Défaut), Request Body style code editor.
+
 **RUD012 — Import Swagger/OpenAPI**
 Upload d'un fichier JSON/YAML, parsing via `swagger-parser`, import automatique des endpoints dans la config. Installer `swagger-parser`.
 
