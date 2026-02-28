@@ -57,7 +57,7 @@ export default function WidgetCard({ widget, dataState, onEdit, onDelete, readon
                 title="Edit widget"
                 onClick={() => onEdit(widget)}
               >
-                <Pencil size={15} strokeWidth={2} />
+                <Pencil size={17} strokeWidth={2} />
               </button>
             )}
             {onDelete && (
@@ -66,7 +66,7 @@ export default function WidgetCard({ widget, dataState, onEdit, onDelete, readon
                 title="Delete widget"
                 onClick={() => onDelete(widget.id)}
               >
-                <Trash2 size={15} strokeWidth={2} />
+                <Trash2 size={17} strokeWidth={2} />
               </button>
             )}
           </div>

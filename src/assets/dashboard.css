@@ -301,18 +301,22 @@
   justify-content: center;
   width: 2rem;
   height: 2rem;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
   border-radius: 6px;
   cursor: pointer;
-  color: inherit;
-  transition: background 0.15s, color 0.15s;
+  color: #fff;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
 }
-.widget-card__overlay-btn:hover { background: rgba(255,255,255,0.22); }
+.widget-card__overlay-btn svg {
+  display: block;
+  flex-shrink: 0;
+}
+.widget-card__overlay-btn:hover { background: rgba(255,255,255,0.28); }
 .widget-card__overlay-btn--danger:hover {
-  background: rgba(224,82,82,0.25);
-  color: var(--danger-color);
-  border-color: var(--danger-color);
+  background: rgba(224,82,82,0.3);
+  color: #ff8080;
+  border-color: rgba(224,82,82,0.6);
 }
 
 .widget-card__body {
