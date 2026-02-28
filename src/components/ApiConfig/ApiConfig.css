@@ -131,9 +131,55 @@
   border-radius: 3px;
   min-width: 52px;
   text-align: center;
-  background: rgba(255,255,255,0.08);
+  background: var(--method-color, rgba(255,255,255,0.08));
+  color: #000;
   letter-spacing: 0.03em;
   flex-shrink: 0;
+}
+
+/* Endpoint send result panel */
+.endpoint-result {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.4rem 0.5rem 0.4rem 1.25rem;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.02);
+  font-size: 0.8rem;
+}
+.endpoint-result--error {
+  background: rgba(224,82,82,0.06);
+}
+.endpoint-result--cors {
+  background: rgba(252,161,48,0.08);
+}
+
+.endpoint-result__code {
+  flex-shrink: 0;
+  font-family: monospace;
+  font-weight: 700;
+  font-size: 0.78rem;
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.06);
+  opacity: 0.9;
+}
+
+.endpoint-result__message {
+  opacity: 0.65;
+  font-style: italic;
+}
+
+.endpoint-result__preview {
+  margin: 0;
+  flex: 1;
+  font-family: monospace;
+  font-size: 0.78rem;
+  white-space: pre-wrap;
+  word-break: break-all;
+  opacity: 0.75;
+  max-height: 6rem;
+  overflow: hidden;
 }
 
 .api-item__add-route {

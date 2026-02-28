@@ -36,8 +36,8 @@ Refonte visuelle du formulaire de création/édition d'endpoint : badge HTTP col
 **RUD012 — Import Swagger/OpenAPI** ✅
 Upload d'un fichier JSON/YAML, parsing via `js-yaml`, import automatique des endpoints dans la config (base URL, auth, path params, query params, request body).
 
-**RUD013 — Test de connexion**
-Bouton "Tester" par endpoint : fait un `fetch` réel et affiche le statut HTTP + un extrait de la réponse. Message d'erreur clair si CORS.
+**RUD013 — Test de connexion** ✅
+Bouton "Send" par endpoint : fetch réel, affichage du code HTTP + aperçu de la réponse inline. Détection CORS avec message explicite. Badges méthode colorés dans la liste.
 
 ---
 

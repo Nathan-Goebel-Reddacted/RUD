@@ -4,6 +4,13 @@ import { AuthType } from "@/enum/authType";
 
 export type FetchStatus = "unknown" | "loading" | "ok" | "error";
 
+export type FetchResult = {
+  status: "ok" | "error";
+  httpCode?: number;
+  preview?: string;
+  corsError: boolean;
+};
+
 function buildFetchHeaders(conn: ApiConnection): Record<string, string> {
   const headers: Record<string, string> = { ...conn.getHeaders() };
   switch (conn.getAuthType()) {
@@ -37,7 +44,7 @@ function buildEndpointUrl(conn: ApiConnection, ep: ApiEndpoint): string {
 export async function sendEndpoint(
   conn: ApiConnection,
   ep: ApiEndpoint
-): Promise<"ok" | "error"> {
+): Promise<FetchResult> {
   const headers = buildFetchHeaders(conn);
   const options: RequestInit = { method: ep.getMethod(), headers };
   if (ep.hasBody() && ep.getBody()) {
@@ -46,9 +53,14 @@ export async function sendEndpoint(
   }
   try {
     const res = await fetch(buildEndpointUrl(conn, ep), options);
-    return res.ok ? "ok" : "error";
-  } catch {
-    return "error";
+    let preview: string | undefined;
+    try {
+      const text = await res.text();
+      preview = text.trimEnd().slice(0, 400) || undefined;
+    } catch { /* ignore read errors */ }
+    return { status: res.ok ? "ok" : "error", httpCode: res.status, preview, corsError: false };
+  } catch (err) {
+    return { status: "error", corsError: err instanceof TypeError };
   }
 }
 

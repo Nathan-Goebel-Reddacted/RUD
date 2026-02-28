@@ -11,7 +11,7 @@ import ApiEndpointForm, {
 } from "@/components/ApiConfig/ApiEndpointForm";
 import SwaggerImportButton from "@/components/ApiConfig/SwaggerImportButton";
 import { sendEndpoint } from "@/services/apiFetch";
-import type { FetchStatus } from "@/services/apiFetch";
+import type { FetchStatus, FetchResult } from "@/services/apiFetch";
 import ApiConnection from "@/class/ApiConnection";
 import ApiEndpoint from "@/class/ApiEndpoint";
 import "@/components/ApiConfig/ApiConfig.css";
@@ -40,7 +40,8 @@ function ApiConfig() {
   const [endpointConnectionId, setEndpointConnectionId] = useState<string | null>(null);
   const [editingEndpoint,      setEditingEndpoint]      = useState<ApiEndpoint | null>(null);
 
-  const [endpointStatuses,   setEndpointStatuses]   = useState<Record<string, FetchStatus>>({});
+  const [endpointResults,    setEndpointResults]    = useState<Record<string, FetchResult>>({});
+  const [endpointLoading,    setEndpointLoading]    = useState<Record<string, boolean>>({});
   const [connectionStatuses, setConnectionStatuses] = useState<Record<string, FetchStatus>>({});
 
   // Auto-connect health check endpoints on mount
@@ -52,7 +53,7 @@ function ApiConfig() {
       if (!ep) return;
       setConnectionStatuses((prev) => ({ ...prev, [conn.getId()]: "loading" }));
       sendEndpoint(conn, ep).then((result) => {
-        setConnectionStatuses((prev) => ({ ...prev, [conn.getId()]: result }));
+        setConnectionStatuses((prev) => ({ ...prev, [conn.getId()]: result.status }));
       });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -83,16 +84,17 @@ function ApiConfig() {
 
   const handleSendEndpoint = async (conn: ApiConnection, ep: ApiEndpoint, e: React.MouseEvent) => {
     e.stopPropagation();
-    setEndpointStatuses((prev) => ({ ...prev, [ep.getId()]: "loading" }));
+    setEndpointLoading((prev) => ({ ...prev, [ep.getId()]: true }));
     const result = await sendEndpoint(conn, ep);
-    setEndpointStatuses((prev) => ({ ...prev, [ep.getId()]: result }));
+    setEndpointLoading((prev) => ({ ...prev, [ep.getId()]: false }));
+    setEndpointResults((prev) => ({ ...prev, [ep.getId()]: result }));
   };
 
   const handleConnectHealth = async (conn: ApiConnection, ep: ApiEndpoint, e: React.MouseEvent) => {
     e.stopPropagation();
     setConnectionStatuses((prev) => ({ ...prev, [conn.getId()]: "loading" }));
     const result = await sendEndpoint(conn, ep);
-    setConnectionStatuses((prev) => ({ ...prev, [conn.getId()]: result }));
+    setConnectionStatuses((prev) => ({ ...prev, [conn.getId()]: result.status }));
   };
 
   const handleSwaggerImport = (conn: ApiConnection) => {
@@ -154,27 +156,51 @@ function ApiConfig() {
                     </div>
                   ) : (
                     endpoints.map((ep) => {
-                      const epStatus = endpointStatuses[ep.getId()] ?? "unknown";
+                      const isLoading = endpointLoading[ep.getId()] ?? false;
+                      const result    = endpointResults[ep.getId()];
+                      const epStatus: FetchStatus = isLoading ? "loading" : (result?.status ?? "unknown");
+
                       return (
-                        <div key={ep.getId()} className="endpoint-row">
-                          <span className="endpoint-row__info">
-                            <StatusDot status={epStatus} />
-                            <span className="endpoint-row__path">{ep.getPath()}</span>
-                          </span>
-                          <span className="endpoint-row__method">{ep.getMethod()}</span>
-                          <button
-                            className="api-item__btn"
-                            onClick={(e) => handleSendEndpoint(conn, ep, e)}
-                          >
-                            Send
-                          </button>
-                          <button
-                            className="api-item__btn api-item__btn--icon"
-                            title="Edit route"
-                            onClick={(e) => openEditEndpoint(conn, ep, e)}
-                          >
-                            <PencilIcon />
-                          </button>
+                        <div key={ep.getId()}>
+                          <div className="endpoint-row">
+                            <span className="endpoint-row__info">
+                              <StatusDot status={epStatus} />
+                              <span className="endpoint-row__path">{ep.getPath()}</span>
+                            </span>
+                            <span className={`endpoint-row__method method--${ep.getMethod().toLowerCase()}`}>
+                              {ep.getMethod()}
+                            </span>
+                            <button
+                              className="api-item__btn"
+                              disabled={isLoading}
+                              onClick={(e) => handleSendEndpoint(conn, ep, e)}
+                            >
+                              {isLoading ? "…" : "Send"}
+                            </button>
+                            <button
+                              className="api-item__btn api-item__btn--icon"
+                              title="Edit route"
+                              onClick={(e) => openEditEndpoint(conn, ep, e)}
+                            >
+                              <PencilIcon />
+                            </button>
+                          </div>
+                          {result && !isLoading && (
+                            <div className={`endpoint-result${result.corsError ? " endpoint-result--cors" : result.status === "error" ? " endpoint-result--error" : ""}`}>
+                              {result.httpCode && (
+                                <span className="endpoint-result__code">{result.httpCode}</span>
+                              )}
+                              {result.corsError ? (
+                                <span className="endpoint-result__message">
+                                  CORS error — the server blocked the request from the browser. Check the API's allowed origins.
+                                </span>
+                              ) : result.preview ? (
+                                <pre className="endpoint-result__preview">{result.preview}</pre>
+                              ) : (
+                                <span className="endpoint-result__message">No response body.</span>
+                              )}
+                            </div>
+                          )}
                         </div>
                       );
                     })
