@@ -426,7 +426,6 @@
   display: flex;
   flex-direction: column;
   background: var(--background-color);
-  padding-top: 4rem;
 }
 .display-dashboard--fullscreen {
   padding-top: 0;

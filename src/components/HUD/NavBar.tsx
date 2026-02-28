@@ -12,7 +12,7 @@ function NavBar() {
   const profile = useProfileStore((state) => state.profile);
   const setProfile = useProfileStore((state) => state.setProfile);
 
-  const hiddenPaths = ["/", "/no-profile"];
+  const hiddenPaths = ["/", "/no-profile", "/display"];
   if (hiddenPaths.includes(location.pathname)) return null;
 
   const links = [
