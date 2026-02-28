@@ -24,7 +24,6 @@ export default function DisplayDashboard() {
   const currentDashboard              = useDashboardStore((s) => s.currentDashboard);
   const { isFullscreen, enter, exit } = useFullscreen();
 
-  const hasTitle   = currentDashboard.title.trim().length > 0;
   const maxRow     = currentDashboard.widgets.reduce(
     (max, w) => Math.max(max, w.position.y + w.position.h), 4
   );
@@ -37,25 +36,15 @@ export default function DisplayDashboard() {
     >
       <DashboardClock />
 
-      {/* Header only shown if title is set OR not in fullscreen */}
-      {(hasTitle || !isFullscreen) && (
-        <div className="display-dashboard__header">
-          {hasTitle && (
-            <h1 className="display-dashboard__title">{currentDashboard.title}</h1>
-          )}
-          <div className="display-dashboard__controls">
-            <button
-              className="btn btn--secondary display-dashboard__fs-btn"
-              onClick={() => isFullscreen ? exit() : enter(containerRef.current)}
-              title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
-            >
-              {isFullscreen
-                ? <Minimize2 size={16} strokeWidth={2} />
-                : <Maximize2 size={16} strokeWidth={2} />}
-            </button>
-          </div>
-        </div>
-      )}
+      <button
+        className="display-dashboard__fs-btn"
+        onClick={() => isFullscreen ? exit() : enter(containerRef.current)}
+        title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+      >
+        {isFullscreen
+          ? <Minimize2 size={16} strokeWidth={2} />
+          : <Maximize2 size={16} strokeWidth={2} />}
+      </button>
 
       {currentDashboard.widgets.length === 0 ? (
         <div className="display-dashboard__empty">
