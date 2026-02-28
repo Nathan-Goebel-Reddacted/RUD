@@ -102,7 +102,7 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
   }
 
   function handleSave() {
-    if (!label.trim() || !connectionId || !endpointId) return;
+    if (!connectionId || !endpointId) return;
     onSave({
       id: initial?.id,
       label: label.trim(),
@@ -114,7 +114,7 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
     });
   }
 
-  const isValid = label.trim() && connectionId && endpointId;
+  const isValid = connectionId && endpointId;
 
   // Config-specific fields
   function renderConfigFields() {
@@ -242,7 +242,7 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
       <div className="widget-config-panel__body">
         {/* Label */}
         <div className="form-group">
-          <label className="form-label">Widget label *</label>
+          <label className="form-label">Widget label</label>
           <input
             className="form-input"
             type="text"
