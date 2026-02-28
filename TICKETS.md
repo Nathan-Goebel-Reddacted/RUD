@@ -43,36 +43,47 @@ Bouton "Send" par endpoint : fetch réel, affichage du code HTTP + aperçu de la
 
 ## Dashboard Editor
 
-**RUD014 — Modèle Widget**
+**RUD014 — Modèle Widget** ✅
 Créer l'interface `Widget` (id, type, endpointId, dataPath, position `{x,y,w,h}`, config chart). Intégrer dans le store Zustand.
+- `src/types/widget.ts` : types Widget, Dashboard, WidgetConfig (discriminated union), WidgetDataState, FetchCacheEntry
+- `src/stores/dashboardStore.ts` : store Zustand persisté (localStorage "rud-dashboard"), fetchCache runtime non-persisté
 
-**RUD015 — Grille de layout**
-Installer `dnd-kit`, implémenter une grille drag-and-drop où les widgets peuvent être déplacés et redimensionnés.
+**RUD014b — Validation widget** ✅
+Validation intégrée dans WidgetConfigPanel (label requis, connectionId + endpointId requis avant save).
 
-**RUD016 — Widget Number Card**
-Premier type de widget : affiche une valeur numérique unique extraite via JSONPath. Le plus simple à implémenter, utile pour valider le pipeline fetch → affichage.
+**RUD015 — Grille de layout** ✅
+CSS Grid absolue 12 colonnes, row height 80px. dnd-kit drag-and-drop via `DashboardGrid.tsx`.
 
-**RUD017 — Widget Table**
-Affiche une liste d'objets API sous forme de tableau. Colonnes configurables.
+**RUD015b — Toolbar éditeur** ✅
+`DashboardToolbar.tsx` : titre éditable inline, sélecteur refresh interval, boutons "Add widget" et "▶ Display".
 
-**RUD018 — Widget Bar Chart / Line Chart**
-Installer `recharts`. Implémenter bar chart et line chart avec mapping axes X/Y configurables.
+**RUD016 — Widget Number Card** ✅
+`src/components/Widget/types/NumberCard.tsx` : valeur numérique + unité + décimales configurables.
 
-**RUD019 — Panneau de configuration widget**
-Panneau latéral ou modal pour configurer un widget sélectionné : choix de l'endpoint, du type de chart, du JSONPath pour les données.
+**RUD017 — Widget Table** ✅
+`src/components/Widget/types/Table.tsx` : tableau auto-colonnes ou colonnes configurées, maxRows.
+
+**RUD018 — Widget Bar Chart / Line Chart** ✅
+`src/components/Widget/types/BarChart.tsx` + `LineChart.tsx` via recharts. Multi-séries pour line chart.
+
+**RUD019 — Panneau de configuration widget** ✅
+`WidgetConfigPanel.tsx` (modal) + `EndpointSelector.tsx` (connexion → endpoint imbriqué) + `DataPathInput.tsx` (JSONPath + preview live) + `AxisKeySelector.tsx` (clés auto-détectées depuis réponse API).
+
+**RUD019b — Sélecteur endpoint imbriqué** ✅
+Intégré dans EndpointSelector : select connexion → select endpoint filtré.
 
 ---
 
 ## Page Display (fullscreen)
 
-**RUD020 — Fetch live data**
-Mécanisme central : pour chaque widget, appel `fetch` vers l'endpoint configuré, extraction via JSONPath, transmission au composant de rendu.
+**RUD020 — Fetch live data** ✅
+`src/services/widgetFetch.ts` (fetch + JSONPath via jsonpath-plus, states erreur) + `src/hooks/useWidgetData.ts` (polling, AbortController, cache déduplication par clé `connectionId::endpointId`).
 
-**RUD021 — Vue fullscreen**
-Page `/display` en fullscreen réel (`requestFullscreen`), sans chrome, qui render les widgets en lecture seule avec les données live.
+**RUD021 — Vue fullscreen** ✅
+`src/pages/displayDashboard.tsx` : grille read-only des widgets avec données live. `src/hooks/useFullscreen.ts` : requestFullscreen + fallback webkit + bouton toggle.
 
-**RUD022 — Auto-refresh**
-Intervalle de rafraîchissement configurable par dashboard (ex: 30s). Timer qui re-fetch tous les endpoints actifs.
+**RUD022 — Auto-refresh** ✅
+Intégré dans `useWidgetData` : setInterval + AbortController, refresh global dashboard ou override par widget (`refreshOverride`). Déduplication fetch par cache (90% freshness threshold).
 
 ---
 
