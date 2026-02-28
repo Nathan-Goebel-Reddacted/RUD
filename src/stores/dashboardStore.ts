@@ -18,6 +18,10 @@ type DashboardState = {
   fetchCache:      Record<string, FetchCacheEntry>;
   setFetchCache:   (key: string, entry: FetchCacheEntry) => void;
   clearFetchCache: () => void;
+
+  // Global clock tick (not persisted) — incremented every second by DashboardClock
+  tick:          number;
+  incrementTick: () => void;
 };
 
 const defaultDashboard: Dashboard = {
@@ -99,6 +103,10 @@ export const useDashboardStore = create<DashboardState>()(
       setFetchCache: (key, entry) =>
         set((state) => ({ fetchCache: { ...state.fetchCache, [key]: entry } })),
       clearFetchCache: () => set({ fetchCache: {} }),
+
+      // Global clock
+      tick:          0,
+      incrementTick: () => set((state) => ({ tick: state.tick + 1 })),
     }),
     {
       name:    "rud-dashboard",
