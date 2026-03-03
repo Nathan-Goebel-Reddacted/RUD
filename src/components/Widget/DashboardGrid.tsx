@@ -8,7 +8,7 @@ import {
 } from "@dnd-kit/core";
 import { useDraggable } from "@dnd-kit/core";
 import { GripHorizontal } from "lucide-react";
-import type { Widget, WidgetPosition } from "@/types/widget";
+import type { Widget, WidgetDataState, WidgetPosition } from "@/types/widget";
 import { useWidgetData } from "@/hooks/useWidgetData";
 import WidgetCard from "./WidgetCard";
 
@@ -78,6 +78,10 @@ function ResizeHandle({ widget, gridRef, onResize }: ResizeHandleProps) {
 
 // ─── Draggable widget ─────────────────────────────────────────────────────────
 
+const STATIC_DATA_STATE: WidgetDataState = {
+  data: null, loading: false, error: null, httpCode: null, fetchedAt: null,
+};
+
 type DraggableWidgetProps = {
   widget:   Widget;
   gridRef:  React.RefObject<HTMLDivElement | null>;
@@ -86,11 +90,16 @@ type DraggableWidgetProps = {
   onResize: (id: string, position: WidgetPosition) => void;
 };
 
+// Separate component so useWidgetData is only called for non-static widgets
+function FetchingWidgetContent({ widget, onEdit, onDelete }: Pick<DraggableWidgetProps, "widget" | "onEdit" | "onDelete">) {
+  const dataState = useWidgetData(widget);
+  return <WidgetCard widget={widget} dataState={dataState} onEdit={onEdit} onDelete={onDelete} />;
+}
+
 function DraggableWidget({ widget, gridRef, onEdit, onDelete, onResize }: DraggableWidgetProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: widget.id,
   });
-  const dataState = useWidgetData(widget);
 
   const { x, y, w, h } = widget.position;
   const style: React.CSSProperties = {
@@ -108,7 +117,10 @@ function DraggableWidget({ widget, gridRef, onEdit, onDelete, onResize }: Dragga
 
   return (
     <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
-      <WidgetCard widget={widget} dataState={dataState} onEdit={onEdit} onDelete={onDelete} />
+      {widget.config.type === "text"
+        ? <WidgetCard widget={widget} dataState={STATIC_DATA_STATE} onEdit={onEdit} onDelete={onDelete} />
+        : <FetchingWidgetContent widget={widget} onEdit={onEdit} onDelete={onDelete} />
+      }
       <ResizeHandle widget={widget} gridRef={gridRef} onResize={onResize} />
     </div>
   );

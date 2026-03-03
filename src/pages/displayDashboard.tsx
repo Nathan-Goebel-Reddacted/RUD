@@ -1,19 +1,30 @@
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Maximize2, Minimize2 } from "lucide-react";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import { useWidgetData } from "@/hooks/useWidgetData";
 import { useFullscreen } from "@/hooks/useFullscreen";
 import DashboardClock from "@/components/DashboardClock";
 import WidgetCard from "@/components/Widget/WidgetCard";
-import type { Widget } from "@/types/widget";
+import type { Widget, WidgetDataState } from "@/types/widget";
 
 const COL_GAP    = 8;
 const COLS       = 12;
 const ROW_HEIGHT = 80;
 
-function ReadonlyWidget({ widget }: { widget: Widget }) {
+const STATIC_DATA_STATE: WidgetDataState = {
+  data: null, loading: false, error: null, httpCode: null, fetchedAt: null,
+};
+
+function FetchingReadonlyWidget({ widget }: { widget: Widget }) {
   const dataState = useWidgetData(widget);
   return <WidgetCard widget={widget} dataState={dataState} readonly />;
+}
+
+function ReadonlyWidget({ widget }: { widget: Widget }) {
+  if (widget.config.type === "text") {
+    return <WidgetCard widget={widget} dataState={STATIC_DATA_STATE} readonly />;
+  }
+  return <FetchingReadonlyWidget widget={widget} />;
 }
 
 function colToPercent(x: number) { return `${(x / COLS) * 100}%`; }
@@ -21,13 +32,26 @@ function widthPercent(w: number)  { return `calc(${(w / COLS) * 100}% - ${COL_GA
 
 export default function DisplayDashboard() {
   const containerRef                  = useRef<HTMLDivElement | null>(null);
+  const gridRef                       = useRef<HTMLDivElement | null>(null);
   const currentDashboard              = useDashboardStore((s) => s.currentDashboard);
   const { isFullscreen, enter, exit } = useFullscreen();
+  const [gridPixelHeight, setGridPixelHeight] = useState(0);
 
-  const maxRow     = currentDashboard.widgets.reduce(
+  useEffect(() => {
+    const el = gridRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => setGridPixelHeight(entry.contentRect.height));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const maxRow    = currentDashboard.widgets.reduce(
     (max, w) => Math.max(max, w.position.y + w.position.h), 4
   );
-  const gridHeight = maxRow * (ROW_HEIGHT + COL_GAP) + COL_GAP;
+  // Dynamic row height: fill the available grid height exactly
+  const rowHeight = gridPixelHeight > 0
+    ? Math.floor((gridPixelHeight - COL_GAP) / maxRow - COL_GAP)
+    : ROW_HEIGHT;
 
   return (
     <div
@@ -52,8 +76,9 @@ export default function DisplayDashboard() {
         </div>
       ) : (
         <div
+          ref={gridRef}
           className="display-dashboard__grid"
-          style={{ position: "relative", height: gridHeight, width: "100%" }}
+          style={{ width: "100%" }}
         >
           {currentDashboard.widgets.map((widget) => {
             const { x, y, w, h } = widget.position;
@@ -63,9 +88,9 @@ export default function DisplayDashboard() {
                 style={{
                   position: "absolute",
                   left:     colToPercent(x),
-                  top:      y * (ROW_HEIGHT + COL_GAP),
+                  top:      y * (rowHeight + COL_GAP),
                   width:    widthPercent(w),
-                  height:   h * ROW_HEIGHT + (h - 1) * COL_GAP,
+                  height:   h * rowHeight + (h - 1) * COL_GAP,
                 }}
               >
                 <ReadonlyWidget widget={widget} />

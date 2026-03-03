@@ -1,8 +1,10 @@
 export const WidgetType = {
-  NUMBER_CARD: "number-card",
-  TABLE:       "table",
-  BAR_CHART:   "bar-chart",
-  LINE_CHART:  "line-chart",
+  NUMBER_CARD:  "number-card",
+  TABLE:        "table",
+  BAR_CHART:    "bar-chart",
+  LINE_CHART:   "line-chart",
+  TEXT:         "text",
+  RAW_RESPONSE: "raw-response",
 } as const;
 export type WidgetType = typeof WidgetType[keyof typeof WidgetType];
 
@@ -14,17 +16,19 @@ export type NumberCardConfig = {
   decimalPlaces?: number;
 };
 export type TableConfig = {
-  type:    "table";
-  columns: Array<{ key: string; label: string; width?: number }>;
-  maxRows?: number;
+  type:        "table";
+  columns:     Array<{ key: string; label: string; width?: number }>;
+  maxRows?:    number;
+  showHeader?: boolean; // default true
 };
 export type BarChartConfig = {
-  type:    "bar-chart";
-  xKey:    string;
-  yKey:    string;
-  xLabel?: string;
-  yLabel?: string;
-  color?:  string;
+  type:         "bar-chart";
+  xKey:         string;
+  yKey:         string;
+  xLabel?:      string;
+  yLabel?:      string;
+  color?:       string;
+  aggregation?: "count"; // group by xKey and count rows
 };
 export type LineChartConfig = {
   type:    "line-chart";
@@ -34,11 +38,21 @@ export type LineChartConfig = {
   yLabel?: string;
   colors?: string[];
 };
+export type TextConfig = {
+  type:      "text";
+  content:   string;
+  fontSize?: number;
+};
+export type RawResponseConfig = {
+  type: "raw-response";
+};
 export type WidgetConfig =
   | NumberCardConfig
   | TableConfig
   | BarChartConfig
-  | LineChartConfig;
+  | LineChartConfig
+  | TextConfig
+  | RawResponseConfig;
 
 export type Widget = {
   id:              string;

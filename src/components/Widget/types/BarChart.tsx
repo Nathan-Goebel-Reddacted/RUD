@@ -14,10 +14,24 @@ type Props = {
   config: BarChartConfig;
 };
 
-export default function BarChart({ data, config }: Props) {
-  const { xKey, yKey, xLabel, yLabel, color } = config;
+function groupAndCount(rows: unknown[], xKey: string): Record<string, unknown>[] {
+  const counts = new Map<string, number>();
+  for (const row of rows) {
+    if (typeof row !== "object" || row === null) continue;
+    const val = String((row as Record<string, unknown>)[xKey] ?? "");
+    counts.set(val, (counts.get(val) ?? 0) + 1);
+  }
+  return Array.from(counts.entries())
+    .sort((a, b) => Number(a[0]) - Number(b[0]) || a[0].localeCompare(b[0]))
+    .map(([k, v]) => ({ [xKey]: k, count: v }));
+}
 
-  const rows = Array.isArray(data) ? data : [];
+export default function BarChart({ data, config }: Props) {
+  const { xKey, yKey, xLabel, yLabel, color, aggregation } = config;
+
+  const rawRows = Array.isArray(data) ? data : [];
+  const rows = aggregation === "count" ? groupAndCount(rawRows, xKey) : rawRows;
+  const activeYKey = aggregation === "count" ? "count" : yKey;
 
   if (rows.length === 0) {
     return <p className="widget-chart__empty">No data</p>;
@@ -41,7 +55,7 @@ export default function BarChart({ data, config }: Props) {
           tick={{ fontSize: 11 }}
         />
         <Tooltip />
-        <Bar dataKey={yKey} fill={color ?? "var(--primary-color, #4a9eff)"} />
+        <Bar dataKey={activeYKey} fill={color ?? "var(--primary-color, #4a9eff)"} />
       </ReBarChart>
     </ResponsiveContainer>
   );

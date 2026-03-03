@@ -5,6 +5,8 @@ import NumberCard from "./types/NumberCard";
 import Table from "./types/Table";
 import BarChart from "./types/BarChart";
 import LineChart from "./types/LineChart";
+import TextWidget from "./types/TextWidget";
+import RawResponse from "./types/RawResponse";
 
 type Props = {
   widget:    Widget;
@@ -32,14 +34,20 @@ function ErrorMessage({ error }: { error: string }) {
 }
 
 function WidgetBody({ widget, dataState }: { widget: Widget; dataState: WidgetDataState }) {
+  // Text is static — render before data checks (no fetch needed)
+  if (widget.config.type === "text") {
+    return <TextWidget config={widget.config} />;
+  }
+
   if (dataState.loading && dataState.data === null) return <WidgetSkeleton />;
   if (dataState.error) return <ErrorMessage error={dataState.error} />;
 
   switch (widget.config.type) {
-    case "number-card": return <NumberCard data={dataState.data} config={widget.config} />;
-    case "table":       return <Table      data={dataState.data} config={widget.config} />;
-    case "bar-chart":   return <BarChart   data={dataState.data} config={widget.config} />;
-    case "line-chart":  return <LineChart  data={dataState.data} config={widget.config} />;
+    case "number-card":   return <NumberCard   data={dataState.data} config={widget.config} />;
+    case "table":         return <Table        data={dataState.data} config={widget.config} />;
+    case "bar-chart":     return <BarChart     data={dataState.data} config={widget.config} />;
+    case "line-chart":    return <LineChart    data={dataState.data} config={widget.config} />;
+    case "raw-response":  return <RawResponse  data={dataState.data} />;
   }
 }
 

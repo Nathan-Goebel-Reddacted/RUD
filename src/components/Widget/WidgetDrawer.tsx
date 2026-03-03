@@ -4,6 +4,8 @@ import {
   Table2,
   BarChart2,
   TrendingUp,
+  Type,
+  Braces,
   ChevronRight,
   ChevronLeft,
 } from "lucide-react";
@@ -40,6 +42,18 @@ const ITEMS: DrawerItem[] = [
     label:       "Line Chart",
     icon:        <TrendingUp size={22} strokeWidth={1.75} />,
     description: "Trend over time or sequence",
+  },
+  {
+    type:        "text",
+    label:       "Text",
+    icon:        <Type size={22} strokeWidth={1.75} />,
+    description: "Static text block",
+  },
+  {
+    type:        "raw-response",
+    label:       "Raw Response",
+    icon:        <Braces size={22} strokeWidth={1.75} />,
+    description: "Full JSON response",
   },
 ];
 

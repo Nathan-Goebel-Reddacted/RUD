@@ -89,8 +89,33 @@ Intégré dans `useWidgetData` : setInterval + AbortController, refresh global d
 
 ## Export / Import
 
-**RUD023 — Export/import config JSON**
-Bouton pour exporter la config complète (APIs + dashboard) en fichier JSON, et l'importer depuis un fichier. Format défini dans `CLAUDE.md`.
+**RUD023 — Export sauvegarde profil JSON** ✅
+Bouton "Export" dans la navbar. Génère un fichier JSON contenant profile + connexions API + dashboard courant.
+Format : `{ version, exportedAt, profile, connections, dashboard }`.
+Service `src/services/profileBackup.ts` → `exportBackup()`. Déclenche un téléchargement via Blob + lien temporaire.
+
+**RUD023b — Import sauvegarde profil JSON** ✅
+Bouton "Import Profile" sur la page `/no-profile` (déjà stub). Ouvre un sélecteur de fichier `.json`, lit le contenu, appelle `importBackup()`, restaure les trois stores (profile, connexions, dashboard), redirige vers `/dashboard`.
+Afficher un message d'erreur si le fichier est invalide.
+
+---
+
+## Nouveaux types de widgets
+
+**RUD024 — Widget Text statique** ✅
+Nouveau type `text` : affiche un texte libre configurable (textarea + taille de police optionnelle). Pas de connexion API requise — widget statique, ne déclenche pas de fetch.
+
+**RUD025 — Widget Raw Response** ✅
+Nouveau type `raw-response` : affiche la réponse JSON brute de l'endpoint dans un `<pre>` scrollable. Utile pour le debug.
+
+**RUD026 — Sélecteur de colonnes visibles (Table)** ✅
+Config widget Table : cases à cocher pour choisir les colonnes affichées + label éditable par colonne. Toggle "Show column headers" (sticky thead). Bouton "Clear — show all columns".
+
+**RUD027 — Agrégation count (Bar Chart)** ✅
+Option "Count rows by X key" sur le bar chart : groupe les données par la clé X et compte les occurrences. Permet d'afficher une distribution (ex: nombre de cartes par CMC depuis Scryfall).
+
+**RUD028 — Display fullscreen fit** ✅
+Page Display : suppression des marges, hauteur des lignes dynamique via ResizeObserver pour que les widgets remplissent exactement l'écran. Padding uniforme 6px autour de la grille.
 
 ---
 

@@ -6,7 +6,7 @@ type Props = {
 };
 
 export default function Table({ data, config }: Props) {
-  const { columns, maxRows } = config;
+  const { columns, maxRows, showHeader = true } = config;
 
   const rows: Record<string, unknown>[] = (() => {
     if (!Array.isArray(data)) return [];
@@ -26,18 +26,20 @@ export default function Table({ data, config }: Props) {
   return (
     <div className="widget-table__wrapper">
       <table className="widget-table">
-        <thead>
-          <tr>
-            {visibleColumns.map((col) => (
-              <th
-                key={col.key}
-                style={col.width ? { width: col.width } : undefined}
-              >
-                {col.label}
-              </th>
-            ))}
-          </tr>
-        </thead>
+        {showHeader && (
+          <thead>
+            <tr>
+              {visibleColumns.map((col) => (
+                <th
+                  key={col.key}
+                  style={col.width ? { width: col.width } : undefined}
+                >
+                  {col.label}
+                </th>
+              ))}
+            </tr>
+          </thead>
+        )}
         <tbody>
           {rows.map((row, i) => (
             <tr key={i}>
