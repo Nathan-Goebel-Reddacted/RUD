@@ -14,6 +14,9 @@ type DashboardState = {
   removeWidget:       (id: string) => void;
   moveWidget:         (id: string, position: WidgetPosition) => void;
 
+  resetDashboard: () => void;
+  setDashboard: (dashboard: Dashboard) => void;
+
   // Runtime cache (not persisted)
   fetchCache:      Record<string, FetchCacheEntry>;
   setFetchCache:   (key: string, entry: FetchCacheEntry) => void;
@@ -97,6 +100,10 @@ export const useDashboardStore = create<DashboardState>()(
             ),
           },
         })),
+
+      resetDashboard: () =>
+        set({ currentDashboard: { ...defaultDashboard, id: crypto.randomUUID() } }),
+      setDashboard: (dashboard) => set({ currentDashboard: dashboard }),
 
       // Runtime cache
       fetchCache:    {},

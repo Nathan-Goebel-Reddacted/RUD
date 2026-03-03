@@ -2,6 +2,8 @@ import { useState } from "react";
 import Profile from "@/class/Profiles";
 import Modal from "@/components/tool/Modal";
 import { useProfileStore } from "@/stores/profileStore";
+import { useApiStore } from "@/stores/apiStore";
+import { useDashboardStore } from "@/stores/dashboardStore";
 import { useNavigate } from "react-router";
 import { Language, type Language as LanguageType } from "@/enum/language";
 import { useTranslation } from "react-i18next";
@@ -18,6 +20,8 @@ function ProfileSettings({ onClose, initialProfile, modalId = "ProfileSetting" }
   const [textColor,       setTextColor]       = useState<string>(initialProfile?.getTextColor()       ?? "#646cff");
   const [textHoverColor,  setTextHoverColor]  = useState<string>(initialProfile?.getTextHoverColor()  ?? "#535bf2");
   const setProfile = useProfileStore((state) => state.setProfile);
+  const clearConnections = useApiStore((state) => state.clearConnections);
+  const resetDashboard = useDashboardStore((state) => state.resetDashboard);
   const navigate = useNavigate();
   const { t } = useTranslation();
   
@@ -39,6 +43,10 @@ function ProfileSettings({ onClose, initialProfile, modalId = "ProfileSetting" }
     if (result.isSuccess()) {
       setErrors({});
       applyColors(newProfile);
+      if (!initialProfile) {
+        clearConnections();
+        resetDashboard();
+      }
       setProfile(newProfile);
       onClose();
       if (!initialProfile) navigate("/dashboard");

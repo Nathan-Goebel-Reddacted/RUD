@@ -48,7 +48,7 @@ function Dashboard() {
   }
 
   return (
-    <div className="page-with-nav dashboard-editor">
+    <div className="dashboard-editor">
       <DashboardClock />
       <div className="dashboard-editor__body">
         <div className="dashboard-editor__canvas">

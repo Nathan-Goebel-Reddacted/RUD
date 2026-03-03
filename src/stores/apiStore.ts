@@ -11,6 +11,7 @@ type ApiState = {
   addEndpoint: (connectionId: string, endpoint: ApiEndpoint) => void;
   updateEndpoint: (connectionId: string, endpoint: ApiEndpoint) => void;
   removeEndpoint: (connectionId: string, endpointId: string) => void;
+  clearConnections: () => void;
 };
 
 export const useApiStore = create<ApiState>()(
@@ -60,6 +61,7 @@ export const useApiStore = create<ApiState>()(
             return updated;
           }),
         })),
+      clearConnections: () => set({ connections: [] }),
     }),
     {
       name: "rud-api-connections",

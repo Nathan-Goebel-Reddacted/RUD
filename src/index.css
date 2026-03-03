@@ -104,6 +104,16 @@ button:focus-visible {
   margin-bottom: 0.35rem;
 }
 
+/* No profile page */
+.NoProfilePage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  gap: 1rem;
+}
+
 /* Form errors */
 .form-error {
   display: block;
