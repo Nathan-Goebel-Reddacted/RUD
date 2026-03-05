@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import Modal from "@/components/tool/Modal";
 import ApiConnection from "@/class/ApiConnection";
 import { AuthType } from "@/enum/authType";
@@ -18,6 +19,7 @@ type Props = {
 };
 
 function ApiConnectionForm({ onClose, initialConnection }: Props) {
+  const { t } = useTranslation();
   const addConnection    = useApiStore((state) => state.addConnection);
   const updateConnection = useApiStore((state) => state.updateConnection);
   const removeConnection = useApiStore((state) => state.removeConnection);
@@ -103,32 +105,32 @@ function ApiConnectionForm({ onClose, initialConnection }: Props) {
 
   const authValuePlaceholder: Record<AuthTypeValue, string> = {
     [AuthType.NONE]:    "",
-    [AuthType.BEARER]:  "Bearer token",
-    [AuthType.API_KEY]: "API key value",
-    [AuthType.BASIC]:   "username:password",
+    [AuthType.BEARER]:  t("apiConnection.authValue.bearer"),
+    [AuthType.API_KEY]: t("apiConnection.authValue.apiKey"),
+    [AuthType.BASIC]:   t("apiConnection.authValue.basic"),
   };
 
   return (
     <Modal id={modalId} width={480}>
       <div className="p-4">
         <h2 className="text-center m-2">
-          {isEdit ? "Edit API Connection" : "Add API Connection"}
+          {isEdit ? t("apiConnection.titleEdit") : t("apiConnection.titleAdd")}
         </h2>
         <form onSubmit={handleSubmit}>
-          <FormField error={errors["ApiConnection.label.tooShort"] ? "Label must be at least 3 characters" : undefined}>
+          <FormField error={errors["ApiConnection.label.tooShort"] ? t("apiConnection.labelError") : undefined}>
             <input
               className="d-block w-full"
-              placeholder="Connection label (min. 3 chars)"
+              placeholder={t("apiConnection.labelPlaceholder")}
               value={label}
               onChange={(e) => setLabel(e.target.value)}
               required
             />
           </FormField>
 
-          <FormField error={errors["ApiConnection.baseUrl.invalid"] ? "Enter a valid http/https URL" : undefined}>
+          <FormField error={errors["ApiConnection.baseUrl.invalid"] ? t("apiConnection.baseUrlError") : undefined}>
             <input
               className="d-block w-full"
-              placeholder="Base URL (https://api.example.com)"
+              placeholder={t("apiConnection.baseUrlPlaceholder")}
               value={baseUrl}
               onChange={(e) => setBaseUrl(e.target.value)}
               required
@@ -143,10 +145,10 @@ function ApiConnectionForm({ onClose, initialConnection }: Props) {
               setAuthValue("");
             }}
           >
-            <option value={AuthType.NONE}>No auth</option>
-            <option value={AuthType.BEARER}>Bearer token</option>
-            <option value={AuthType.API_KEY}>API Key</option>
-            <option value={AuthType.BASIC}>Basic auth (user:password)</option>
+            <option value={AuthType.NONE}>{t("apiConnection.auth.none")}</option>
+            <option value={AuthType.BEARER}>{t("apiConnection.auth.bearer")}</option>
+            <option value={AuthType.API_KEY}>{t("apiConnection.auth.apiKey")}</option>
+            <option value={AuthType.BASIC}>{t("apiConnection.auth.basic")}</option>
           </select>
 
           {authType !== AuthType.NONE && (
@@ -160,19 +162,19 @@ function ApiConnectionForm({ onClose, initialConnection }: Props) {
 
           <div className="m-2">
             <div className="d-flex justify-between align-center">
-              <span>Custom headers</span>
-              <button type="button" onClick={addHeaderRow}>+ Add header</button>
+              <span>{t("apiConnection.customHeaders")}</span>
+              <button type="button" onClick={addHeaderRow}>{t("apiConnection.addHeader")}</button>
             </div>
             {headers.map((row, i) => (
               <div key={i} className="d-flex gap-2 m-1 align-center">
                 <input
-                  placeholder="Header name"
+                  placeholder={t("apiConnection.headerName")}
                   value={row.key}
                   onChange={(e) => updateHeader(i, "key", e.target.value)}
                   style={{ flex: 1 }}
                 />
                 <input
-                  placeholder="Value"
+                  placeholder={t("apiConnection.headerValue")}
                   value={row.value}
                   onChange={(e) => updateHeader(i, "value", e.target.value)}
                   style={{ flex: 2 }}
@@ -183,13 +185,13 @@ function ApiConnectionForm({ onClose, initialConnection }: Props) {
           </div>
 
           {isEdit && (
-            <FormField label="Health check endpoint">
+            <FormField label={t("apiConnection.healthCheck")}>
               <select
                 className="d-block w-full"
                 value={healthCheckEndpointId ?? ""}
                 onChange={(e) => setHealthCheckEndpointId(e.target.value || null)}
               >
-                <option value="">— None —</option>
+                <option value="">{t("apiConnection.noHealthCheck")}</option>
                 {endpoints.map((ep) => (
                   <option key={ep.getId()} value={ep.getId()}>
                     {ep.getMethod()} {ep.getPath()}
@@ -201,10 +203,10 @@ function ApiConnectionForm({ onClose, initialConnection }: Props) {
 
           <div className="d-flex gap-2 m-2">
             <button type="submit" style={{ flex: 1 }}>
-              {isEdit ? "Save changes" : "Save"}
+              {isEdit ? t("apiConnection.saveChanges") : t("apiConnection.save")}
             </button>
             <button type="button" onClick={onClose} style={{ flex: 1 }}>
-              Cancel
+              {t("apiConnection.cancel")}
             </button>
           </div>
 
@@ -212,8 +214,8 @@ function ApiConnectionForm({ onClose, initialConnection }: Props) {
             <div className="m-2">
               <ConfirmDeleteButton
                 onConfirm={handleDelete}
-                label="Delete this connection"
-                confirmLabel="Confirm delete?"
+                label={t("apiConnection.delete")}
+                confirmLabel={t("apiConnection.confirmDelete")}
               />
             </div>
           )}

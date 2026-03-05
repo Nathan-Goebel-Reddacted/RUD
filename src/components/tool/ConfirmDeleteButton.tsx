@@ -32,9 +32,9 @@ export default function ConfirmDeleteButton({
       onClick={handleClick}
       className={`d-block w-full${className ? ` ${className}` : ""}`}
       style={{
-        color: "#e05252",
-        borderColor: "#e05252",
-        background: confirming ? "rgba(224,82,82,0.15)" : undefined,
+        color: "var(--danger-color)",
+        borderColor: "var(--danger-color)",
+        background: confirming ? "var(--danger-color-subtle)" : undefined,
       }}
     >
       {confirming ? confirmLabel : label}

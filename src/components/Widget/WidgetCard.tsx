@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Pencil, Trash2 } from "lucide-react";
 import type { Widget, WidgetDataState } from "@/types/widget";
 import WidgetSkeleton from "./WidgetSkeleton";
@@ -17,13 +18,14 @@ type Props = {
 };
 
 function ErrorMessage({ error }: { error: string }) {
+  const { t } = useTranslation();
   const messages: Record<string, string> = {
-    endpoint_not_found: "Endpoint not found — check API config",
-    cors:               "CORS error — the API blocked the request",
-    http_error:         "HTTP error — the server returned an error",
-    parse_error:        "Parse error — response is not valid JSON",
-    no_data:            "No data matched the data path",
-    invalid_path:       "Invalid JSONPath expression",
+    endpoint_not_found: t("widgetCard.error.endpointNotFound"),
+    cors:               t("widgetCard.error.cors"),
+    http_error:         t("widgetCard.error.httpError"),
+    parse_error:        t("widgetCard.error.parseError"),
+    no_data:            t("widgetCard.error.noData"),
+    invalid_path:       t("widgetCard.error.invalidPath"),
   };
   return (
     <div className="widget-card__error">
@@ -52,6 +54,8 @@ function WidgetBody({ widget, dataState }: { widget: Widget; dataState: WidgetDa
 }
 
 export default function WidgetCard({ widget, dataState, onEdit, onDelete, readonly }: Props) {
+  const { t } = useTranslation();
+
   return (
     <div className="widget-card">
       {/* Edit/delete overlay — appears on hover, full top strip */}
@@ -62,7 +66,7 @@ export default function WidgetCard({ widget, dataState, onEdit, onDelete, readon
             {onEdit && (
               <button
                 className="widget-card__overlay-btn"
-                title="Edit widget"
+                title={t("widgetCard.editWidget")}
                 onPointerDown={(e) => e.stopPropagation()}
                 onClick={() => onEdit(widget)}
               >
@@ -72,7 +76,7 @@ export default function WidgetCard({ widget, dataState, onEdit, onDelete, readon
             {onDelete && (
               <button
                 className="widget-card__overlay-btn widget-card__overlay-btn--danger"
-                title="Delete widget"
+                title={t("widgetCard.deleteWidget")}
                 onPointerDown={(e) => e.stopPropagation()}
                 onClick={() => onDelete(widget.id)}
               >

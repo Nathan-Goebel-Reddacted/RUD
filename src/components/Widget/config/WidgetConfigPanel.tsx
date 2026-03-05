@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useApiStore } from "@/stores/apiStore";
 import { fetchWidgetData } from "@/services/widgetFetch";
 import { extractData } from "@/services/widgetFetch";
@@ -47,7 +48,17 @@ function extractKeys(data: unknown): string[] {
   return [];
 }
 
+const TYPE_LABELS: Record<WidgetType, string> = {
+  "number-card":  "widgetDrawer.types.numberCard",
+  "table":        "widgetDrawer.types.table",
+  "bar-chart":    "widgetDrawer.types.barChart",
+  "line-chart":   "widgetDrawer.types.lineChart",
+  "text":         "widgetDrawer.types.text",
+  "raw-response": "widgetDrawer.types.rawResponse",
+};
+
 export default function WidgetConfigPanel({ initial, initialType, onSave, onCancel }: Props) {
+  const { t } = useTranslation();
   const connections = useApiStore((state) => state.connections);
 
   const [label,        setLabel]        = useState(initial?.label ?? "");
@@ -128,24 +139,24 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
         return (
           <>
             <div className="form-group">
-              <label className="form-label">Unit (optional)</label>
+              <label className="form-label">{t("widgetConfig.unit")}</label>
               <input
                 className="form-input"
                 type="text"
-                placeholder="e.g. ms, %, users"
+                placeholder={t("widgetConfig.unitPlaceholder")}
                 value={c.unit ?? ""}
                 onChange={(e) => setConfig({ ...c, unit: e.target.value || undefined })}
               />
             </div>
             <div className="form-group">
-              <label className="form-label">Decimal places</label>
+              <label className="form-label">{t("widgetConfig.decimals")}</label>
               <input
                 className="form-input"
                 type="number"
                 min={0}
                 max={10}
                 value={c.decimalPlaces ?? ""}
-                placeholder="auto"
+                placeholder={t("widgetConfig.autoPlaceholder")}
                 onChange={(e) => setConfig({
                   ...c,
                   decimalPlaces: e.target.value ? Number(e.target.value) : undefined,
@@ -181,13 +192,13 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
         return (
           <>
             <div className="form-group">
-              <label className="form-label">Max rows</label>
+              <label className="form-label">{t("widgetConfig.maxRows")}</label>
               <input
                 className="form-input"
                 type="number"
                 min={1}
                 value={c.maxRows ?? ""}
-                placeholder="all"
+                placeholder={t("widgetConfig.allPlaceholder")}
                 onChange={(e) => setConfig({
                   ...c,
                   maxRows: e.target.value ? Number(e.target.value) : undefined,
@@ -201,16 +212,16 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
                   checked={c.showHeader !== false}
                   onChange={(e) => setConfig({ ...c, showHeader: e.target.checked })}
                 />
-                <span style={{ marginLeft: "0.4rem" }}>Show column headers</span>
+                <span style={{ marginLeft: "0.4rem" }}>{t("widgetConfig.showHeaders")}</span>
               </label>
             </div>
             <div className="form-group">
               <label className="form-label">
-                Visible columns
-                {c.columns.length === 0 && <span className="form-hint"> — all (auto)</span>}
+                {t("widgetConfig.visibleColumns")}
+                {c.columns.length === 0 && <span className="form-hint">{t("widgetConfig.allAuto")}</span>}
               </label>
               {allKeys.length === 0 ? (
-                <span className="form-hint">Fetch data preview to see available columns.</span>
+                <span className="form-hint">{t("widgetConfig.fetchColumnsHint")}</span>
               ) : (
                 <div className="column-selector">
                   {allKeys.map((key) => {
@@ -242,7 +253,7 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
                       className="btn btn--ghost btn--sm"
                       onClick={() => setConfig({ ...c, columns: [] })}
                     >
-                      Clear — show all columns
+                      {t("widgetConfig.clearColumns")}
                     </button>
                   )}
                 </div>
@@ -256,7 +267,7 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
         return (
           <>
             <AxisKeySelector
-              label="X axis key"
+              label={t("widgetConfig.xAxis")}
               value={c.xKey}
               keys={dataKeys}
               onChange={(k) => setConfig({ ...c, xKey: k })}
@@ -272,23 +283,23 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
                   })}
                 />
                 <span style={{ marginLeft: "0.4rem" }}>
-                  Count rows by X key (group & count)
+                  {t("widgetConfig.countRows")}
                 </span>
               </label>
               <span className="form-hint">
-                Groups data by the X key and counts occurrences — no Y key needed.
+                {t("widgetConfig.countRowsHint")}
               </span>
             </div>
             {c.aggregation !== "count" && (
               <AxisKeySelector
-                label="Y axis key (value)"
+                label={t("widgetConfig.yAxis")}
                 value={c.yKey}
                 keys={dataKeys}
                 onChange={(k) => setConfig({ ...c, yKey: k })}
               />
             )}
             <div className="form-group">
-              <label className="form-label">Bar color (optional)</label>
+              <label className="form-label">{t("widgetConfig.barColor")}</label>
               <input
                 className="form-input"
                 type="color"
@@ -304,17 +315,17 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
         return (
           <>
             <AxisKeySelector
-              label="X axis key"
+              label={t("widgetConfig.xAxis")}
               value={c.xKey}
               keys={dataKeys}
               onChange={(k) => setConfig({ ...c, xKey: k })}
             />
             <div className="form-group">
-              <label className="form-label">Y keys (values) — comma-separated</label>
+              <label className="form-label">{t("widgetConfig.yKeys")}</label>
               <input
                 className="form-input"
                 type="text"
-                placeholder="e.g. value, count"
+                placeholder={t("widgetConfig.yKeysPlaceholder")}
                 value={c.yKeys.join(", ")}
                 onChange={(e) => setConfig({
                   ...c,
@@ -323,7 +334,7 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
               />
               {dataKeys.length > 0 && (
                 <span className="form-hint">
-                  Available keys: {dataKeys.join(", ")}
+                  {t("widgetConfig.availableKeys", { keys: dataKeys.join(", ") })}
                 </span>
               )}
             </div>
@@ -335,23 +346,23 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
         return (
           <>
             <div className="form-group">
-              <label className="form-label">Text content *</label>
+              <label className="form-label">{t("widgetConfig.textContent")}</label>
               <textarea
                 className="form-input"
                 rows={4}
-                placeholder="Enter text to display…"
+                placeholder={t("widgetConfig.textPlaceholder")}
                 value={c.content}
                 onChange={(e) => setConfig({ ...c, content: e.target.value })}
               />
             </div>
             <div className="form-group">
-              <label className="form-label">Font size (px, optional)</label>
+              <label className="form-label">{t("widgetConfig.fontSize")}</label>
               <input
                 className="form-input"
                 type="number"
                 min={8}
                 max={200}
-                placeholder="auto"
+                placeholder={t("widgetConfig.autoPlaceholder")}
                 value={c.fontSize ?? ""}
                 onChange={(e) => setConfig({
                   ...c,
@@ -365,7 +376,7 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
       case "raw-response": {
         return (
           <p className="form-hint">
-            Displays the full JSON response. No additional configuration needed.
+            {t("widgetConfig.rawHint")}
           </p>
         );
       }
@@ -375,17 +386,17 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
   return (
     <div className="widget-config-panel">
       <div className="widget-config-panel__header">
-        <h2>{initial ? "Edit Widget" : "Add Widget"}</h2>
+        <h2>{initial ? t("widgetConfig.titleEdit") : t("widgetConfig.titleAdd")}</h2>
       </div>
 
       <div className="widget-config-panel__body">
         {/* Label */}
         <div className="form-group">
-          <label className="form-label">Widget label</label>
+          <label className="form-label">{t("widgetConfig.labelField")}</label>
           <input
             className="form-input"
             type="text"
-            placeholder="e.g. Total Users"
+            placeholder={t("widgetConfig.labelPlaceholder")}
             value={label}
             onChange={(e) => setLabel(e.target.value)}
           />
@@ -406,7 +417,7 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
                 onClick={fetchPreview}
                 disabled={fetching}
               >
-                {fetching ? "Fetching…" : "Fetch data preview"}
+                {fetching ? t("widgetConfig.fetching") : t("widgetConfig.fetchPreview")}
               </button>
             )}
 
@@ -420,14 +431,14 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
 
         {/* Widget type */}
         <div className="form-group">
-          <label className="form-label">Widget type *</label>
+          <label className="form-label">{t("widgetConfig.widgetType")}</label>
           <select
             className="form-select"
             value={type}
             onChange={(e) => handleTypeChange(e.target.value as WidgetType)}
           >
-            {Object.entries(WidgetType).map(([, v]) => (
-              <option key={v} value={v}>{v}</option>
+            {Object.values(WidgetType).map((v) => (
+              <option key={v} value={v}>{t(TYPE_LABELS[v])}</option>
             ))}
           </select>
         </div>
@@ -438,26 +449,26 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
         {/* Fetch interval — hidden for static widgets */}
         {!isStatic && (
           <div className="form-group">
-            <label className="form-label">Fetch interval (seconds)</label>
+            <label className="form-label">{t("widgetConfig.fetchInterval")}</label>
             <input
               className="form-input"
               type="number"
               min={1}
-              placeholder="default (30 s)"
+              placeholder={t("widgetConfig.fetchIntervalPlaceholder")}
               value={refreshOverride ?? ""}
               onChange={(e) =>
                 setRefreshOverride(e.target.value ? Number(e.target.value) : undefined)
               }
             />
-            <span className="form-hint">Leave empty to use the global default (30 s).</span>
+            <span className="form-hint">{t("widgetConfig.fetchIntervalHint")}</span>
           </div>
         )}
       </div>
 
       <div className="widget-config-panel__footer">
-        <button className="btn btn--secondary" onClick={onCancel}>Cancel</button>
+        <button className="btn btn--secondary" onClick={onCancel}>{t("widgetConfig.cancel")}</button>
         <button className="btn btn--primary" onClick={handleSave} disabled={!isValid}>
-          {initial ? "Save" : "Add widget"}
+          {initial ? t("widgetConfig.save") : t("widgetConfig.addWidget")}
         </button>
       </div>
     </div>

@@ -119,6 +119,112 @@ Page Display : suppression des marges, hauteur des lignes dynamique via ResizeOb
 
 ---
 
+---
+
+## Phase 1 Cleanup
+
+**RUD029 — Nettoyage Phase 1 : i18n, CSS, Navbar, corrections critiques** ✅
+
+Passe de nettoyage avant de passer à la Phase 2. Quatre axes indépendants.
+
+---
+
+### A — i18n : brancher tous les textes UI sur le système de traduction
+
+Tous les textes affichés à l'utilisateur doivent passer par `t()` (hook `useTranslation`). Actuellement ~50+ textes sont hardcodés en anglais dans le JSX. Les clés doivent être ajoutées à `en.json` et `fr.json`.
+
+**Fichiers à mettre à jour :**
+
+- `src/App.tsx` — `"Redirection en cours..."` → clé `redirecting` existe déjà dans `en.json`, brancher `t("redirecting")`
+- `src/components/HUD/NavBar.tsx` — labels liens (`"API Config"`, `"Dashboard Editor"`, `"Display"`) + boutons actions (`"Edit Profile"`, `"Export"`, `"Delete Profile"`)
+- `src/pages/displayDashboard.tsx` — message vide `"No widgets configured. Go to the Dashboard Editor to add widgets."`
+- `src/components/Widget/DashboardGrid.tsx` — message vide `"No widgets yet. Click Add widget to get started."`
+- `src/components/Widget/DashboardToolbar.tsx` — placeholder titre, label `"Refresh every"`, options select (10s/30s/1min…), boutons `"+ Add widget"` / `"▶ Display"`, title fullscreen
+- `src/components/Widget/WidgetDrawer.tsx` — heading `"Add widget"`, labels types + descriptions dans `ITEMS[]`
+- `src/components/Widget/WidgetCard.tsx` — les 6 messages d'erreur dans la map (`endpoint_not_found`, `cors_error`, `http_error`, `parse_error`, `no_data`, `invalid_path`)
+- `src/pages/apiConfig.tsx` — boutons `"Connect"`, `"+ Add route"`, `"+ Add API connection"`, message `"No routes yet"`, messages CORS/erreur, placeholder résultat vide
+- `src/components/ApiConfig/ApiConnectionForm.tsx` — titre modal, placeholders, labels auth, headers, boutons Save/Cancel/Delete
+- `src/components/ApiConfig/ApiEndpointForm.tsx` — titre modal, labels paramètres, placeholders, boutons
+- `src/components/ApiConfig/SwaggerImportButton.tsx` — libellé bouton
+- `src/components/Widget/config/WidgetConfigPanel.tsx` — tous les labels, placeholders, hints de configuration (unit, decimals, maxRows, columns, axes, text, font size…)
+- `src/components/Widget/config/DataPathInput.tsx` — placeholder JSONPath
+- `src/components/Widget/config/AxisKeySelector.tsx` — placeholder
+
+**Structure de clés suggérée à créer dans `en.json` / `fr.json` :**
+```
+navbar.apiConfig / navbar.dashboardEditor / navbar.display
+navbar.editProfile / navbar.export / navbar.deleteProfile
+dashboard.noWidgets / display.noWidgets
+toolbar.dashboardTitle / toolbar.refreshEvery / toolbar.addWidget / toolbar.openDisplay
+toolbar.refresh.10s / 30s / 1min / 5min / manual
+widgetDrawer.title / widgetDrawer.types.number / table / bar-chart / line-chart / text / raw-response
+widgetDrawer.desc.number / table / bar-chart / line-chart / text / raw-response
+widgetCard.error.endpoint_not_found / cors_error / http_error / parse_error / no_data / invalid_path
+apiConfig.connect / addRoute / addApi / noRoutes / corsError / emptyBody
+apiConfig.form.label / baseUrl / authType / headers / addHeader / healthCheck / save / cancel / delete
+endpointForm.title.add / edit / path / pathParams / queryParams / body / dataPath / save / cancel / delete
+swaggerImport.label / importing
+widgetConfig.label / unit / decimals / maxRows / showHeaders / columns / xAxis / yAxis / color / yKeys / text / fontSize / fetchPreview / fetchInterval / save / cancel / add
+widgetConfig.hint.fetchInterval / rawResponse / countRows / columns
+```
+
+---
+
+### B — Navbar : agrandir la zone de détection hover
+
+**Problème :** La zone sensible du hover est actuellement de **4px** (`calc(-100% + 4px)`). La barre s'ouvre et se referme instantanément si la souris effleure la zone sans rester dessus.
+
+**Fix dans `src/components/HUD/NavBar.css` :**
+
+1. Augmenter la bande visible de **4px → 14px** pour faciliter le ciblage
+2. Ajouter un pseudo-élément `::after` qui prolonge la zone de détection de **20px supplémentaires** sous la barre (fonctionne car `:hover` reste actif quand la souris est sur `::after`)
+
+```css
+.nav-bar {
+  position: relative;                         /* requis pour ::after absolu */
+  transform: translateY(calc(-100% + 14px));  /* était 4px */
+}
+
+.nav-bar::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 20px;     /* zone de détection silencieuse sous la navbar */
+}
+```
+
+Total zone de déclenchement : **34px** visible + invisible vs 4px actuellement.
+
+---
+
+### C — CSS : supprimer les styles inline magiques, préférer `style=` aux classes à usage unique ultra-spécifiques
+
+**Philosophie :** Garder le BEM pour les composants. Mais pour un style rattaché à **un seul élément précis et sans réutilisation possible**, préférer `style={{ ... }}` inline plutôt qu'une classe CSS dédiée. Cela évite des classes zombie et clarifie que c'est un style ad-hoc.
+
+**Corrections concrètes :**
+
+1. **`src/components/tool/ConfirmDeleteButton.tsx`** — Le bouton danger utilise des couleurs hardcodées (`#e05252`) en `style={{}}`. Remplacer par la CSS variable `--danger-color` déjà définie dans le thème :
+   ```tsx
+   // Avant
+   style={{ color: "#e05252", borderColor: "#e05252", background: confirming ? "rgba(224,82,82,0.15)" : undefined }}
+   // Après — utiliser var(--danger-color) dans NavBar.css/.nav-btn--danger, et reprendre le même pattern ici
+   ```
+   Définir `--danger-color: #e05252` dans `Color.css` et utiliser `color: var(--danger-color)` partout.
+
+2. Identifier dans `dashboard.css` et `ApiConfig.css` les classes utilisées dans **un seul composant** et qui appliquent uniquement 1-2 propriétés de positionnement ou dimensionnement simple → les convertir en `style=` dans le JSX et supprimer la classe. Ne pas toucher aux classes BEM structurelles (`__header`, `__body`, etc.).
+
+---
+
+### D — Corrections critiques mineures
+
+1. **`src/translations/en.json` ligne 9** — Typo `"RRole"` → `"Role"` (deux fois, `roleForEditDashboard` et `roleForEditProfile`)
+2. **`src/components/HUD/NavBar.tsx`** — Ajouter `useTranslation` et brancher `t()` sur les textes (fait en même temps que tâche A)
+3. Vérifier la cohérence des clés entre `en.json` et `fr.json` après ajout des nouvelles clés
+
+---
+
 ## Ordre d'implémentation suggéré
 
 ```

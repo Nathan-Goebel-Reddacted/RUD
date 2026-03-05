@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import Modal from "@/components/tool/Modal";
 import ApiEndpoint from "@/class/ApiEndpoint";
 import { HttpMethod } from "@/enum/httpMethod";
@@ -22,6 +23,7 @@ type Props = {
 };
 
 function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
+  const { t } = useTranslation();
   const addEndpoint    = useApiStore((state) => state.addEndpoint);
   const updateEndpoint = useApiStore((state) => state.updateEndpoint);
   const removeEndpoint = useApiStore((state) => state.removeEndpoint);
@@ -90,15 +92,15 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
   };
 
   const pathError =
-    errors["ApiEndpoint.path.empty"]          ? "Path is required" :
-    errors["ApiEndpoint.path.noLeadingSlash"] ? "Path must start with /" :
+    errors["ApiEndpoint.path.empty"]          ? t("apiEndpoint.pathErrorEmpty") :
+    errors["ApiEndpoint.path.noLeadingSlash"] ? t("apiEndpoint.pathErrorNoSlash") :
     undefined;
 
   return (
     <Modal id={modalId} width={640}>
       <div className="p-4">
         <h2 className="text-center m-2" style={{ marginTop: 0 }}>
-          {isEdit ? "Edit route" : "Add route"}
+          {isEdit ? t("apiEndpoint.titleEdit") : t("apiEndpoint.titleAdd")}
         </h2>
         <form onSubmit={handleSubmit}>
 
@@ -107,7 +109,7 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
             {/* Path input first in DOM for correct focus order */}
             <input
               className="endpoint-form__path-input"
-              placeholder="/path/{id}"
+              placeholder={t("apiEndpoint.pathPlaceholder")}
               value={path}
               onChange={(e) => setPath(e.target.value)}
               required
@@ -130,12 +132,12 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
           {/* Path params — auto-detected from {param} in path */}
           {pathParams.length > 0 && (
             <div className="endpoint-form__section">
-              <div className="form-section-label">Path parameters</div>
+              <div className="form-section-label">{t("apiEndpoint.pathParams")}</div>
               <div className="endpoint-form__table endpoint-form__table--path">
                 <div className="endpoint-form__table-header">
-                  <span>Name</span>
-                  <span>Type</span>
-                  <span>Default</span>
+                  <span>{t("apiEndpoint.table.name")}</span>
+                  <span>{t("apiEndpoint.table.type")}</span>
+                  <span>{t("apiEndpoint.table.default")}</span>
                 </div>
                 {pathParams.map((p, i) => (
                   <div key={p.name} className="endpoint-form__table-row">
@@ -144,10 +146,10 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
                       value={p.type}
                       onChange={(e) => updatePathParam(i, "type", e.target.value)}
                     >
-                      {Object.values(ParamType).map((t) => <option key={t} value={t}>{t}</option>)}
+                      {Object.values(ParamType).map((type) => <option key={type} value={type}>{type}</option>)}
                     </select>
                     <input
-                      placeholder="—"
+                      placeholder={t("apiEndpoint.defaultPlaceholder")}
                       value={p.defaultValue}
                       onChange={(e) => updatePathParam(i, "defaultValue", e.target.value)}
                     />
@@ -160,24 +162,24 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
           {/* Query params */}
           <div className="endpoint-form__section">
             <div className="d-flex justify-between align-center">
-              <span className="form-section-label">Query parameters</span>
+              <span className="form-section-label">{t("apiEndpoint.queryParams")}</span>
               <button type="button" className="endpoint-form__add-btn" onClick={addQueryParam}>
-                + Add
+                {t("apiEndpoint.addQueryParam")}
               </button>
             </div>
             {queryParams.length > 0 && (
               <div className="endpoint-form__table endpoint-form__table--query">
                 <div className="endpoint-form__table-header">
-                  <span>Name</span>
-                  <span>Type</span>
-                  <span style={{ textAlign: "center" }}>Req.</span>
-                  <span>Default</span>
+                  <span>{t("apiEndpoint.table.name")}</span>
+                  <span>{t("apiEndpoint.table.type")}</span>
+                  <span style={{ textAlign: "center" }}>{t("apiEndpoint.table.required")}</span>
+                  <span>{t("apiEndpoint.table.default")}</span>
                   <span></span>
                 </div>
                 {queryParams.map((p, i) => (
                   <div key={i} className="endpoint-form__table-row">
                     <input
-                      placeholder="name"
+                      placeholder={t("apiEndpoint.namePlaceholder")}
                       value={p.name}
                       onChange={(e) => updateQueryParam(i, "name", e.target.value)}
                     />
@@ -185,7 +187,7 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
                       value={p.type}
                       onChange={(e) => updateQueryParam(i, "type", e.target.value)}
                     >
-                      {Object.values(ParamType).map((t) => <option key={t} value={t}>{t}</option>)}
+                      {Object.values(ParamType).map((type) => <option key={type} value={type}>{type}</option>)}
                     </select>
                     <input
                       type="checkbox"
@@ -193,7 +195,7 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
                       onChange={(e) => updateQueryParam(i, "required", e.target.checked)}
                     />
                     <input
-                      placeholder="—"
+                      placeholder={t("apiEndpoint.defaultPlaceholder")}
                       value={p.defaultValue}
                       onChange={(e) => updateQueryParam(i, "defaultValue", e.target.value)}
                     />
@@ -212,10 +214,10 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
 
           {/* Response data path */}
           <div className="endpoint-form__section">
-            <div className="form-section-label">Response data path</div>
+            <div className="form-section-label">{t("apiEndpoint.dataPath")}</div>
             <input
               className="d-block w-full"
-              placeholder="$.data  or  $.items[*]  (leave empty for root)"
+              placeholder={t("apiEndpoint.dataPathPlaceholder")}
               value={responseDataPath}
               onChange={(e) => setResponseDataPath(e.target.value)}
               style={{ boxSizing: "border-box" }}
@@ -226,7 +228,7 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
           {METHODS_WITH_BODY.includes(method) && (
             <div className="endpoint-form__section">
               <div className="d-flex justify-between align-center">
-                <span className="form-section-label">Request body</span>
+                <span className="form-section-label">{t("apiEndpoint.body")}</span>
                 <select
                   className="endpoint-form__content-type"
                   value={bodyContentType}
@@ -241,8 +243,8 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
                 className="endpoint-form__body-editor"
                 rows={5}
                 placeholder={bodyContentType === BodyContentType.JSON
-                  ? '{\n  "key": "value"\n}'
-                  : "key=value&key2=value2"
+                  ? t("apiEndpoint.bodyJsonPlaceholder")
+                  : t("apiEndpoint.bodyFormPlaceholder")
                 }
                 value={body}
                 onChange={(e) => setBody(e.target.value)}
@@ -256,10 +258,10 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
               type="submit"
               className="endpoint-form__submit"
             >
-              {isEdit ? "Save" : "Add route"}
+              {isEdit ? t("apiEndpoint.save") : t("apiEndpoint.addRoute")}
             </button>
             <button type="button" onClick={onClose} style={{ flex: 1 }}>
-              Cancel
+              {t("apiEndpoint.cancel")}
             </button>
           </div>
 
@@ -267,8 +269,8 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
             <div style={{ marginTop: "0.75rem" }}>
               <ConfirmDeleteButton
                 onConfirm={handleDelete}
-                label="Delete this route"
-                confirmLabel="Confirm delete?"
+                label={t("apiEndpoint.delete")}
+                confirmLabel={t("apiEndpoint.confirmDelete")}
               />
             </div>
           )}

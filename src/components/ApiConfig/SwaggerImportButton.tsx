@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { importSwaggerFile } from "@/services/swaggerImport";
 import type ApiConnection from "@/class/ApiConnection";
 
@@ -7,6 +8,7 @@ type Props = {
 };
 
 function SwaggerImportButton({ onImported }: Props) {
+  const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,7 +45,7 @@ function SwaggerImportButton({ onImported }: Props) {
         onClick={() => inputRef.current?.click()}
         disabled={loading}
       >
-        {loading ? "Importing…" : "Import from Swagger / OpenAPI"}
+        {loading ? t("swagger.importing") : t("swagger.import")}
       </button>
       {error && <span className="form-error" style={{ padding: "0 0.5rem" }}>{error}</span>}
     </>

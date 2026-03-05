@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useApiStore } from "@/stores/apiStore";
 import { openModal, closeModal } from "@/components/tool/Modal";
 import ApiConnectionForm, {
@@ -32,6 +33,7 @@ function StatusDot({ status }: { status: FetchStatus }) {
 }
 
 function ApiConfig() {
+  const { t } = useTranslation();
   const connections   = useApiStore((state) => state.connections);
   const addConnection = useApiStore((state) => state.addConnection);
 
@@ -129,15 +131,15 @@ function ApiConfig() {
                   {hcEp && (
                     <button
                       className="api-item__btn"
-                      title="Connect"
+                      title={t("apiConfig.connect")}
                       onClick={(e) => handleConnectHealth(conn, hcEp, e)}
                     >
-                      Connect
+                      {t("apiConfig.connect")}
                     </button>
                   )}
                   <button
                     className="api-item__btn api-item__btn--icon"
-                    title="Edit connection"
+                    title={t("apiConfig.editConnection")}
                     onClick={(e) => openEditConnection(conn, e)}
                   >
                     <PencilIcon />
@@ -152,7 +154,7 @@ function ApiConfig() {
                 <div className="api-item__body">
                   {endpoints.length === 0 ? (
                     <div className="endpoint-row" style={{ opacity: 0.5 }}>
-                      No routes yet
+                      {t("apiConfig.noRoutes")}
                     </div>
                   ) : (
                     endpoints.map((ep) => {
@@ -175,11 +177,11 @@ function ApiConfig() {
                               disabled={isLoading}
                               onClick={(e) => handleSendEndpoint(conn, ep, e)}
                             >
-                              {isLoading ? "…" : "Send"}
+                              {isLoading ? "…" : t("apiConfig.send")}
                             </button>
                             <button
                               className="api-item__btn api-item__btn--icon"
-                              title="Edit route"
+                              title={t("apiConfig.editRoute")}
                               onClick={(e) => openEditEndpoint(conn, ep, e)}
                             >
                               <PencilIcon />
@@ -192,12 +194,12 @@ function ApiConfig() {
                               )}
                               {result.corsError ? (
                                 <span className="endpoint-result__message">
-                                  CORS error — the server blocked the request from the browser. Check the API's allowed origins.
+                                  {t("apiConfig.corsError")}
                                 </span>
                               ) : result.preview ? (
                                 <pre className="endpoint-result__preview">{result.preview}</pre>
                               ) : (
-                                <span className="endpoint-result__message">No response body.</span>
+                                <span className="endpoint-result__message">{t("apiConfig.emptyBody")}</span>
                               )}
                             </div>
                           )}
@@ -209,7 +211,7 @@ function ApiConfig() {
                     className="api-item__add-route"
                     onClick={(e) => openAddEndpoint(conn.getId(), e)}
                   >
-                    + Add route
+                    {t("apiConfig.addRoute")}
                   </button>
                 </div>
               )}
@@ -222,7 +224,7 @@ function ApiConfig() {
         className="api-config__add-api"
         onClick={() => openModal(MODAL_CREATE_ID)}
       >
-        + Add API connection
+        {t("apiConfig.addApi")}
       </button>
       <SwaggerImportButton onImported={handleSwaggerImport} />
 

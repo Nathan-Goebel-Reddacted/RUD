@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Maximize2, Minimize2 } from "lucide-react";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import { useWidgetData } from "@/hooks/useWidgetData";
@@ -31,6 +32,7 @@ function colToPercent(x: number) { return `${(x / COLS) * 100}%`; }
 function widthPercent(w: number)  { return `calc(${(w / COLS) * 100}% - ${COL_GAP}px)`; }
 
 export default function DisplayDashboard() {
+  const { t } = useTranslation();
   const containerRef                  = useRef<HTMLDivElement | null>(null);
   const gridRef                       = useRef<HTMLDivElement | null>(null);
   const currentDashboard              = useDashboardStore((s) => s.currentDashboard);
@@ -63,7 +65,7 @@ export default function DisplayDashboard() {
       <button
         className="display-dashboard__fs-btn"
         onClick={() => isFullscreen ? exit() : enter(containerRef.current)}
-        title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+        title={isFullscreen ? t("display.exitFullscreen") : t("display.fullscreen")}
       >
         {isFullscreen
           ? <Minimize2 size={16} strokeWidth={2} />
@@ -72,7 +74,7 @@ export default function DisplayDashboard() {
 
       {currentDashboard.widgets.length === 0 ? (
         <div className="display-dashboard__empty">
-          <p>No widgets configured. Go to the <strong>Dashboard Editor</strong> to add widgets.</p>
+          <p>{t("display.noWidgets")}</p>
         </div>
       ) : (
         <div

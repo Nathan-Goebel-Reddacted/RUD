@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   title:           string;
@@ -15,6 +16,7 @@ export default function DashboardToolbar({
   onRefreshChange,
   onAddWidget,
 }: Props) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   return (
@@ -25,14 +27,14 @@ export default function DashboardToolbar({
           type="text"
           value={title}
           onChange={(e) => onTitleChange(e.target.value)}
-          placeholder="Dashboard title"
-          aria-label="Dashboard title"
+          placeholder={t("toolbar.titlePlaceholder")}
+          aria-label={t("toolbar.titlePlaceholder")}
         />
       </div>
 
       <div className="dashboard-toolbar__center">
         <label className="dashboard-toolbar__label" htmlFor="refresh-interval">
-          Refresh every
+          {t("toolbar.refreshLabel")}
         </label>
         <select
           id="refresh-interval"
@@ -40,24 +42,23 @@ export default function DashboardToolbar({
           value={refreshInterval}
           onChange={(e) => onRefreshChange(Number(e.target.value))}
         >
-          <option value={10}>10 s</option>
-          <option value={30}>30 s</option>
-          <option value={60}>1 min</option>
-          <option value={300}>5 min</option>
-          <option value={0}>Manual</option>
+          <option value={10}>{t("toolbar.refresh.10s")}</option>
+          <option value={30}>{t("toolbar.refresh.30s")}</option>
+          <option value={60}>{t("toolbar.refresh.1min")}</option>
+          <option value={300}>{t("toolbar.refresh.5min")}</option>
+          <option value={0}>{t("toolbar.refresh.manual")}</option>
         </select>
       </div>
 
       <div className="dashboard-toolbar__right">
         <button className="btn btn--primary" onClick={onAddWidget}>
-          + Add widget
+          {t("toolbar.addWidget")}
         </button>
         <button
           className="btn btn--secondary"
           onClick={() => navigate("/display")}
-          title="Open fullscreen display"
         >
-          ▶ Display
+          {t("toolbar.openDisplay")}
         </button>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { useTranslation } from "react-i18next";
 import {
   DndContext,
   PointerSensor,
@@ -136,6 +137,7 @@ type Props = {
 };
 
 export default function DashboardGrid({ widgets, onMove, onEdit, onDelete }: Props) {
+  const { t } = useTranslation();
   const gridRef = useRef<HTMLDivElement>(null);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
 
@@ -161,7 +163,7 @@ export default function DashboardGrid({ widgets, onMove, onEdit, onDelete }: Pro
   if (widgets.length === 0) {
     return (
       <div className="dashboard-grid__empty">
-        <p>No widgets yet. Click <strong>Add widget</strong> to get started.</p>
+        <p>{t("dashboard.noWidgets")}</p>
       </div>
     );
   }

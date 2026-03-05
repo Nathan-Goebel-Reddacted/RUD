@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+
 type Props = {
   label:    string;
   value:    string;
@@ -6,6 +8,8 @@ type Props = {
 };
 
 export default function AxisKeySelector({ label, value, keys, onChange }: Props) {
+  const { t } = useTranslation();
+
   if (keys.length === 0) {
     return (
       <div className="form-group">
@@ -13,11 +17,11 @@ export default function AxisKeySelector({ label, value, keys, onChange }: Props)
         <input
           className="form-input"
           type="text"
-          placeholder="key name"
+          placeholder={t("axisKey.placeholder")}
           value={value}
           onChange={(e) => onChange(e.target.value)}
         />
-        <span className="form-hint">Fetch data first to get key suggestions.</span>
+        <span className="form-hint">{t("axisKey.fetchFirst")}</span>
       </div>
     );
   }
@@ -30,7 +34,7 @@ export default function AxisKeySelector({ label, value, keys, onChange }: Props)
         value={value}
         onChange={(e) => onChange(e.target.value)}
       >
-        <option value="">— Select a key —</option>
+        <option value="">{t("axisKey.selectKey")}</option>
         {keys.map((k) => (
           <option key={k} value={k}>{k}</option>
         ))}

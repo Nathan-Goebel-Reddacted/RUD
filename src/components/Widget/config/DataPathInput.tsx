@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { extractData } from "@/services/widgetFetch";
 
 type Props = {
@@ -8,6 +9,7 @@ type Props = {
 };
 
 export default function DataPathInput({ value, onChange, preview }: Props) {
+  const { t } = useTranslation();
   const [previewResult, setPreviewResult] = useState<string | null>(null);
 
   useEffect(() => {
@@ -16,7 +18,7 @@ export default function DataPathInput({ value, onChange, preview }: Props) {
       return;
     }
     if (!value.trim()) {
-      setPreviewResult("(using full response)");
+      setPreviewResult(t("dataPath.fullResponsePreview"));
       return;
     }
     const { value: extracted, error } = extractData(preview, value);
@@ -30,15 +32,15 @@ export default function DataPathInput({ value, onChange, preview }: Props) {
         setPreviewResult(String(extracted));
       }
     }
-  }, [value, preview]);
+  }, [value, preview, t]);
 
   return (
     <div className="form-group">
-      <label className="form-label">Data Path (JSONPath)</label>
+      <label className="form-label">{t("dataPath.label")}</label>
       <input
         className="form-input"
         type="text"
-        placeholder="e.g. $.data or $.results[0].value"
+        placeholder={t("dataPath.placeholder")}
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
@@ -47,7 +49,7 @@ export default function DataPathInput({ value, onChange, preview }: Props) {
           Preview: <code>{previewResult}</code>
         </span>
       )}
-      <span className="form-hint">Leave empty to use the full response.</span>
+      <span className="form-hint">{t("dataPath.fullResponseHint")}</span>
     </div>
   );
 }

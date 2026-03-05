@@ -1,4 +1,5 @@
 import { useNavigate, useLocation } from "react-router";
+import { useTranslation } from "react-i18next";
 import { useProfileStore } from "@/stores/profileStore";
 import { useApiStore } from "@/stores/apiStore";
 import { useDashboardStore } from "@/stores/dashboardStore";
@@ -10,6 +11,7 @@ import "./NavBar.css";
 const EDIT_MODAL_ID = "ProfileEdit";
 
 function NavBar() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const profile          = useProfileStore((state) => state.profile);
@@ -19,11 +21,12 @@ function NavBar() {
 
   const hiddenPaths = ["/", "/no-profile"];
   if (hiddenPaths.includes(location.pathname)) return null;
+  if (!profile) return null;
 
   const links = [
-    { label: "API Config",       path: "/api-config" },
-    { label: "Dashboard Editor", path: "/dashboard"  },
-    { label: "Display",          path: "/display"    },
+    { label: t("navbar.apiConfig"),       path: "/api-config" },
+    { label: t("navbar.dashboardEditor"), path: "/dashboard"  },
+    { label: t("navbar.display"),         path: "/display"    },
   ];
 
   const handleDeleteProfile = () => {
@@ -49,13 +52,13 @@ function NavBar() {
         })}
         <div className="nav-bar__actions">
           <button className="nav-btn" onClick={() => openModal(EDIT_MODAL_ID)}>
-            Edit Profile
+            {t("navbar.editProfile")}
           </button>
           <button className="nav-btn" onClick={() => exportBackup(profile, connections, currentDashboard)}>
-            Export
+            {t("navbar.export")}
           </button>
           <button className="nav-btn nav-btn--danger" onClick={handleDeleteProfile}>
-            Delete Profile
+            {t("navbar.deleteProfile")}
           </button>
         </div>
       </nav>

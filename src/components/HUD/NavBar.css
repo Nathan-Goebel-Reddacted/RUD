@@ -8,15 +8,26 @@
 }
 
 .nav-bar {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
   background-color: var(--background-color, #242424);
   border-bottom: 1px solid var(--border-color, #888888);
-  transform: translateY(calc(-100% + 4px));
+  transform: translateY(calc(-100% + 8px));
   transition: transform 0.25s ease;
   pointer-events: auto;
+}
+
+/* Invisible zone extending the hover area below the visible strip */
+.nav-bar::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 20px;
 }
 
 .nav-bar:hover {
@@ -53,10 +64,10 @@
 }
 
 .nav-btn--danger {
-  color: #e05252;
+  color: var(--danger-color);
 }
 
 .nav-btn--danger:hover:not(:disabled) {
-  border-color: #e05252;
-  background-color: rgba(224, 82, 82, 0.1);
+  border-color: var(--danger-color);
+  background-color: var(--danger-color-subtle);
 }
