@@ -24,7 +24,7 @@ class Profile{
     }
 
     public IsProfileValid(): ActionResult {
-        let actionResult = new ActionResult("")
+        const actionResult = new ActionResult("")
         if (!this.IsProfileNameValid(this.profileName).isSuccess()){
             actionResult.addReason("Profile.invalid","profile.invalid")
         }
@@ -35,7 +35,7 @@ class Profile{
     }
 
     private IsProfileNameValid(ProfileName:string ): ActionResult {
-        let actionResult = new ActionResult("")
+        const actionResult = new ActionResult("")
         if(ProfileName.length < 5){
             actionResult.addReason("Profile.name.tooShort","profile.invalidName")
         }
