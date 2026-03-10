@@ -42,6 +42,7 @@
 
     "display": {
         "noWidgets": "No widgets configured. Go to the Dashboard Editor to add widgets.",
+        "noDashboard": "No dashboard available.",
         "fullscreen": "Fullscreen",
         "exitFullscreen": "Exit fullscreen"
     },

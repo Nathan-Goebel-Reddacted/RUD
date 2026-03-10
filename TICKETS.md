@@ -119,123 +119,123 @@ Page Display : suppression des marges, hauteur des lignes dynamique via ResizeOb
 
 ---
 
----
-
 ## Phase 1 Cleanup
 
 **RUD029 — Nettoyage Phase 1 : i18n, CSS, Navbar, corrections critiques** ✅
-
-Passe de nettoyage avant de passer à la Phase 2. Quatre axes indépendants.
-
----
-
-### A — i18n : brancher tous les textes UI sur le système de traduction
-
-Tous les textes affichés à l'utilisateur doivent passer par `t()` (hook `useTranslation`). Actuellement ~50+ textes sont hardcodés en anglais dans le JSX. Les clés doivent être ajoutées à `en.json` et `fr.json`.
-
-**Fichiers à mettre à jour :**
-
-- `src/App.tsx` — `"Redirection en cours..."` → clé `redirecting` existe déjà dans `en.json`, brancher `t("redirecting")`
-- `src/components/HUD/NavBar.tsx` — labels liens (`"API Config"`, `"Dashboard Editor"`, `"Display"`) + boutons actions (`"Edit Profile"`, `"Export"`, `"Delete Profile"`)
-- `src/pages/displayDashboard.tsx` — message vide `"No widgets configured. Go to the Dashboard Editor to add widgets."`
-- `src/components/Widget/DashboardGrid.tsx` — message vide `"No widgets yet. Click Add widget to get started."`
-- `src/components/Widget/DashboardToolbar.tsx` — placeholder titre, label `"Refresh every"`, options select (10s/30s/1min…), boutons `"+ Add widget"` / `"▶ Display"`, title fullscreen
-- `src/components/Widget/WidgetDrawer.tsx` — heading `"Add widget"`, labels types + descriptions dans `ITEMS[]`
-- `src/components/Widget/WidgetCard.tsx` — les 6 messages d'erreur dans la map (`endpoint_not_found`, `cors_error`, `http_error`, `parse_error`, `no_data`, `invalid_path`)
-- `src/pages/apiConfig.tsx` — boutons `"Connect"`, `"+ Add route"`, `"+ Add API connection"`, message `"No routes yet"`, messages CORS/erreur, placeholder résultat vide
-- `src/components/ApiConfig/ApiConnectionForm.tsx` — titre modal, placeholders, labels auth, headers, boutons Save/Cancel/Delete
-- `src/components/ApiConfig/ApiEndpointForm.tsx` — titre modal, labels paramètres, placeholders, boutons
-- `src/components/ApiConfig/SwaggerImportButton.tsx` — libellé bouton
-- `src/components/Widget/config/WidgetConfigPanel.tsx` — tous les labels, placeholders, hints de configuration (unit, decimals, maxRows, columns, axes, text, font size…)
-- `src/components/Widget/config/DataPathInput.tsx` — placeholder JSONPath
-- `src/components/Widget/config/AxisKeySelector.tsx` — placeholder
-
-**Structure de clés suggérée à créer dans `en.json` / `fr.json` :**
-```
-navbar.apiConfig / navbar.dashboardEditor / navbar.display
-navbar.editProfile / navbar.export / navbar.deleteProfile
-dashboard.noWidgets / display.noWidgets
-toolbar.dashboardTitle / toolbar.refreshEvery / toolbar.addWidget / toolbar.openDisplay
-toolbar.refresh.10s / 30s / 1min / 5min / manual
-widgetDrawer.title / widgetDrawer.types.number / table / bar-chart / line-chart / text / raw-response
-widgetDrawer.desc.number / table / bar-chart / line-chart / text / raw-response
-widgetCard.error.endpoint_not_found / cors_error / http_error / parse_error / no_data / invalid_path
-apiConfig.connect / addRoute / addApi / noRoutes / corsError / emptyBody
-apiConfig.form.label / baseUrl / authType / headers / addHeader / healthCheck / save / cancel / delete
-endpointForm.title.add / edit / path / pathParams / queryParams / body / dataPath / save / cancel / delete
-swaggerImport.label / importing
-widgetConfig.label / unit / decimals / maxRows / showHeaders / columns / xAxis / yAxis / color / yKeys / text / fontSize / fetchPreview / fetchInterval / save / cancel / add
-widgetConfig.hint.fetchInterval / rawResponse / countRows / columns
-```
+~50 textes UI branchés sur `t()`, zone hover navbar 4px→34px, `--danger-color` CSS var, typo "RRole" corrigée.
 
 ---
 
-### B — Navbar : agrandir la zone de détection hover
+# Tickets V2 — Phase 2
 
-**Problème :** La zone sensible du hover est actuellement de **4px** (`calc(-100% + 4px)`). La barre s'ouvre et se referme instantanément si la souris effleure la zone sans rester dessus.
+## Fondation multi-dashboard
 
-**Fix dans `src/components/HUD/NavBar.css` :**
+**RUD030 — Migration store : Profile → dashboards[]** ✅
+Breaking change architectural. Remplacer le dashboard unique (`dashboardStore`) par un tableau `dashboards[]` dans le store profil (ou un store dédié). Chaque dashboard contient ses propres widgets. Migrer la persistance localStorage. Adapter toutes les lectures/écritures du dashboard courant vers un index actif `activeDashboardIndex`.
 
-1. Augmenter la bande visible de **4px → 14px** pour faciliter le ciblage
-2. Ajouter un pseudo-élément `::after` qui prolonge la zone de détection de **20px supplémentaires** sous la barre (fonctionne car `:hover` reste actif quand la souris est sur `::after`)
+**RUD031 — Bulles de navigation (Editor)**
+Ajouter en bas de l'Editor une rangée de bulles représentant chaque dashboard. Clic = switch vers ce dashboard. Bouton `+` = créer un nouveau dashboard vide. Drag-and-drop (dnd-kit) pour réordonner. Suppression via bouton sur la bulle active — bloquée si un seul dashboard reste.
 
-```css
-.nav-bar {
-  position: relative;                         /* requis pour ::after absolu */
-  transform: translateY(calc(-100% + 14px));  /* était 4px */
-}
+**RUD032 — Duplications (dashboard + widget)**
+- Dashboard : bouton "Dupliquer" dans la liste des dashboards (Edit Profile > onglet Dashboards). Clone le dashboard actif avec tous ses widgets (nouveaux IDs générés).
+- Widget : bouton "Dupliquer" dans le menu d'un widget (WidgetCard header). Clone le widget avec décalage de position.
 
-.nav-bar::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  height: 20px;     /* zone de détection silencieuse sous la navbar */
-}
-```
-
-Total zone de déclenchement : **34px** visible + invisible vs 4px actuellement.
+**RUD033 — Edit Profile : refonte en onglets**
+Restructurer la modal/page Edit Profile en 3 onglets :
+- **Profil** : nom, langue (contenu existant)
+- **Display** : mode switch (`timer` | `scroll-end`), intervalle en secondes, vitesse auto-scroll (px/s)
+- **Dashboards** : liste des dashboards avec réordonner (drag) et supprimer (bloqué si unique)
 
 ---
 
-### C — CSS : supprimer les styles inline magiques, préférer `style=` aux classes à usage unique ultra-spécifiques
+## Display mode — évolutions
 
-**Philosophie :** Garder le BEM pour les composants. Mais pour un style rattaché à **un seul élément précis et sans réutilisation possible**, préférer `style={{ ... }}` inline plutôt qu'une classe CSS dédiée. Cela évite des classes zombie et clarifie que c'est un style ad-hoc.
+**RUD034 — Auto-scroll display**
+En mode Display : faire défiler verticalement la grille à vitesse constante (configurable dans Display settings, en px/s). Le scroll repart en haut à chaque changement de dashboard. Pause si la souris survole l'écran.
+**Mobile :** la grille affiche 4 rows visibles en paysage (hauteur dynamique via ResizeObserver, même mécanisme que RUD028). L'auto-scroll donne accès aux rows suivantes sans redimensionner la grille.
 
-**Corrections concrètes :**
+**RUD035 — Rotation automatique des dashboards (Display)**
+Enchaîner les dashboards automatiquement en mode Display. Deux modes configurables (Display settings) :
+- `timer` : passage au dashboard suivant après N secondes
+- `scroll-end` : passage au dashboard suivant quand le scroll atteint le bas
+Boucle infinie (dernier → premier).
 
-1. **`src/components/tool/ConfirmDeleteButton.tsx`** — Le bouton danger utilise des couleurs hardcodées (`#e05252`) en `style={{}}`. Remplacer par la CSS variable `--danger-color` déjà définie dans le thème :
-   ```tsx
-   // Avant
-   style={{ color: "#e05252", borderColor: "#e05252", background: confirming ? "rgba(224,82,82,0.15)" : undefined }}
-   // Après — utiliser var(--danger-color) dans NavBar.css/.nav-btn--danger, et reprendre le même pattern ici
-   ```
-   Définir `--danger-color: #e05252` dans `Color.css` et utiliser `color: var(--danger-color)` partout.
-
-2. Identifier dans `dashboard.css` et `ApiConfig.css` les classes utilisées dans **un seul composant** et qui appliquent uniquement 1-2 propriétés de positionnement ou dimensionnement simple → les convertir en `style=` dans le JSX et supprimer la classe. Ne pas toucher aux classes BEM structurelles (`__header`, `__body`, etc.).
-
----
-
-### D — Corrections critiques mineures
-
-1. **`src/translations/en.json` ligne 9** — Typo `"RRole"` → `"Role"` (deux fois, `roleForEditDashboard` et `roleForEditProfile`)
-2. **`src/components/HUD/NavBar.tsx`** — Ajouter `useTranslation` et brancher `t()` sur les textes (fait en même temps que tâche A)
-3. Vérifier la cohérence des clés entre `en.json` et `fr.json` après ajout des nouvelles clés
+**RUD036 — Wake Lock + orientation mobile + bulles (Display)**
+- Wake Lock API : activer `navigator.wakeLock.request('screen')` à l'entrée en Display, relâcher à la sortie. Fallback silencieux si non supporté.
+- **Orientation mobile :** `screen.orientation.lock('landscape')` au chargement de `/display` sur mobile. Fallback : message "Please rotate your device" si non supporté (iOS Safari sans PWA installée).
+- Bulles semi-transparentes en bas de l'écran Display : indiquent le dashboard actif, clic = switch manuel (interrompt la rotation automatique jusqu'au prochain cycle).
 
 ---
 
-## Ordre d'implémentation suggéré
+## Widgets natifs
+
+**RUD037 — Widget Horloge**
+Nouveau type natif `clock` : affiche l'heure en temps réel (format 24h / 12h configurable). Mise à jour chaque seconde via `setInterval`. Pas de connexion API.
+
+**RUD038 — Widget Dernière MAJ**
+Nouveau type natif `last-update` : affiche le timestamp de la dernière réponse reçue par un endpoint sélectionné (ou le fetch global du dashboard). Format d'affichage configurable ("il y a Xs" / timestamp absolu).
+
+---
+
+## Widgets API — évolutions
+
+**RUD039 — Widget HealthCheck**
+Nouveau type `health-check` : ping un endpoint, affiche OK (vert) / KO (rouge) selon le code HTTP reçu. Codes considérés "OK" configurables (défaut : 2xx). Refresh selon l'intervalle global. Pas de dataPath — juste le statut HTTP.
+
+**RUD040 — Seuils visuels**
+Ajouter une config optionnelle `threshold` sur les widgets **NumberCard**, **HealthCheck** et **BarChart** :
+- Définir des paliers (valeur + couleur : vert / orange / rouge)
+- Le widget change de couleur selon la valeur courante
+- Config dans le WidgetConfigPanel, section "Thresholds"
+
+**RUD041 — Historique runtime (NumberCard + LineChart)**
+Sur les widgets **NumberCard** et **LineChart** uniquement : option "Keep history" + `maxPoints` (défaut 50). Stocker les N dernières valeurs en mémoire runtime (non persisté). NumberCard affiche une mini sparkline sous la valeur. LineChart utilise l'historique au lieu de la réponse courante.
+
+---
+
+## QR Code profil
+
+**RUD042 — QR Code profil (export URL)**
+- Encoder le profil en JSON, compresser (LZ-string), encoder en base64.
+- Générer l'URL : `${window.location.origin}/#/import?data=<base64>`. Le hash n'est jamais envoyé au serveur — les données du profil restent 100% côté client.
+- Générer un QR code depuis cette URL (lib : `qrcode.react`).
+- **Bouton navbar** : ouvre une modal avec le QR code. Warning si profil compressé > ~2KB (limite densité QR ~2.9KB).
+- Sur `/no-profile` : détecter `/#/import?data=...` dans l'URL, décoder + importer automatiquement, rediriger vers `/display`.
+- Profils légers (~10 widgets, 1-2 connexions) ≈ 400-800 bytes compressés → QR lisible. Profils lourds (>3KB) → warning explicite, pas de QR généré.
+
+---
+
+## PWA & Déploiement
+
+**RUD044 — PWA (Progressive Web App)**
+`vite-plugin-pwa` + manifest + service worker. Objectifs :
+- App installable sur mobile ("Ajouter à l'écran d'accueil") → bannière affichée sur `/display` après import de profil via QR code
+- Offline : app fonctionnelle depuis le cache service worker après premier chargement
+- Nécessaire pour `screen.orientation.lock()` sur iOS Safari (uniquement disponible en mode PWA fullscreen)
+- Le build display-only (RUD043) est la cible prioritaire pour le mode PWA
+
+**RUD043 — Docker nginx:alpine + build display-only**
+- `Dockerfile` : build React (`npm run build`) + `nginx:alpine` servant le `dist/`. Image < 20MB visée.
+- `docker-compose.yml` : 2 services :
+  - `rud-full` : build complet (Editor + Config + Display), port 8080
+  - `rud-display` : build display-only via `VITE_MODE=display`, port 8081
+- `vite.config.ts` : feature flag `VITE_MODE`. En mode `display` : exclure dnd-kit, les pages Editor/ApiConfig, tous les composants d'édition. Conserver uniquement : import JSON, Display, widgets read-only.
+- `npm run build:display` dans `package.json`.
+
+---
+
+## Ordre d'implémentation suggéré (Phase 2)
 
 ```
-RUD005 → RUD006 → RUD007 → RUD007b
-→ RUD008 → RUD009 → RUD010 → RUD011
-→ RUD014 → RUD016 → RUD020 → RUD021
-→ RUD015 → RUD018 → RUD019
-→ RUD012 → RUD013 → RUD017
-→ RUD022 → RUD023
+RUD030 (migration store) → RUD031 (bulles editor) → RUD033 (edit profile onglets)
+→ RUD032 (duplications)
+→ RUD034 (auto-scroll + mobile 4 rows) → RUD035 (rotation) → RUD036 (wake lock + orientation + bulles)
+→ RUD037 (widget horloge) → RUD038 (widget dernière MAJ)
+→ RUD039 (health check) → RUD040 (seuils) → RUD041 (historique runtime)
+→ RUD042 (QR code)
+→ RUD043 (docker) → RUD044 (PWA)
 ```
 
-RUD005–007b débloquent tout le reste.
-RUD008 (Zustand) doit précéder tous les tickets suivants.
-RUD009 et RUD014 (modèles de données) doivent précéder leurs UI respectives.
+RUD030 est bloquant pour tout ce qui touche au multi-dashboard.
+RUD033 peut être fait en parallèle de RUD031-032.
+RUD044 (PWA) dépend de RUD043 (build display-only comme cible PWA prioritaire).

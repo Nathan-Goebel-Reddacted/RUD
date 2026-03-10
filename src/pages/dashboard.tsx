@@ -11,7 +11,9 @@ const ADD_MODAL  = "widget-add";
 const EDIT_MODAL = "widget-edit";
 
 function Dashboard() {
-  const currentDashboard   = useDashboardStore((s) => s.currentDashboard);
+  const dashboards           = useDashboardStore((s) => s.dashboards);
+  const activeDashboardIndex = useDashboardStore((s) => s.activeDashboardIndex);
+  const currentDashboard     = dashboards[activeDashboardIndex] ?? dashboards[0] ?? null;
   const addWidget          = useDashboardStore((s) => s.addWidget);
   const updateWidget       = useDashboardStore((s) => s.updateWidget);
   const removeWidget       = useDashboardStore((s) => s.removeWidget);
@@ -31,6 +33,7 @@ function Dashboard() {
   }
 
   function handleSaveNew(partial: Omit<Widget, "id" | "position"> & { id?: string }) {
+    if (!currentDashboard) return;
     const maxY = currentDashboard.widgets.reduce(
       (max, w) => Math.max(max, w.position.y + w.position.h),
       0
@@ -41,7 +44,7 @@ function Dashboard() {
   }
 
   function handleSaveEdit(partial: Omit<Widget, "id" | "position"> & { id?: string }) {
-    if (!editingWidget) return;
+    if (!editingWidget || !currentDashboard) return;
     updateWidget({ ...editingWidget, ...partial, id: editingWidget.id } as Widget);
     setEditingWidget(null);
     closeModal(EDIT_MODAL);

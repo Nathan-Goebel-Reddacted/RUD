@@ -17,7 +17,7 @@ function NoProfile() {
   const setProfile       = useProfileStore((s) => s.setProfile);
   const clearConnections = useApiStore((s) => s.clearConnections);
   const addConnection    = useApiStore((s) => s.addConnection);
-  const setDashboard     = useDashboardStore((s) => s.setDashboard);
+  const setDashboards    = useDashboardStore((s) => s.setDashboards);
   const navigate         = useNavigate();
 
   function handleImportFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -33,7 +33,7 @@ function NoProfile() {
       }
       clearConnections();
       for (const conn of result.connections) addConnection(conn);
-      setDashboard(result.dashboard);
+      setDashboards(result.dashboards);
       applyColors(result.profile);
       setProfile(result.profile);
       navigate("/dashboard");

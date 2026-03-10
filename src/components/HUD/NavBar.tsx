@@ -17,7 +17,7 @@ function NavBar() {
   const profile          = useProfileStore((state) => state.profile);
   const setProfile       = useProfileStore((state) => state.setProfile);
   const connections      = useApiStore((state) => state.connections);
-  const currentDashboard = useDashboardStore((state) => state.currentDashboard);
+  const dashboards       = useDashboardStore((state) => state.dashboards);
 
   const hiddenPaths = ["/", "/no-profile"];
   if (hiddenPaths.includes(location.pathname)) return null;
@@ -54,7 +54,7 @@ function NavBar() {
           <button className="nav-btn" onClick={() => openModal(EDIT_MODAL_ID)}>
             {t("navbar.editProfile")}
           </button>
-          <button className="nav-btn" onClick={() => exportBackup(profile, connections, currentDashboard)}>
+          <button className="nav-btn" onClick={() => exportBackup(profile, connections, dashboards)}>
             {t("navbar.export")}
           </button>
           <button className="nav-btn nav-btn--danger" onClick={handleDeleteProfile}>

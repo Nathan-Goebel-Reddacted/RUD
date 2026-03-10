@@ -3,10 +3,11 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import type { Widget, WidgetPosition, Dashboard, FetchCacheEntry } from "@/types/widget";
 
 type DashboardState = {
-  // Persisted
-  currentDashboard: Dashboard;
+  // Persisté
+  dashboards:            Dashboard[];
+  activeDashboardIndex:  number;
 
-  // Actions
+  // Mutations (ciblent dashboards[activeDashboardIndex])
   setTitle:           (title: string) => void;
   setRefreshInterval: (seconds: number) => void;
   addWidget:          (widget: Widget) => void;
@@ -14,8 +15,16 @@ type DashboardState = {
   removeWidget:       (id: string) => void;
   moveWidget:         (id: string, position: WidgetPosition) => void;
 
-  resetDashboard: () => void;
-  setDashboard: (dashboard: Dashboard) => void;
+  // Navigation multi-dashboard
+  setActiveDashboardIndex: (index: number) => void;
+  addDashboard:            (title?: string) => void;
+  removeDashboard:         (index: number) => void;
+  reorderDashboards:       (fromIndex: number, toIndex: number) => void;
+
+  // Import / reset
+  resetDashboard:  () => void;
+  setDashboard:    (d: Dashboard) => void;
+  setDashboards:   (dashboards: Dashboard[], activeIndex?: number) => void;
 
   // Runtime cache (not persisted)
   fetchCache:      Record<string, FetchCacheEntry>;
@@ -27,12 +36,14 @@ type DashboardState = {
   incrementTick: () => void;
 };
 
-const defaultDashboard: Dashboard = {
-  id:              crypto.randomUUID(),
-  title:           "My Dashboard",
-  widgets:         [],
-  refreshInterval: 30,
-};
+function createDefaultDashboard(): Dashboard {
+  return {
+    id:              crypto.randomUUID(),
+    title:           "My Dashboard",
+    widgets:         [],
+    refreshInterval: 30,
+  };
+}
 
 function safeSetItem(key: string, value: string): void {
   try {
@@ -53,57 +64,97 @@ const safeStorage = {
 export const useDashboardStore = create<DashboardState>()(
   persist(
     (set) => ({
-      currentDashboard: defaultDashboard,
+      dashboards:           [createDefaultDashboard()],
+      activeDashboardIndex: 0,
 
-      setTitle: (title) =>
-        set((state) => ({
-          currentDashboard: { ...state.currentDashboard, title },
-        })),
+      setTitle: (title) => set((state) => {
+        const dashboards = [...state.dashboards];
+        dashboards[state.activeDashboardIndex] = { ...dashboards[state.activeDashboardIndex], title };
+        return { dashboards };
+      }),
 
-      setRefreshInterval: (seconds) =>
-        set((state) => ({
-          currentDashboard: { ...state.currentDashboard, refreshInterval: seconds },
-        })),
+      setRefreshInterval: (seconds) => set((state) => {
+        const dashboards = [...state.dashboards];
+        dashboards[state.activeDashboardIndex] = { ...dashboards[state.activeDashboardIndex], refreshInterval: seconds };
+        return { dashboards };
+      }),
 
-      addWidget: (widget) =>
-        set((state) => ({
-          currentDashboard: {
-            ...state.currentDashboard,
-            widgets: [...state.currentDashboard.widgets, widget],
-          },
-        })),
+      addWidget: (widget) => set((state) => {
+        const dashboards = [...state.dashboards];
+        const d = dashboards[state.activeDashboardIndex];
+        dashboards[state.activeDashboardIndex] = { ...d, widgets: [...d.widgets, widget] };
+        return { dashboards };
+      }),
 
-      updateWidget: (widget) =>
-        set((state) => ({
-          currentDashboard: {
-            ...state.currentDashboard,
-            widgets: state.currentDashboard.widgets.map((w) =>
-              w.id === widget.id ? widget : w
-            ),
-          },
-        })),
+      updateWidget: (widget) => set((state) => {
+        const dashboards = [...state.dashboards];
+        const d = dashboards[state.activeDashboardIndex];
+        dashboards[state.activeDashboardIndex] = {
+          ...d,
+          widgets: d.widgets.map((w) => w.id === widget.id ? widget : w),
+        };
+        return { dashboards };
+      }),
 
-      removeWidget: (id) =>
-        set((state) => ({
-          currentDashboard: {
-            ...state.currentDashboard,
-            widgets: state.currentDashboard.widgets.filter((w) => w.id !== id),
-          },
-        })),
+      removeWidget: (id) => set((state) => {
+        const dashboards = [...state.dashboards];
+        const d = dashboards[state.activeDashboardIndex];
+        dashboards[state.activeDashboardIndex] = { ...d, widgets: d.widgets.filter((w) => w.id !== id) };
+        return { dashboards };
+      }),
 
-      moveWidget: (id, position) =>
-        set((state) => ({
-          currentDashboard: {
-            ...state.currentDashboard,
-            widgets: state.currentDashboard.widgets.map((w) =>
-              w.id === id ? { ...w, position } : w
-            ),
-          },
-        })),
+      moveWidget: (id, position) => set((state) => {
+        const dashboards = [...state.dashboards];
+        const d = dashboards[state.activeDashboardIndex];
+        dashboards[state.activeDashboardIndex] = {
+          ...d,
+          widgets: d.widgets.map((w) => w.id === id ? { ...w, position } : w),
+        };
+        return { dashboards };
+      }),
 
-      resetDashboard: () =>
-        set({ currentDashboard: { ...defaultDashboard, id: crypto.randomUUID() } }),
-      setDashboard: (dashboard) => set({ currentDashboard: dashboard }),
+      // Vider fetchCache suffit à forcer un re-fetch immédiat des widgets
+      // (tick++ provoquerait un double fetch avec DashboardClock)
+      setActiveDashboardIndex: (index) => set((state) => ({
+        activeDashboardIndex: Math.max(0, Math.min(index, state.dashboards.length - 1)),
+        fetchCache: {},
+      })),
+
+      addDashboard: (title) => set((state) => {
+        const d: Dashboard = { ...createDefaultDashboard(), ...(title ? { title } : {}) };
+        const dashboards = [...state.dashboards, d];
+        return { dashboards, activeDashboardIndex: dashboards.length - 1 };
+      }),
+
+      removeDashboard: (index) => set((state) => {
+        if (state.dashboards.length <= 1) return state;
+        const dashboards = state.dashboards.filter((_, i) => i !== index);
+        return {
+          dashboards,
+          activeDashboardIndex: Math.min(state.activeDashboardIndex, dashboards.length - 1),
+        };
+      }),
+
+      reorderDashboards: (fromIndex, toIndex) => set((state) => {
+        if (fromIndex === toIndex) return state;
+        const dashboards = [...state.dashboards];
+        const [moved] = dashboards.splice(fromIndex, 1);
+        dashboards.splice(toIndex, 0, moved);
+        let idx = state.activeDashboardIndex;
+        if (idx === fromIndex) idx = toIndex;
+        else if (fromIndex < idx && toIndex >= idx) idx -= 1;
+        else if (fromIndex > idx && toIndex <= idx) idx += 1;
+        return { dashboards, activeDashboardIndex: idx };
+      }),
+
+      resetDashboard: () => set({ dashboards: [createDefaultDashboard()], activeDashboardIndex: 0 }),
+
+      setDashboard: (d) => set({ dashboards: [d], activeDashboardIndex: 0 }),
+
+      setDashboards: (dashboards, activeIndex = 0) => set({
+        dashboards,
+        activeDashboardIndex: Math.max(0, Math.min(activeIndex, dashboards.length - 1)),
+      }),
 
       // Runtime cache
       fetchCache:    {},
@@ -117,8 +168,25 @@ export const useDashboardStore = create<DashboardState>()(
     }),
     {
       name:    "rud-dashboard",
+      version: 1,
       storage: createJSONStorage(() => safeStorage),
-      partialize: (state) => ({ currentDashboard: state.currentDashboard }),
+      partialize: (state) => ({
+        dashboards:           state.dashboards,
+        activeDashboardIndex: state.activeDashboardIndex,
+      }),
+      migrate: (persistedState, version) => {
+        if (version === 0) {
+          const old = persistedState as { currentDashboard?: Dashboard };
+          const existing = old.currentDashboard;
+          // Valider que le dashboard migré est utilisable (id string requis)
+          const dashboards =
+            existing && typeof existing.id === "string"
+              ? [existing]
+              : [createDefaultDashboard()];
+          return { dashboards, activeDashboardIndex: 0 };
+        }
+        return persistedState;
+      },
     }
   )
 );

@@ -35,7 +35,9 @@ export default function DisplayDashboard() {
   const { t } = useTranslation();
   const containerRef                  = useRef<HTMLDivElement | null>(null);
   const gridRef                       = useRef<HTMLDivElement | null>(null);
-  const currentDashboard              = useDashboardStore((s) => s.currentDashboard);
+  const dashboards                    = useDashboardStore((s) => s.dashboards);
+  const activeDashboardIndex          = useDashboardStore((s) => s.activeDashboardIndex);
+  const currentDashboard              = dashboards[activeDashboardIndex] ?? dashboards[0] ?? null;
   const { isFullscreen, enter, exit } = useFullscreen();
   const [gridPixelHeight, setGridPixelHeight] = useState(0);
 
@@ -46,6 +48,8 @@ export default function DisplayDashboard() {
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+
+  if (!currentDashboard) return <div className="display-dashboard__empty"><p>{t("display.noDashboard")}</p></div>;
 
   const maxRow    = currentDashboard.widgets.reduce(
     (max, w) => Math.max(max, w.position.y + w.position.h), 4
