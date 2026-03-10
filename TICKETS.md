@@ -133,7 +133,7 @@ Page Display : suppression des marges, hauteur des lignes dynamique via ResizeOb
 **RUD030 — Migration store : Profile → dashboards[]** ✅
 Breaking change architectural. Remplacer le dashboard unique (`dashboardStore`) par un tableau `dashboards[]` dans le store profil (ou un store dédié). Chaque dashboard contient ses propres widgets. Migrer la persistance localStorage. Adapter toutes les lectures/écritures du dashboard courant vers un index actif `activeDashboardIndex`.
 
-**RUD031 — Bulles de navigation (Editor)**
+**RUD031 — Bulles de navigation (Editor)** ✅
 Ajouter en bas de l'Editor une rangée de bulles représentant chaque dashboard. Clic = switch vers ce dashboard. Bouton `+` = créer un nouveau dashboard vide. Drag-and-drop (dnd-kit) pour réordonner. Suppression via bouton sur la bulle active — bloquée si un seul dashboard reste.
 
 **RUD032 — Duplications (dashboard + widget)**
