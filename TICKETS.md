@@ -140,7 +140,7 @@ Ajouter en bas de l'Editor une rangée de bulles représentant chaque dashboard.
 - Dashboard : bouton "Dupliquer" dans la liste des dashboards (Edit Profile > onglet Dashboards). Clone le dashboard actif avec tous ses widgets (nouveaux IDs générés).
 - Widget : bouton "Dupliquer" dans le menu d'un widget (WidgetCard header). Clone le widget avec décalage de position.
 
-**RUD033 — Edit Profile : refonte en onglets**
+**RUD033 — Edit Profile : refonte en onglets** ✅
 Restructurer la modal/page Edit Profile en 3 onglets :
 - **Profil** : nom, langue (contenu existant)
 - **Display** : mode switch (`timer` | `scroll-end`), intervalle en secondes, vitesse auto-scroll (px/s)
