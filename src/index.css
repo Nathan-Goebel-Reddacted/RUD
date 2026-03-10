@@ -121,3 +121,87 @@ button:focus-visible {
   font-size: 0.8rem;
   margin: -6px 10px 6px;
 }
+
+/* Profile modal — tabs */
+.profile-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 0.75rem;
+}
+
+.profile-tab {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-color);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.profile-tab--active {
+  border-bottom-color: var(--text-color);
+  font-weight: 600;
+}
+
+.profile-tab-content {
+  min-height: 200px;
+}
+
+/* Profile modal — dashboards list */
+.profile-dash-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0.5rem 0;
+}
+
+.profile-dash-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: var(--background-color);
+}
+
+.profile-dash-item--active {
+  border-color: var(--text-color);
+}
+
+.profile-dash-grip {
+  cursor: grab;
+  color: var(--border-color);
+  display: flex;
+  align-items: center;
+}
+
+.profile-dash-name {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+  font-size: 0.9rem;
+  padding: 2px 4px;
+}
+
+.profile-dash-name:focus {
+  outline: 1px solid var(--border-color);
+  border-radius: 2px;
+}
+
+.profile-dash-delete {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--danger-color, #e74c3c);
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  opacity: 0.6;
+}
+
+.profile-dash-delete:hover:not(:disabled) { opacity: 1; }
+.profile-dash-delete:disabled { opacity: 0.2; cursor: not-allowed; }

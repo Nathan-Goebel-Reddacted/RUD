@@ -23,6 +23,7 @@ type DashboardState = {
 
   // Duplication
   duplicateDashboard: (index: number, titleSuffix?: string) => void;
+  renameDashboard:    (index: number, title: string) => void;
 
   // Import / reset
   resetDashboard:  () => void;
@@ -166,6 +167,14 @@ export const useDashboardStore = create<DashboardState>()(
         const dashboards = [...state.dashboards];
         dashboards.splice(index + 1, 0, cloned);
         return { dashboards, activeDashboardIndex: index + 1, fetchCache: {} };
+      }),
+
+      renameDashboard: (index, title) => set((state) => {
+        const trimmed = title.trim();
+        if (!trimmed || index < 0 || index >= state.dashboards.length) return state;
+        const dashboards = [...state.dashboards];
+        dashboards[index] = { ...dashboards[index], title: trimmed };
+        return { dashboards };
       }),
 
       resetDashboard: () => set({ dashboards: [createDefaultDashboard()], activeDashboardIndex: 0 }),

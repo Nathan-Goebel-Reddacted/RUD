@@ -6,8 +6,6 @@
 
     "profileSettings": {
         "profileName": "Profile name",
-        "roleForEditDashboard": "Role to edit the dashboard",
-        "roleForEditProfile": "Role to edit the profile",
         "language": "Language",
         "loadProfile": "Load this profile",
         "saveProfile": "Save profile",
@@ -16,6 +14,21 @@
             "border": "Border color",
             "text": "Accent color",
             "textHover": "Accent hover color"
+        },
+        "tabs": {
+            "profile":    "Profile",
+            "dashboards": "Dashboards",
+            "display":    "Display"
+        },
+        "display": {
+            "mode":          "Rotation mode",
+            "modeTimer":     "Timer",
+            "modeScrollEnd": "Scroll end",
+            "interval":      "Interval (s)",
+            "scrollSpeed":   "Scroll speed (px/s)"
+        },
+        "dashboards": {
+            "delete": "Delete dashboard"
         }
     },
 

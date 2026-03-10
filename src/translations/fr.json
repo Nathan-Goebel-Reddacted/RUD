@@ -6,8 +6,6 @@
 
     "profileSettings": {
         "profileName": "Nom du profil",
-        "roleForEditDashboard": "Rôle pour éditer le tableau de bord",
-        "roleForEditProfile": "Rôle pour éditer le profil",
         "language": "Langue",
         "loadProfile": "Charger ce profil",
         "saveProfile": "Enregistrer le profil",
@@ -16,6 +14,21 @@
             "border": "Couleur de bordure",
             "text": "Couleur d'accentuation",
             "textHover": "Couleur d'accentuation au survol"
+        },
+        "tabs": {
+            "profile":    "Profil",
+            "dashboards": "Tableaux de bord",
+            "display":    "Affichage"
+        },
+        "display": {
+            "mode":          "Mode de rotation",
+            "modeTimer":     "Minuterie",
+            "modeScrollEnd": "Fin de défilement",
+            "interval":      "Intervalle (s)",
+            "scrollSpeed":   "Vitesse de défilement (px/s)"
+        },
+        "dashboards": {
+            "delete": "Supprimer le tableau de bord"
         }
     },
 
