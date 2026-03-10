@@ -84,20 +84,21 @@ const STATIC_DATA_STATE: WidgetDataState = {
 };
 
 type DraggableWidgetProps = {
-  widget:   Widget;
-  gridRef:  React.RefObject<HTMLDivElement | null>;
-  onEdit?:  (widget: Widget) => void;
-  onDelete?:(id: string) => void;
-  onResize: (id: string, position: WidgetPosition) => void;
+  widget:       Widget;
+  gridRef:      React.RefObject<HTMLDivElement | null>;
+  onEdit?:      (widget: Widget) => void;
+  onDelete?:    (id: string) => void;
+  onDuplicate?: (widget: Widget) => void;
+  onResize:     (id: string, position: WidgetPosition) => void;
 };
 
 // Separate component so useWidgetData is only called for non-static widgets
-function FetchingWidgetContent({ widget, onEdit, onDelete }: Pick<DraggableWidgetProps, "widget" | "onEdit" | "onDelete">) {
+function FetchingWidgetContent({ widget, onEdit, onDelete, onDuplicate }: Pick<DraggableWidgetProps, "widget" | "onEdit" | "onDelete" | "onDuplicate">) {
   const dataState = useWidgetData(widget);
-  return <WidgetCard widget={widget} dataState={dataState} onEdit={onEdit} onDelete={onDelete} />;
+  return <WidgetCard widget={widget} dataState={dataState} onEdit={onEdit} onDelete={onDelete} onDuplicate={onDuplicate} />;
 }
 
-function DraggableWidget({ widget, gridRef, onEdit, onDelete, onResize }: DraggableWidgetProps) {
+function DraggableWidget({ widget, gridRef, onEdit, onDelete, onDuplicate, onResize }: DraggableWidgetProps) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: widget.id,
   });
@@ -119,8 +120,8 @@ function DraggableWidget({ widget, gridRef, onEdit, onDelete, onResize }: Dragga
   return (
     <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
       {widget.config.type === "text"
-        ? <WidgetCard widget={widget} dataState={STATIC_DATA_STATE} onEdit={onEdit} onDelete={onDelete} />
-        : <FetchingWidgetContent widget={widget} onEdit={onEdit} onDelete={onDelete} />
+        ? <WidgetCard widget={widget} dataState={STATIC_DATA_STATE} onEdit={onEdit} onDelete={onDelete} onDuplicate={onDuplicate} />
+        : <FetchingWidgetContent widget={widget} onEdit={onEdit} onDelete={onDelete} onDuplicate={onDuplicate} />
       }
       <ResizeHandle widget={widget} gridRef={gridRef} onResize={onResize} />
     </div>
@@ -130,13 +131,14 @@ function DraggableWidget({ widget, gridRef, onEdit, onDelete, onResize }: Dragga
 // ─── Grid ─────────────────────────────────────────────────────────────────────
 
 type Props = {
-  widgets:  Widget[];
-  onMove:   (id: string, position: WidgetPosition) => void;
-  onEdit?:  (widget: Widget) => void;
-  onDelete?:(id: string) => void;
+  widgets:      Widget[];
+  onMove:       (id: string, position: WidgetPosition) => void;
+  onEdit?:      (widget: Widget) => void;
+  onDelete?:    (id: string) => void;
+  onDuplicate?: (widget: Widget) => void;
 };
 
-export default function DashboardGrid({ widgets, onMove, onEdit, onDelete }: Props) {
+export default function DashboardGrid({ widgets, onMove, onEdit, onDelete, onDuplicate }: Props) {
   const { t } = useTranslation();
   const gridRef = useRef<HTMLDivElement>(null);
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
@@ -182,6 +184,7 @@ export default function DashboardGrid({ widgets, onMove, onEdit, onDelete }: Pro
             gridRef={gridRef}
             onEdit={onEdit}
             onDelete={onDelete}
+            onDuplicate={onDuplicate}
             onResize={onMove}
           />
         ))}

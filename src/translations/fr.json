@@ -42,7 +42,9 @@
 
     "bubbles": {
         "add": "Ajouter un tableau de bord",
-        "delete": "Supprimer ce tableau de bord"
+        "duplicate": "Dupliquer ce tableau de bord",
+        "delete": "Supprimer ce tableau de bord",
+        "copySuffix": " (copie)"
     },
 
     "display": {
@@ -89,6 +91,7 @@
 
     "widgetCard": {
         "editWidget": "Modifier le widget",
+        "duplicateWidget": "Dupliquer le widget",
         "deleteWidget": "Supprimer le widget",
         "error": {
             "endpointNotFound": "Endpoint introuvable — vérifier la config API",

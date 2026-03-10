@@ -42,7 +42,9 @@
 
     "bubbles": {
         "add": "Add dashboard",
-        "delete": "Delete this dashboard"
+        "duplicate": "Duplicate dashboard",
+        "delete": "Delete this dashboard",
+        "copySuffix": " (copy)"
     },
 
     "display": {
@@ -89,6 +91,7 @@
 
     "widgetCard": {
         "editWidget": "Edit widget",
+        "duplicateWidget": "Duplicate widget",
         "deleteWidget": "Delete widget",
         "error": {
             "endpointNotFound": "Endpoint not found — check API config",

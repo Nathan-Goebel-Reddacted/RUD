@@ -25,12 +25,14 @@ type BubbleProps = {
   isActive:       boolean;
   canDelete:      boolean;
   dragStartedRef: React.RefObject<boolean>;
+  copySuffix:     string;
 };
 
-function Bubble({ id, index, label, isActive, canDelete, dragStartedRef }: BubbleProps) {
+function Bubble({ id, index, label, isActive, canDelete, dragStartedRef, copySuffix }: BubbleProps) {
   const { t } = useTranslation();
-  const setActive = useDashboardStore((s) => s.setActiveDashboardIndex);
-  const remove    = useDashboardStore((s) => s.removeDashboard);
+  const setActive   = useDashboardStore((s) => s.setActiveDashboardIndex);
+  const remove      = useDashboardStore((s) => s.removeDashboard);
+  const duplicate   = useDashboardStore((s) => s.duplicateDashboard);
 
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
 
@@ -54,9 +56,21 @@ function Bubble({ id, index, label, isActive, canDelete, dragStartedRef }: Bubbl
       {...listeners}
     >
       <span className="db-bubble__label">{label}</span>
+      {isActive && (
+        <button
+          className="db-bubble__action"
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => { e.stopPropagation(); duplicate(index, copySuffix); }}
+          title={t("bubbles.duplicate")}
+          aria-label={t("bubbles.duplicate")}
+        >
+          ⎘
+        </button>
+      )}
       {isActive && canDelete && (
         <button
-          className="db-bubble__delete"
+          className="db-bubble__action db-bubble__action--danger"
+          onPointerDown={(e) => e.stopPropagation()}
           onClick={(e) => { e.stopPropagation(); remove(index); }}
           title={t("bubbles.delete")}
           aria-label={t("bubbles.delete")}
@@ -71,7 +85,8 @@ function Bubble({ id, index, label, isActive, canDelete, dragStartedRef }: Bubbl
 // ─── Bubbles bar ───────────────────────────────────────────────────────────────
 
 export default function DashboardBubbles() {
-  const { t } = useTranslation();
+  const { t }      = useTranslation();
+  const copySuffix = t("bubbles.copySuffix");
   const dashboards           = useDashboardStore((s) => s.dashboards);
   const activeDashboardIndex = useDashboardStore((s) => s.activeDashboardIndex);
   const addDashboard         = useDashboardStore((s) => s.addDashboard);
@@ -123,6 +138,7 @@ export default function DashboardBubbles() {
               isActive={i === activeDashboardIndex}
               canDelete={dashboards.length > 1}
               dragStartedRef={dragStartedRef}
+              copySuffix={copySuffix}
             />
           ))}
         </SortableContext>

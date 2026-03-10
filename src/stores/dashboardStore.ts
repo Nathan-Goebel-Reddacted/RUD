@@ -21,6 +21,9 @@ type DashboardState = {
   removeDashboard:         (index: number) => void;
   reorderDashboards:       (fromIndex: number, toIndex: number) => void;
 
+  // Duplication
+  duplicateDashboard: (index: number, titleSuffix?: string) => void;
+
   // Import / reset
   resetDashboard:  () => void;
   setDashboard:    (d: Dashboard) => void;
@@ -145,6 +148,24 @@ export const useDashboardStore = create<DashboardState>()(
         else if (fromIndex < idx && toIndex >= idx) idx -= 1;
         else if (fromIndex > idx && toIndex <= idx) idx += 1;
         return { dashboards, activeDashboardIndex: idx, fetchCache: {} };
+      }),
+
+      duplicateDashboard: (index, titleSuffix = " (copy)") => set((state) => {
+        const source = state.dashboards[index];
+        if (!source) return state;
+        const cloned: Dashboard = {
+          ...source,
+          id:      crypto.randomUUID(),
+          title:   `${source.title}${titleSuffix}`,
+          widgets: source.widgets.map((w) => ({
+            ...w,
+            id:     crypto.randomUUID(),
+            config: structuredClone(w.config),
+          })),
+        };
+        const dashboards = [...state.dashboards];
+        dashboards.splice(index + 1, 0, cloned);
+        return { dashboards, activeDashboardIndex: index + 1, fetchCache: {} };
       }),
 
       resetDashboard: () => set({ dashboards: [createDefaultDashboard()], activeDashboardIndex: 0 }),

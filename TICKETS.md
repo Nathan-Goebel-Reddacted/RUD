@@ -136,7 +136,7 @@ Breaking change architectural. Remplacer le dashboard unique (`dashboardStore`) 
 **RUD031 — Bulles de navigation (Editor)** ✅
 Ajouter en bas de l'Editor une rangée de bulles représentant chaque dashboard. Clic = switch vers ce dashboard. Bouton `+` = créer un nouveau dashboard vide. Drag-and-drop (dnd-kit) pour réordonner. Suppression via bouton sur la bulle active — bloquée si un seul dashboard reste.
 
-**RUD032 — Duplications (dashboard + widget)**
+**RUD032 — Duplications (dashboard + widget)** ✅
 - Dashboard : bouton "Dupliquer" dans la liste des dashboards (Edit Profile > onglet Dashboards). Clone le dashboard actif avec tous ses widgets (nouveaux IDs générés).
 - Widget : bouton "Dupliquer" dans le menu d'un widget (WidgetCard header). Clone le widget avec décalage de position.
 

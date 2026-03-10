@@ -44,6 +44,15 @@ function Dashboard() {
     closeModal(ADD_MODAL);
   }
 
+  function handleDuplicateWidget(widget: Widget) {
+    if (!currentDashboard) return;
+    const maxY = currentDashboard.widgets.reduce(
+      (max, w) => Math.max(max, w.position.y + w.position.h),
+      0
+    );
+    addWidget({ ...widget, id: crypto.randomUUID(), position: { ...widget.position, x: 0, y: maxY } });
+  }
+
   function handleSaveEdit(partial: Omit<Widget, "id" | "position"> & { id?: string }) {
     if (!editingWidget || !currentDashboard) return;
     updateWidget({ ...editingWidget, ...partial, id: editingWidget.id } as Widget);
@@ -61,6 +70,7 @@ function Dashboard() {
             onMove={moveWidget}
             onEdit={handleEditWidget}
             onDelete={removeWidget}
+            onDuplicate={handleDuplicateWidget}
           />
         </div>
 

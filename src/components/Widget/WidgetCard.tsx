@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, Copy } from "lucide-react";
 import type { Widget, WidgetDataState } from "@/types/widget";
 import WidgetSkeleton from "./WidgetSkeleton";
 import NumberCard from "./types/NumberCard";
@@ -10,11 +10,12 @@ import TextWidget from "./types/TextWidget";
 import RawResponse from "./types/RawResponse";
 
 type Props = {
-  widget:    Widget;
-  dataState: WidgetDataState;
-  onEdit?:   (widget: Widget) => void;
-  onDelete?: (id: string) => void;
-  readonly?: boolean;
+  widget:       Widget;
+  dataState:    WidgetDataState;
+  onEdit?:      (widget: Widget) => void;
+  onDelete?:    (id: string) => void;
+  onDuplicate?: (widget: Widget) => void;
+  readonly?:    boolean;
 };
 
 function ErrorMessage({ error }: { error: string }) {
@@ -53,13 +54,13 @@ function WidgetBody({ widget, dataState }: { widget: Widget; dataState: WidgetDa
   }
 }
 
-export default function WidgetCard({ widget, dataState, onEdit, onDelete, readonly }: Props) {
+export default function WidgetCard({ widget, dataState, onEdit, onDelete, onDuplicate, readonly }: Props) {
   const { t } = useTranslation();
 
   return (
     <div className="widget-card">
-      {/* Edit/delete overlay — appears on hover, full top strip */}
-      {!readonly && (onEdit || onDelete) && (
+      {/* Edit/duplicate/delete overlay — appears on hover, full top strip */}
+      {!readonly && (onEdit || onDuplicate || onDelete) && (
         <div className="widget-card__overlay">
           <span className="widget-card__overlay-label">{widget.label}</span>
           <div className="widget-card__overlay-actions">
@@ -71,6 +72,16 @@ export default function WidgetCard({ widget, dataState, onEdit, onDelete, readon
                 onClick={() => onEdit(widget)}
               >
                 <Pencil size={17} strokeWidth={2} />
+              </button>
+            )}
+            {onDuplicate && (
+              <button
+                className="widget-card__overlay-btn"
+                title={t("widgetCard.duplicateWidget")}
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={() => onDuplicate(widget)}
+              >
+                <Copy size={17} strokeWidth={2} />
               </button>
             )}
             {onDelete && (
