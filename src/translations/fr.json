@@ -40,6 +40,11 @@
         "noWidgets": "Aucun widget. Cliquez sur Ajouter un widget pour commencer."
     },
 
+    "bubbles": {
+        "add": "Ajouter un tableau de bord",
+        "delete": "Supprimer ce tableau de bord"
+    },
+
     "display": {
         "noWidgets": "Aucun widget configuré. Rendez-vous dans l'Éditeur pour en ajouter.",
         "noDashboard": "Aucun tableau de bord disponible.",

@@ -144,7 +144,7 @@ export const useDashboardStore = create<DashboardState>()(
         if (idx === fromIndex) idx = toIndex;
         else if (fromIndex < idx && toIndex >= idx) idx -= 1;
         else if (fromIndex > idx && toIndex <= idx) idx += 1;
-        return { dashboards, activeDashboardIndex: idx };
+        return { dashboards, activeDashboardIndex: idx, fetchCache: {} };
       }),
 
       resetDashboard: () => set({ dashboards: [createDefaultDashboard()], activeDashboardIndex: 0 }),

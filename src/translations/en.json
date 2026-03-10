@@ -40,6 +40,11 @@
         "noWidgets": "No widgets yet. Click Add widget to get started."
     },
 
+    "bubbles": {
+        "add": "Add dashboard",
+        "delete": "Delete this dashboard"
+    },
+
     "display": {
         "noWidgets": "No widgets configured. Go to the Dashboard Editor to add widgets.",
         "noDashboard": "No dashboard available.",

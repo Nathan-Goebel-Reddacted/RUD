@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import DashboardClock from "@/components/DashboardClock";
 import DashboardGrid from "@/components/Widget/DashboardGrid";
+import DashboardBubbles from "@/components/Widget/DashboardBubbles";
 import WidgetDrawer from "@/components/Widget/WidgetDrawer";
 import WidgetConfigPanel from "@/components/Widget/config/WidgetConfigPanel";
 import Modal, { openModal, closeModal } from "@/components/tool/Modal";
@@ -65,6 +66,8 @@ function Dashboard() {
 
         <WidgetDrawer onAdd={handleDrawerAdd} />
       </div>
+
+      <DashboardBubbles />
 
       <Modal id={ADD_MODAL} width={520}>
         <WidgetConfigPanel
