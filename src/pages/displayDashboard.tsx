@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Maximize2, Minimize2 } from "lucide-react";
 import { useDashboardStore } from "@/stores/dashboardStore";
+import DisplayBubbles from "@/components/Widget/DisplayBubbles";
 import { useWidgetData } from "@/hooks/useWidgetData";
 import { useFullscreen } from "@/hooks/useFullscreen";
 import DashboardClock from "@/components/DashboardClock";
@@ -65,6 +66,8 @@ export default function DisplayDashboard() {
       className={`display-dashboard${isFullscreen ? " display-dashboard--fullscreen" : ""}`}
     >
       <DashboardClock />
+
+      <DisplayBubbles />
 
       <button
         className="display-dashboard__fs-btn"

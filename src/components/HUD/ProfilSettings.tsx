@@ -8,6 +8,7 @@ import { useNavigate } from "react-router";
 import { Language, type Language as LanguageType } from "@/enum/language";
 import { useTranslation } from "react-i18next";
 import { applyColors } from "@/utils/colors";
+import { applyLanguage } from "@/translations/i18n";
 
 function ProfileSettings({ onClose, initialProfile, modalId = "ProfileSetting" }: { onClose: () => void; initialProfile?: Profile; modalId?: string }) {
   const [profileName, setProfileName] = useState(initialProfile?.getProfileName() ?? "");
@@ -43,6 +44,7 @@ function ProfileSettings({ onClose, initialProfile, modalId = "ProfileSetting" }
     if (result.isSuccess()) {
       setErrors({});
       applyColors(newProfile);
+      applyLanguage(language);
       if (!initialProfile) {
         clearConnections();
         resetDashboard();
