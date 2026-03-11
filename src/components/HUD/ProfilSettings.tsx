@@ -38,14 +38,16 @@ function SortableDashboardItem({
   isActive,
   onRename,
   onDelete,
+  onToggleDisplay,
   canDelete,
 }: {
-  dashboard:  Dashboard;
-  index:      number;
-  isActive:   boolean;
-  onRename:   (index: number, title: string) => void;
-  onDelete:   (index: number) => void;
-  canDelete:  boolean;
+  dashboard:       Dashboard;
+  index:           number;
+  isActive:        boolean;
+  onRename:        (index: number, title: string) => void;
+  onDelete:        (index: number) => void;
+  onToggleDisplay: (index: number, value: boolean) => void;
+  canDelete:       boolean;
 }) {
   const { t } = useTranslation();
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: dashboard.id });
@@ -67,6 +69,18 @@ function SortableDashboardItem({
         onBlur={() => onRename(index, editing)}
         onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); }}
       />
+      <label
+        className="toggle"
+        onPointerDown={(e) => e.stopPropagation()}
+        title={t("profileSettings.dashboards.showInDisplay")}
+      >
+        <input
+          type="checkbox"
+          checked={dashboard.showInDisplay}
+          onChange={(e) => onToggleDisplay(index, e.target.checked)}
+        />
+        <span className="toggle__track" />
+      </label>
       <button
         className="profile-dash-delete"
         disabled={!canDelete}
@@ -91,12 +105,14 @@ function DashboardsTab({
   renameDashboard,
   reorderDashboards,
   removeDashboard,
+  setDashboardShowInDisplay,
 }: {
-  dashboards:           Dashboard[];
-  activeDashboardIndex: number;
-  renameDashboard:      (index: number, title: string) => void;
-  reorderDashboards:    (fromIndex: number, toIndex: number) => void;
-  removeDashboard:      (index: number) => void;
+  dashboards:                Dashboard[];
+  activeDashboardIndex:      number;
+  renameDashboard:           (index: number, title: string) => void;
+  reorderDashboards:         (fromIndex: number, toIndex: number) => void;
+  removeDashboard:           (index: number) => void;
+  setDashboardShowInDisplay: (index: number, value: boolean) => void;
 }) {
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
@@ -127,6 +143,7 @@ function DashboardsTab({
               isActive={i === activeDashboardIndex}
               onRename={renameDashboard}
               onDelete={removeDashboard}
+              onToggleDisplay={setDashboardShowInDisplay}
               canDelete={dashboards.length > 1}
             />
           ))}
@@ -174,7 +191,8 @@ function ProfileSettings({
   const activeDashboardIndex = useDashboardStore((state) => state.activeDashboardIndex);
   const renameDashboard   = useDashboardStore((state) => state.renameDashboard);
   const reorderDashboards = useDashboardStore((state) => state.reorderDashboards);
-  const removeDashboard   = useDashboardStore((state) => state.removeDashboard);
+  const removeDashboard             = useDashboardStore((state) => state.removeDashboard);
+  const setDashboardShowInDisplay   = useDashboardStore((state) => state.setDashboardShowInDisplay);
   const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -289,6 +307,7 @@ function ProfileSettings({
                 renameDashboard={renameDashboard}
                 reorderDashboards={reorderDashboards}
                 removeDashboard={removeDashboard}
+                setDashboardShowInDisplay={setDashboardShowInDisplay}
               />
             </div>
           )}
@@ -302,11 +321,15 @@ function ProfileSettings({
                   value={displayMode}
                   onChange={(e) => setDisplayMode(e.target.value as DisplayMode)}
                 >
+                  <option value="disabled">{t("profileSettings.display.modeDisabled")}</option>
                   <option value="timer">{t("profileSettings.display.modeTimer")}</option>
                   <option value="scroll-end">{t("profileSettings.display.modeScrollEnd")}</option>
                 </select>
               </label>
-              <label className="d-flex align-center gap-2 margin-10">
+              <label
+                className="d-flex align-center gap-2 margin-10"
+                style={{ opacity: displayMode === "timer" ? 1 : 0.4 }}
+              >
                 {t("profileSettings.display.interval")}
                 <input
                   type="number"
@@ -315,6 +338,7 @@ function ProfileSettings({
                   value={displayInterval}
                   onChange={(e) => setDisplayInterval(Number(e.target.value))}
                   style={{ width: "80px" }}
+                  disabled={displayMode !== "timer"}
                 />
               </label>
               <label className="d-flex align-center gap-2 margin-10">

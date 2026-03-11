@@ -70,6 +70,7 @@ export type Dashboard = {
   title:           string;
   widgets:         Widget[];
   refreshInterval: number;
+  showInDisplay:   boolean;
 };
 
 export type WidgetDataError =

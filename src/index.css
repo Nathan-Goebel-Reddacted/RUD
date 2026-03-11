@@ -205,3 +205,35 @@ button:focus-visible {
 
 .profile-dash-delete:hover:not(:disabled) { opacity: 1; }
 .profile-dash-delete:disabled { opacity: 0.2; cursor: not-allowed; }
+
+/* ─── Toggle switch ──────────────────────────────────────────────── */
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 32px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle__track {
+  position: absolute;
+  inset: 0;
+  border-radius: 9px;
+  background: var(--border-color);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.toggle input:checked + .toggle__track { background: var(--text-color); }
+.toggle__track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s;
+}
+.toggle input:checked + .toggle__track::after { transform: translateX(14px); }
+

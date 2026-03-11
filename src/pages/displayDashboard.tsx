@@ -10,10 +10,10 @@ import DashboardClock from "@/components/DashboardClock";
 import WidgetCard from "@/components/Widget/WidgetCard";
 import type { Widget, WidgetDataState } from "@/types/widget";
 
-const COL_GAP    = 8;
-const COLS       = 12;
-const ROW_HEIGHT = 80; // minimum row height — below this, content overflows and auto-scroll kicks in
-const SCROLL_BACK_DURATION = 1200; // CSS transition duration (ms)
+const COL_GAP              = 8;
+const COLS                 = 12;
+const ROW_HEIGHT           = 80;
+const SCROLL_BACK_DURATION = 1200;
 
 const STATIC_DATA_STATE: WidgetDataState = {
   data: null, loading: false, error: null, httpCode: null, fetchedAt: null,
@@ -40,9 +40,10 @@ export default function DisplayDashboard() {
   // DOM refs
   const containerRef = useRef<HTMLDivElement | null>(null);
   const gridRef      = useRef<HTMLDivElement | null>(null);
-  const innerGridRef = useRef<HTMLDivElement | null>(null);
+  const slideRef     = useRef<HTMLDivElement | null>(null); // handles translateX slide animation
+  const innerGridRef = useRef<HTMLDivElement | null>(null); // handles translateY scroll
 
-  // rAF scroll refs (stable across renders, no stale closures)
+  // rAF scroll refs
   const rafIdRef           = useRef<number>(0);
   const scrollPosRef       = useRef<number>(0);
   const maxScrollRef       = useRef<number>(0);
@@ -50,14 +51,23 @@ export default function DisplayDashboard() {
   const loopPauseMsRef     = useRef<number>(2000);
   const isPausedRef        = useRef<boolean>(false);
   const pauseTimerRef      = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const atBottomSinceRef   = useRef<number | null>(null);   // rAF timestamp when bottom was reached
-  const isScrollingBackRef = useRef<boolean>(false);         // true during CSS scroll-back animation
+  const atBottomSinceRef   = useRef<number | null>(null);
+  const isScrollingBackRef = useRef<boolean>(false);
+
+  // Rotation refs
+  const displayModeRef    = useRef<string>("timer");
+  const dashboardCountRef = useRef<number>(1);
+  const goToNextRef       = useRef<() => void>(() => {});
+
+  // Slide direction tracking
+  const prevIndexRef = useRef<number>(0);
 
   // Store reads
-  const dashboards           = useDashboardStore((s) => s.dashboards);
-  const activeDashboardIndex = useDashboardStore((s) => s.activeDashboardIndex);
-  const currentDashboard     = dashboards[activeDashboardIndex] ?? dashboards[0] ?? null;
-  const profile              = useProfileStore((s) => s.profile);
+  const dashboards              = useDashboardStore((s) => s.dashboards);
+  const activeDashboardIndex    = useDashboardStore((s) => s.activeDashboardIndex);
+  const setActiveDashboardIndex = useDashboardStore((s) => s.setActiveDashboardIndex);
+  const currentDashboard        = dashboards[activeDashboardIndex] ?? dashboards[0] ?? null;
+  const profile                 = useProfileStore((s) => s.profile);
   const { isFullscreen, enter, exit } = useFullscreen();
 
   const [gridPixelHeight, setGridPixelHeight] = useState(0);
@@ -92,20 +102,14 @@ export default function DisplayDashboard() {
     const onWheel = (e: WheelEvent) => {
       if (!innerGridRef.current || maxScrollRef.current <= 0) return;
       e.preventDefault();
-
-      // Cancel any ongoing scroll-back animation
       if (isScrollingBackRef.current) {
         isScrollingBackRef.current = false;
         innerGridRef.current.style.transition = "";
       }
       atBottomSinceRef.current = null;
-
-      // Pause auto-scroll for 2s
       isPausedRef.current = true;
       if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
       pauseTimerRef.current = setTimeout(() => { isPausedRef.current = false; }, 2000);
-
-      // Move scroll position immediately
       scrollPosRef.current = Math.max(0, Math.min(scrollPosRef.current + e.deltaY, maxScrollRef.current));
       innerGridRef.current.style.transform = `translateY(-${scrollPosRef.current}px)`;
     };
@@ -113,7 +117,7 @@ export default function DisplayDashboard() {
     return () => window.removeEventListener("wheel", onWheel);
   }, []);
 
-  // rAF scroll loop — runs once, reads mutable state via refs
+  // rAF scroll loop
   useEffect(() => {
     let prevTime: number | null = null;
 
@@ -126,28 +130,29 @@ export default function DisplayDashboard() {
         scrollSpeedRef.current > 0 &&
         maxScrollRef.current > 0
       ) {
-        const dt = Math.min(timestamp - prevTime, 100); // clamp: avoid large jump on background tab resume
+        const dt = Math.min(timestamp - prevTime, 100);
         scrollPosRef.current += (scrollSpeedRef.current * dt) / 1000;
 
         if (scrollPosRef.current >= maxScrollRef.current) {
-          // Clamp at bottom and start 2s wait
           scrollPosRef.current = maxScrollRef.current;
           if (atBottomSinceRef.current === null) {
             atBottomSinceRef.current = timestamp;
           } else if (timestamp - atBottomSinceRef.current >= loopPauseMsRef.current) {
-            // Animate back to top
-            atBottomSinceRef.current   = null;
-            isScrollingBackRef.current = true;
-            scrollPosRef.current       = 0;
-            innerGridRef.current.style.transition = `transform ${SCROLL_BACK_DURATION}ms ease-in-out`;
-            innerGridRef.current.style.transform  = "translateY(0)";
-            // Clear transition once animation ends, then wait 2s at top before resuming
-            setTimeout(() => {
-              if (innerGridRef.current) innerGridRef.current.style.transition = "";
-            }, SCROLL_BACK_DURATION);
-            setTimeout(() => {
-              isScrollingBackRef.current = false;
-            }, SCROLL_BACK_DURATION + loopPauseMsRef.current);
+            atBottomSinceRef.current = null;
+            if (displayModeRef.current === "scroll-end" && dashboardCountRef.current > 1) {
+              goToNextRef.current();
+            } else {
+              isScrollingBackRef.current = true;
+              scrollPosRef.current       = 0;
+              innerGridRef.current.style.transition = `transform ${SCROLL_BACK_DURATION}ms ease-in-out`;
+              innerGridRef.current.style.transform  = "translateY(0)";
+              setTimeout(() => {
+                if (innerGridRef.current) innerGridRef.current.style.transition = "";
+              }, SCROLL_BACK_DURATION);
+              setTimeout(() => {
+                isScrollingBackRef.current = false;
+              }, SCROLL_BACK_DURATION + loopPauseMsRef.current);
+            }
           }
         } else {
           atBottomSinceRef.current = null;
@@ -162,8 +167,49 @@ export default function DisplayDashboard() {
     return () => cancelAnimationFrame(rafIdRef.current);
   }, []);
 
-  // Reset scroll position when active dashboard changes
+  // Timer rotation
+  const displayMode     = profile?.getDisplayMode()     ?? "timer";
+  const displayInterval = profile?.getDisplayInterval() ?? 30;
+
   useEffect(() => {
+    if (displayMode !== "timer" || dashboards.length <= 1 || displayInterval <= 0) return;
+    // No scroll (content fits or speed=0): use loopPauseMs as display duration per dashboard
+    // With scroll: use displayInterval
+    const noScroll = maxScrollRef.current === 0 || scrollSpeedRef.current === 0;
+    const intervalMs = noScroll && loopPauseMsRef.current > 0
+      ? loopPauseMsRef.current
+      : displayInterval * 1000;
+    if (intervalMs <= 0) return;
+    const timer = setTimeout(() => {
+      const count = dashboards.length;
+      for (let i = 1; i < count; i++) {
+        const idx = (activeDashboardIndex + i) % count;
+        if (dashboards[idx].showInDisplay) { setActiveDashboardIndex(idx); return; }
+      }
+    }, intervalMs);
+    return () => clearTimeout(timer);
+  }, [activeDashboardIndex, displayMode, displayInterval, dashboards.length, setActiveDashboardIndex]);
+
+  // Slide animation + scroll reset on dashboard change
+  useEffect(() => {
+    const el = slideRef.current;
+
+    // Determine slide direction: next → from right, prev → from left
+    const isNext = dashboards.length > 1 && (
+      activeDashboardIndex > prevIndexRef.current ||
+      (activeDashboardIndex === 0 && prevIndexRef.current === dashboards.length - 1)
+    );
+    prevIndexRef.current = activeDashboardIndex;
+
+    // Apply slide class and remove after animation
+    if (el && dashboards.length > 1) {
+      const cls = isNext ? "display-dashboard__slide--from-right" : "display-dashboard__slide--from-left";
+      el.classList.add(cls);
+      const onEnd = () => el.classList.remove(cls);
+      el.addEventListener("animationend", onEnd, { once: true });
+    }
+
+    // Reset scroll
     isScrollingBackRef.current = false;
     atBottomSinceRef.current   = null;
     scrollPosRef.current       = 0;
@@ -171,7 +217,7 @@ export default function DisplayDashboard() {
       innerGridRef.current.style.transition = "";
       innerGridRef.current.style.transform  = "translateY(0)";
     }
-  }, [activeDashboardIndex]);
+  }, [activeDashboardIndex, dashboards.length]);
 
   if (!currentDashboard) return <div className="display-dashboard__empty"><p>{t("display.noDashboard")}</p></div>;
 
@@ -180,21 +226,31 @@ export default function DisplayDashboard() {
     (max, w) => Math.max(max, w.position.y + w.position.h), 4,
   );
 
-  // Fill the screen when rows are few; fall back to ROW_HEIGHT minimum when rows overflow.
-  // Works on both desktop and mobile without breakpoint detection.
   const dynamicRowHeight = gridPixelHeight > 0
     ? Math.floor((gridPixelHeight - COL_GAP) / maxRow - COL_GAP)
     : ROW_HEIGHT;
   const rowHeight = Math.max(ROW_HEIGHT, dynamicRowHeight);
 
-  // Exact content height: last row has no trailing gap
   const totalContentHeight = maxRow * rowHeight + (maxRow - 1) * COL_GAP;
   const maxScroll          = Math.max(0, totalContentHeight - gridPixelHeight);
 
-  // Sync refs inline — always current, no useEffect delay
-  maxScrollRef.current   = maxScroll;
-  scrollSpeedRef.current = scrollSpeed;
-  loopPauseMsRef.current = profile?.getLoopPauseMs() ?? 2000;
+  // Sync refs inline
+  maxScrollRef.current      = maxScroll;
+  scrollSpeedRef.current    = scrollSpeed;
+  loopPauseMsRef.current    = profile?.getLoopPauseMs() ?? 2000;
+  displayModeRef.current    = displayMode;
+  dashboardCountRef.current = dashboards.length;
+  goToNextRef.current = () => {
+    const count = dashboards.length;
+    for (let i = 1; i < count; i++) {
+      const idx = (activeDashboardIndex + i) % count;
+      if (dashboards[idx].showInDisplay) {
+        setActiveDashboardIndex(idx);
+        return;
+      }
+    }
+    // All others disabled — stay on current
+  };
 
   return (
     <div
@@ -225,31 +281,33 @@ export default function DisplayDashboard() {
           className="display-dashboard__grid"
           style={{ width: "100%" }}
         >
-          <div
-            ref={innerGridRef}
-            style={{
-              position:   "relative",
-              height:     totalContentHeight,
-              willChange: scrollSpeed > 0 ? "transform" : undefined,
-            }}
-          >
-            {currentDashboard.widgets.map((widget) => {
-              const { x, y, w, h } = widget.position;
-              return (
-                <div
-                  key={widget.id}
-                  style={{
-                    position: "absolute",
-                    left:     colToPercent(x),
-                    top:      y * (rowHeight + COL_GAP),
-                    width:    widthPercent(w),
-                    height:   h * rowHeight + (h - 1) * COL_GAP,
-                  }}
-                >
-                  <ReadonlyWidget widget={widget} />
-                </div>
-              );
-            })}
+          <div ref={slideRef} className="display-dashboard__slide">
+            <div
+              ref={innerGridRef}
+              style={{
+                position:   "relative",
+                height:     totalContentHeight,
+                willChange: scrollSpeed > 0 ? "transform" : undefined,
+              }}
+            >
+              {currentDashboard.widgets.map((widget) => {
+                const { x, y, w, h } = widget.position;
+                return (
+                  <div
+                    key={widget.id}
+                    style={{
+                      position: "absolute",
+                      left:     colToPercent(x),
+                      top:      y * (rowHeight + COL_GAP),
+                      width:    widthPercent(w),
+                      height:   h * rowHeight + (h - 1) * COL_GAP,
+                    }}
+                  >
+                    <ReadonlyWidget widget={widget} />
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       )}

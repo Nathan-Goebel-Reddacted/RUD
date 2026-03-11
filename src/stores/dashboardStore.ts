@@ -22,8 +22,9 @@ type DashboardState = {
   reorderDashboards:       (fromIndex: number, toIndex: number) => void;
 
   // Duplication
-  duplicateDashboard: (index: number, titleSuffix?: string) => void;
-  renameDashboard:    (index: number, title: string) => void;
+  duplicateDashboard:       (index: number, titleSuffix?: string) => void;
+  renameDashboard:          (index: number, title: string) => void;
+  setDashboardShowInDisplay:(index: number, value: boolean) => void;
 
   // Import / reset
   resetDashboard:  () => void;
@@ -46,6 +47,7 @@ function createDefaultDashboard(): Dashboard {
     title:           "My Dashboard",
     widgets:         [],
     refreshInterval: 30,
+    showInDisplay:   true,
   };
 }
 
@@ -177,6 +179,13 @@ export const useDashboardStore = create<DashboardState>()(
         return { dashboards };
       }),
 
+      setDashboardShowInDisplay: (index, value) => set((state) => {
+        if (index < 0 || index >= state.dashboards.length) return state;
+        const dashboards = [...state.dashboards];
+        dashboards[index] = { ...dashboards[index], showInDisplay: value };
+        return { dashboards };
+      }),
+
       resetDashboard: () => set({ dashboards: [createDefaultDashboard()], activeDashboardIndex: 0 }),
 
       setDashboard: (d) => set({ dashboards: [d], activeDashboardIndex: 0 }),
@@ -198,7 +207,7 @@ export const useDashboardStore = create<DashboardState>()(
     }),
     {
       name:    "rud-dashboard",
-      version: 1,
+      version: 2,
       storage: createJSONStorage(() => safeStorage),
       partialize: (state) => ({
         dashboards:           state.dashboards,
@@ -214,6 +223,17 @@ export const useDashboardStore = create<DashboardState>()(
               ? [existing]
               : [createDefaultDashboard()];
           return { dashboards, activeDashboardIndex: 0 };
+        }
+        if (version === 1) {
+          // Add showInDisplay field to existing dashboards
+          const state = persistedState as { dashboards?: Dashboard[]; activeDashboardIndex?: number };
+          return {
+            ...state,
+            dashboards: (state.dashboards ?? []).map((d) => ({
+              ...d,
+              showInDisplay: d.showInDisplay ?? true,
+            })),
+          };
         }
         return persistedState;
       },

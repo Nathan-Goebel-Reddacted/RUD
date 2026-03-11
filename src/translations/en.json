@@ -24,12 +24,14 @@
             "mode":          "Rotation mode",
             "modeTimer":     "Timer",
             "modeScrollEnd": "Scroll end",
+            "modeDisabled":  "Disabled",
             "interval":      "Interval (s)",
             "scrollSpeed":   "Scroll speed (px/s)",
             "loopPauseMs":   "Pause duration (ms)"
         },
         "dashboards": {
-            "delete": "Delete dashboard"
+            "delete":        "Delete dashboard",
+            "showInDisplay": "Show in Display mode"
         }
     },
 

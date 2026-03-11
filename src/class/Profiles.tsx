@@ -1,7 +1,7 @@
 import ActionResult from "../services/resultAction"
 import { Language, type Language as LanguageType } from "@/enum/language";
 
-export type DisplayMode = "timer" | "scroll-end";
+export type DisplayMode = "timer" | "scroll-end" | "disabled";
 
 class Profile{
     private profileName: string = ""
@@ -119,7 +119,7 @@ class Profile{
             if (typeof d.borderColor === "string") p.setBorderColor(d.borderColor)
             if (typeof d.textColor === "string") p.setTextColor(d.textColor)
             if (typeof d.textHoverColor === "string") p.setTextHoverColor(d.textHoverColor)
-            if (d.displayMode === "timer" || d.displayMode === "scroll-end") {
+            if (d.displayMode === "timer" || d.displayMode === "scroll-end" || d.displayMode === "disabled") {
                 p.setDisplayMode(d.displayMode)
             }
             if (typeof d.displayInterval === "number") p.setDisplayInterval(d.displayInterval)

@@ -24,12 +24,14 @@
             "mode":          "Mode de rotation",
             "modeTimer":     "Minuterie",
             "modeScrollEnd": "Fin de défilement",
+            "modeDisabled":  "Désactivé",
             "interval":      "Intervalle (s)",
             "scrollSpeed":   "Vitesse de défilement (px/s)",
             "loopPauseMs":   "Durée des pauses (ms)"
         },
         "dashboards": {
-            "delete": "Supprimer le tableau de bord"
+            "delete":         "Supprimer le tableau de bord",
+            "showInDisplay":  "Afficher en mode Display"
         }
     },
 
