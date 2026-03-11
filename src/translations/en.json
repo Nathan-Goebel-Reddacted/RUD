@@ -25,7 +25,8 @@
             "modeTimer":     "Timer",
             "modeScrollEnd": "Scroll end",
             "interval":      "Interval (s)",
-            "scrollSpeed":   "Scroll speed (px/s)"
+            "scrollSpeed":   "Scroll speed (px/s)",
+            "loopPauseMs":   "Pause duration (ms)"
         },
         "dashboards": {
             "delete": "Delete dashboard"

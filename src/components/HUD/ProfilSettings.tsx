@@ -164,7 +164,8 @@ function ProfileSettings({
   // Display tab state
   const [displayMode,     setDisplayMode]     = useState<DisplayMode>(initialProfile?.getDisplayMode()     ?? "timer");
   const [displayInterval, setDisplayInterval] = useState<number>(initialProfile?.getDisplayInterval() ?? 30);
-  const [scrollSpeed,     setScrollSpeed]     = useState<number>(initialProfile?.getScrollSpeed()     ?? 50);
+  const [scrollSpeed,     setScrollSpeed]     = useState<number>(initialProfile?.getScrollSpeed()     ?? 0);
+  const [loopPauseMs,     setLoopPauseMs]     = useState<number>(initialProfile?.getLoopPauseMs()     ?? 2000);
 
   const setProfile        = useProfileStore((state) => state.setProfile);
   const clearConnections  = useApiStore((state) => state.clearConnections);
@@ -188,6 +189,7 @@ function ProfileSettings({
     newProfile.setDisplayMode(displayMode);
     newProfile.setDisplayInterval(displayInterval);
     newProfile.setScrollSpeed(scrollSpeed);
+    newProfile.setLoopPauseMs(loopPauseMs);
     const result = newProfile.IsProfileValid();
     if (result.isSuccess()) {
       setErrors({});
@@ -319,10 +321,22 @@ function ProfileSettings({
                 {t("profileSettings.display.scrollSpeed")}
                 <input
                   type="number"
-                  min={10}
+                  min={0}
                   max={500}
                   value={scrollSpeed}
                   onChange={(e) => setScrollSpeed(Number(e.target.value))}
+                  style={{ width: "80px" }}
+                />
+              </label>
+              <label className="d-flex align-center gap-2 margin-10">
+                {t("profileSettings.display.loopPauseMs")}
+                <input
+                  type="number"
+                  min={0}
+                  max={10000}
+                  step={100}
+                  value={loopPauseMs}
+                  onChange={(e) => setLoopPauseMs(Number(e.target.value))}
                   style={{ width: "80px" }}
                 />
               </label>

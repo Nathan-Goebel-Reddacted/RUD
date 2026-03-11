@@ -25,7 +25,8 @@
             "modeTimer":     "Minuterie",
             "modeScrollEnd": "Fin de défilement",
             "interval":      "Intervalle (s)",
-            "scrollSpeed":   "Vitesse de défilement (px/s)"
+            "scrollSpeed":   "Vitesse de défilement (px/s)",
+            "loopPauseMs":   "Durée des pauses (ms)"
         },
         "dashboards": {
             "delete": "Supprimer le tableau de bord"

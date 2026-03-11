@@ -15,7 +15,8 @@ class Profile{
 
     private displayMode:     DisplayMode = "timer";
     private displayInterval: number      = 30;
-    private scrollSpeed:     number      = 50;
+    private scrollSpeed:     number      = 0;
+    private loopPauseMs:     number      = 2000;
 
     constructor(){}
 
@@ -85,10 +86,12 @@ class Profile{
     public getDisplayMode():     DisplayMode { return this.displayMode; }
     public getDisplayInterval(): number      { return this.displayInterval; }
     public getScrollSpeed():     number      { return this.scrollSpeed; }
+    public getLoopPauseMs():     number      { return this.loopPauseMs; }
 
     public setDisplayMode(m: DisplayMode): void { this.displayMode = m; }
     public setDisplayInterval(s: number):  void { this.displayInterval = s; }
     public setScrollSpeed(px: number):     void { this.scrollSpeed = px; }
+    public setLoopPauseMs(ms: number):     void { this.loopPauseMs = ms; }
 
     public toJSON(): object {
         return {
@@ -101,6 +104,7 @@ class Profile{
             displayMode:     this.displayMode,
             displayInterval: this.displayInterval,
             scrollSpeed:     this.scrollSpeed,
+            loopPauseMs:     this.loopPauseMs,
         }
     }
 
@@ -120,6 +124,7 @@ class Profile{
             }
             if (typeof d.displayInterval === "number") p.setDisplayInterval(d.displayInterval)
             if (typeof d.scrollSpeed === "number") p.setScrollSpeed(d.scrollSpeed)
+            if (typeof d.loopPauseMs === "number") p.setLoopPauseMs(d.loopPauseMs)
             if (!p.IsProfileValid().isSuccess()) return null
             return p
         } catch {

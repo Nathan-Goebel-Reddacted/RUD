@@ -150,7 +150,7 @@ Restructurer la modal/page Edit Profile en 3 onglets :
 
 ## Display mode — évolutions
 
-**RUD034 — Auto-scroll display**
+**✅ RUD034 — Auto-scroll display**
 En mode Display : faire défiler verticalement la grille à vitesse constante (configurable dans Display settings, en px/s). Le scroll repart en haut à chaque changement de dashboard. Pause si la souris survole l'écran.
 **Mobile :** la grille affiche 4 rows visibles en paysage (hauteur dynamique via ResizeObserver, même mécanisme que RUD028). L'auto-scroll donne accès aux rows suivantes sans redimensionner la grille.
 
