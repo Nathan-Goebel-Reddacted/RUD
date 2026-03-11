@@ -67,7 +67,8 @@
         "noWidgets": "Aucun widget configuré. Rendez-vous dans l'Éditeur pour en ajouter.",
         "noDashboard": "Aucun tableau de bord disponible.",
         "fullscreen": "Plein écran",
-        "exitFullscreen": "Quitter le plein écran"
+        "exitFullscreen": "Quitter le plein écran",
+        "rotate": "Veuillez tourner votre appareil en mode paysage"
     },
 
     "toolbar": {

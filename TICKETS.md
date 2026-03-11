@@ -160,7 +160,7 @@ Enchaîner les dashboards automatiquement en mode Display. Deux modes configurab
 - `scroll-end` : passage au dashboard suivant quand le scroll atteint le bas
 Boucle infinie (dernier → premier).
 
-**RUD036 — Wake Lock + orientation mobile + bulles (Display)**
+**✅ RUD036 — Wake Lock + orientation mobile + bulles (Display)**
 - Wake Lock API : activer `navigator.wakeLock.request('screen')` à l'entrée en Display, relâcher à la sortie. Fallback silencieux si non supporté.
 - **Orientation mobile :** `screen.orientation.lock('landscape')` au chargement de `/display` sur mobile. Fallback : message "Please rotate your device" si non supporté (iOS Safari sans PWA installée).
 - Bulles semi-transparentes en bas de l'écran Display : indiquent le dashboard actif, clic = switch manuel (interrompt la rotation automatique jusqu'au prochain cycle).

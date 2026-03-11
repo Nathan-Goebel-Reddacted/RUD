@@ -71,6 +71,41 @@ export default function DisplayDashboard() {
   const { isFullscreen, enter, exit } = useFullscreen();
 
   const [gridPixelHeight, setGridPixelHeight] = useState(0);
+  const [showRotateMsg, setShowRotateMsg]     = useState(false);
+
+  // Wake Lock — keep screen on while in display mode
+  useEffect(() => {
+    if (!("wakeLock" in navigator)) return;
+    let lock: WakeLockSentinel | null = null;
+    (navigator as Navigator & { wakeLock: { request: (type: string) => Promise<WakeLockSentinel> } })
+      .wakeLock.request("screen")
+      .then((l) => { lock = l; })
+      .catch(() => { /* not supported or denied — silent fallback */ });
+    return () => { lock?.release(); };
+  }, []);
+
+  // Orientation lock — force landscape on mobile, show rotate message if unsupported
+  useEffect(() => {
+    const isMobileDevice = /Mobi|Android/i.test(navigator.userAgent);
+    if (!isMobileDevice) return;
+    const tryLock = async () => {
+      try {
+        await (screen.orientation as ScreenOrientation & { lock: (o: string) => Promise<void> }).lock("landscape");
+      } catch {
+        // Not supported (iOS Safari without PWA) — show rotate message if portrait
+        const mq = window.matchMedia("(orientation: portrait)");
+        setShowRotateMsg(mq.matches);
+        const handler = (e: MediaQueryListEvent) => setShowRotateMsg(e.matches);
+        mq.addEventListener("change", handler);
+        return () => mq.removeEventListener("change", handler);
+      }
+    };
+    const cleanup = tryLock();
+    return () => {
+      cleanup.then((fn) => fn?.());
+      screen.orientation.unlock();
+    };
+  }, []);
 
   // Measure grid container height via ResizeObserver
   useEffect(() => {
@@ -218,6 +253,8 @@ export default function DisplayDashboard() {
       innerGridRef.current.style.transform  = "translateY(0)";
     }
   }, [activeDashboardIndex, dashboards.length]);
+
+  if (showRotateMsg) return <div className="display-dashboard__rotate"><p>{t("display.rotate")}</p></div>;
 
   if (!currentDashboard) return <div className="display-dashboard__empty"><p>{t("display.noDashboard")}</p></div>;
 
