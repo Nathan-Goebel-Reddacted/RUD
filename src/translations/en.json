@@ -281,5 +281,11 @@
         "placeholder": "key name",
         "fetchFirst": "Fetch data first to get key suggestions.",
         "selectKey": "— Select a key —"
+    },
+    "installPrompt": {
+        "title": "Install the app for the best experience",
+        "install": "Install",
+        "later": "Later",
+        "iosInstructions": "Tap the share button ↑ then \"Add to Home Screen\""
     }
 }

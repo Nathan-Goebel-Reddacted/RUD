@@ -1,0 +1,32 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - run: npm run build:gh-pages
+
+      - run: cp dist/index.html dist/404.html && touch dist/.nojekyll
+
+      - uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: dist
+          branch: gh-pages
+          clean: true

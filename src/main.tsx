@@ -13,9 +13,11 @@ import '@/index.css'
 import '@/assets/Color.css'
 import '@/assets/dashboard.css'
 
+const basename = import.meta.env.BASE_URL.replace(/\/$/, '')
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter basename={basename}>
       <NavBar />
       <Routes>
         <Route path="/" element={<App />} />

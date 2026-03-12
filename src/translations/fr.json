@@ -281,5 +281,11 @@
         "placeholder": "nom de clé",
         "fetchFirst": "Prévisualisez les données pour obtenir des suggestions.",
         "selectKey": "— Sélectionner une clé —"
+    },
+    "installPrompt": {
+        "title": "Installez l'app pour la meilleure expérience",
+        "install": "Installer",
+        "later": "Plus tard",
+        "iosInstructions": "Appuyez sur Partager ↑ puis « Sur l'écran d'accueil »"
     }
 }

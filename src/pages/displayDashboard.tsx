@@ -9,6 +9,7 @@ import { useFullscreen } from "@/hooks/useFullscreen";
 import DashboardClock from "@/components/DashboardClock";
 import WidgetCard from "@/components/Widget/WidgetCard";
 import type { Widget, WidgetDataState } from "@/types/widget";
+import InstallPromptBanner from "@/components/tool/InstallPromptBanner";
 
 const COL_GAP              = 8;
 const COLS                 = 12;
@@ -332,6 +333,8 @@ export default function DisplayDashboard() {
           ? <Minimize2 size={16} strokeWidth={2} />
           : <Maximize2 size={16} strokeWidth={2} />}
       </button>
+
+      <InstallPromptBanner />
 
       {currentDashboard.widgets.length === 0 ? (
         <div className="display-dashboard__empty">

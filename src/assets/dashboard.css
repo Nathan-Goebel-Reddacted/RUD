@@ -785,3 +785,40 @@
 }
 .btn--ghost:hover { opacity: 1; }
 .btn--sm { padding: 0.2rem 0.5rem; font-size: 0.78rem; }
+
+/* ─── Install prompt banner ────────────────────────────────────────── */
+.install-banner {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  background: rgba(26, 26, 46, 0.95);
+  border-top: 1px solid var(--border-color);
+  gap: 12px;
+}
+.install-banner__text {
+  flex: 1;
+  font-size: 0.875rem;
+}
+.install-banner__actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.install-banner__btn {
+  padding: 6px 14px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+.install-banner__btn--primary {
+  background: var(--border-color);
+}

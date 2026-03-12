@@ -207,20 +207,27 @@ Sur les widgets **NumberCard** et **LineChart** uniquement : option "Keep histor
 
 ## PWA & Déploiement
 
-**RUD044 — PWA (Progressive Web App)**
+✅ **RUD044 — PWA (Progressive Web App)**
 `vite-plugin-pwa` + manifest + service worker. Objectifs :
 - App installable sur mobile ("Ajouter à l'écran d'accueil") → bannière affichée sur `/display` après import de profil via QR code
 - Offline : app fonctionnelle depuis le cache service worker après premier chargement
 - Nécessaire pour `screen.orientation.lock()` sur iOS Safari (uniquement disponible en mode PWA fullscreen)
 - Le build display-only (RUD043) est la cible prioritaire pour le mode PWA
 
-**RUD043 — Docker nginx:alpine + build display-only**
+✅ **RUD043 — Docker nginx:alpine + build display-only**
 - `Dockerfile` : build React (`npm run build`) + `nginx:alpine` servant le `dist/`. Image < 20MB visée.
 - `docker-compose.yml` : 2 services :
   - `rud-full` : build complet (Editor + Config + Display), port 8080
   - `rud-display` : build display-only via `VITE_MODE=display`, port 8081
 - `vite.config.ts` : feature flag `VITE_MODE`. En mode `display` : exclure dnd-kit, les pages Editor/ApiConfig, tous les composants d'édition. Conserver uniquement : import JSON, Display, widgets read-only.
 - `npm run build:display` dans `package.json`.
+
+✅ **RUD045 — GitHub Pages deployment (display-only PWA)**
+- Mode Vite `gh-pages` : `base: '/RUD/'`, manifest `start_url`/`scope` conditionnels, `navigateFallback`
+- `BrowserRouter basename` dynamique via `import.meta.env.BASE_URL` (dans `main.tsx` et `main.display.tsx`)
+- Script `build:gh-pages` dans `package.json`
+- `.github/workflows/deploy-gh-pages.yml` : CI/CD auto sur push `main`, `404.html` trick, `.nojekyll`
+- URL publique : `https://nathan-goebel-reddacted.github.io/RUD/`
 
 ---
 

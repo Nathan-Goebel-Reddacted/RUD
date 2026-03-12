@@ -1,0 +1,18 @@
+services:
+  rud-full:
+    build:
+      context: .
+      args:
+        VITE_MODE: full
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+
+  rud-display:
+    build:
+      context: .
+      args:
+        VITE_MODE: display
+    ports:
+      - "8081:80"
+    restart: unless-stopped
