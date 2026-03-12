@@ -11,6 +11,7 @@ type ApiState = {
   addEndpoint: (connectionId: string, endpoint: ApiEndpoint) => void;
   updateEndpoint: (connectionId: string, endpoint: ApiEndpoint) => void;
   removeEndpoint: (connectionId: string, endpointId: string) => void;
+  duplicateEndpoint: (connectionId: string, endpointId: string, copySuffix?: string) => void;
   clearConnections: () => void;
 };
 
@@ -58,6 +59,17 @@ export const useApiStore = create<ApiState>()(
             if (updated.getHealthCheckEndpointId() === endpointId) {
               updated.setHealthCheckEndpointId(null);
             }
+            return updated;
+          }),
+        })),
+      duplicateEndpoint: (connectionId, endpointId, copySuffix = "") =>
+        set((state) => ({
+          connections: state.connections.map((c) => {
+            if (c.getId() !== connectionId) return c;
+            const ep = c.getEndpoints().find((e) => e.getId() === endpointId);
+            if (!ep) return c;
+            const updated = c.clone();
+            updated.addEndpoint(ep.clone(copySuffix));
             return updated;
           }),
         })),

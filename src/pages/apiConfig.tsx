@@ -23,6 +23,13 @@ const PencilIcon = () => (
   </svg>
 );
 
+const CopyIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+    <path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 0 1 0 1.5h-1.5a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-1.5a.75.75 0 0 1 1.5 0v1.5A1.75 1.75 0 0 1 9.25 16h-7.5A1.75 1.75 0 0 1 0 14.25Z"/>
+    <path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0 1 14.25 11h-7.5A1.75 1.75 0 0 1 5 9.25Zm1.75-.25a.25.25 0 0 0-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25Z"/>
+  </svg>
+);
+
 function StatusDot({ status }: { status: FetchStatus }) {
   return (
     <span
@@ -34,8 +41,9 @@ function StatusDot({ status }: { status: FetchStatus }) {
 
 function ApiConfig() {
   const { t } = useTranslation();
-  const connections   = useApiStore((state) => state.connections);
-  const addConnection = useApiStore((state) => state.addConnection);
+  const connections        = useApiStore((state) => state.connections);
+  const addConnection      = useApiStore((state) => state.addConnection);
+  const duplicateEndpoint  = useApiStore((state) => state.duplicateEndpoint);
 
   const [openId,               setOpenId]               = useState<string | null>(null);
   const [editingConnection,    setEditingConnection]    = useState<ApiConnection | null>(null);
@@ -97,6 +105,11 @@ function ApiConfig() {
     setConnectionStatuses((prev) => ({ ...prev, [conn.getId()]: "loading" }));
     const result = await sendEndpoint(conn, ep);
     setConnectionStatuses((prev) => ({ ...prev, [conn.getId()]: result.status }));
+  };
+
+  const handleDuplicateEndpoint = (connId: string, epId: string, copySuffix: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    duplicateEndpoint(connId, epId, copySuffix);
   };
 
   const handleSwaggerImport = (conn: ApiConnection) => {
@@ -167,7 +180,14 @@ function ApiConfig() {
                           <div className="endpoint-row">
                             <span className="endpoint-row__info">
                               <StatusDot status={epStatus} />
-                              <span className="endpoint-row__path">{ep.getPath()}</span>
+                              <span className="endpoint-row__path">
+                                {ep.getLabel() ? (
+                                  <>
+                                    <span className="endpoint-row__label">{ep.getLabel()}</span>
+                                    <span className="endpoint-row__subpath">{ep.getPath()}</span>
+                                  </>
+                                ) : ep.getPath()}
+                              </span>
                             </span>
                             <span className={`endpoint-row__method method--${ep.getMethod().toLowerCase()}`}>
                               {ep.getMethod()}
@@ -178,6 +198,13 @@ function ApiConfig() {
                               onClick={(e) => handleSendEndpoint(conn, ep, e)}
                             >
                               {isLoading ? "…" : t("apiConfig.send")}
+                            </button>
+                            <button
+                              className="api-item__btn api-item__btn--icon"
+                              title={t("apiConfig.duplicateRoute")}
+                              onClick={(e) => handleDuplicateEndpoint(conn.getId(), ep.getId(), t("apiEndpoint.copySuffix"), e)}
+                            >
+                              <CopyIcon />
                             </button>
                             <button
                               className="api-item__btn api-item__btn--icon"

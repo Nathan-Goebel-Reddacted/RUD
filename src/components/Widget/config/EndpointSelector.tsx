@@ -53,7 +53,9 @@ export default function EndpointSelector({ connectionId, endpointId, onChange }:
             <option value="">— Select an endpoint —</option>
             {endpoints.map((ep) => (
               <option key={ep.getId()} value={ep.getId()}>
-                [{ep.getMethod()}] {ep.getPath()}
+                {ep.getLabel()
+                  ? `${ep.getLabel()} — [${ep.getMethod()}] ${ep.getPath()}`
+                  : `[${ep.getMethod()}] ${ep.getPath()}`}
               </option>
             ))}
           </select>

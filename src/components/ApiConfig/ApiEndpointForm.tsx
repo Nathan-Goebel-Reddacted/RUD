@@ -31,6 +31,7 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
   const isEdit  = !!initialEndpoint;
   const modalId = isEdit ? ENDPOINT_MODAL_EDIT_ID : ENDPOINT_MODAL_CREATE_ID;
 
+  const [label,            setLabel]            = useState(initialEndpoint?.getLabel()            ?? "");
   const [path,             setPath]             = useState(initialEndpoint?.getPath()             ?? "/");
   const [method,           setMethod]           = useState<HttpMethodValue>(initialEndpoint?.getMethod() ?? HttpMethod.GET);
   const [pathParams,       setPathParams]       = useState<PathParam[]>(initialEndpoint?.getPathParams()   ?? []);
@@ -66,6 +67,7 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
     e.preventDefault();
     const endpoint = new ApiEndpoint();
     endpoint.createAnApiEndpoint(path, method, isEdit ? initialEndpoint!.getId() : undefined);
+    endpoint.setLabel(label);
     endpoint.setPathParams(pathParams);
     endpoint.setQueryParams(queryParams);
     endpoint.setResponseDataPath(responseDataPath);
@@ -103,6 +105,17 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
           {isEdit ? t("apiEndpoint.titleEdit") : t("apiEndpoint.titleAdd")}
         </h2>
         <form onSubmit={handleSubmit}>
+
+          {/* Label (optional) */}
+          <div className="endpoint-form__section">
+            <input
+              className="d-block w-full"
+              placeholder={t("apiEndpoint.labelPlaceholder")}
+              value={label}
+              onChange={(e) => setLabel(e.target.value)}
+              style={{ boxSizing: "border-box" }}
+            />
+          </div>
 
           {/* Route bar — method badge + path */}
           <div className={`endpoint-form__route-bar method--${method.toLowerCase()}`}>

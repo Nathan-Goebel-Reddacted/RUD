@@ -9,6 +9,7 @@ import {
 
 class ApiEndpoint {
   private id: string         = "";
+  private label: string      = "";
   private path: string       = "";
   private method: HttpMethod = HttpMethod.GET;
 
@@ -60,6 +61,7 @@ class ApiEndpoint {
   }
 
   public getId(): string               { return this.id; }
+  public getLabel(): string            { return this.label; }
   public getPath(): string             { return this.path; }
   public getMethod(): HttpMethod       { return this.method; }
   public getPathParams(): PathParam[]  { return [...this.pathParams]; }
@@ -68,12 +70,25 @@ class ApiEndpoint {
   public getBody(): string             { return this.body; }
   public getBodyContentType(): BodyContentType { return this.bodyContentType; }
 
+  public setLabel(label: string): void                   { this.label = label; }
   public setMethod(method: HttpMethod): void             { this.method = method; }
   public setPathParams(params: PathParam[]): void        { this.pathParams = params; }
   public setQueryParams(params: QueryParam[]): void      { this.queryParams = params; }
   public setResponseDataPath(path: string): void         { this.responseDataPath = path; }
   public setBody(body: string): void                     { this.body = body; }
   public setBodyContentType(ct: BodyContentType): void   { this.bodyContentType = ct; }
+
+  public clone(copySuffix = ""): ApiEndpoint {
+    const copy = new ApiEndpoint();
+    copy.createAnApiEndpoint(this.path, this.method);
+    copy.setLabel(this.label ? `${this.label}${copySuffix}` : "");
+    copy.setPathParams([...this.pathParams]);
+    copy.setQueryParams([...this.queryParams]);
+    copy.setResponseDataPath(this.responseDataPath);
+    copy.setBody(this.body);
+    copy.setBodyContentType(this.bodyContentType);
+    return copy;
+  }
 
   public hasBody(): boolean {
     return (["POST", "PUT", "PATCH"] as string[]).includes(this.method);
@@ -82,6 +97,7 @@ class ApiEndpoint {
   public toJSON(): object {
     return {
       id:               this.id,
+      label:            this.label,
       path:             this.path,
       method:           this.method,
       pathParams:       this.pathParams,
@@ -104,6 +120,7 @@ class ApiEndpoint {
           : HttpMethod.GET,
         typeof d.id === "string" ? d.id : undefined
       );
+      if (typeof d.label === "string") e.setLabel(d.label);
       if (Array.isArray(d.pathParams))  e.setPathParams(d.pathParams as PathParam[]);
       if (Array.isArray(d.queryParams)) e.setQueryParams(d.queryParams as QueryParam[]);
       if (typeof d.responseDataPath === "string") e.setResponseDataPath(d.responseDataPath);
