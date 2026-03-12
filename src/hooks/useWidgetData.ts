@@ -56,7 +56,7 @@ export function useWidgetData(widget: Widget): WidgetDataState {
           data:      cached.data,
           loading:   false,
           error:     cached.error as WidgetDataState["error"],
-          httpCode:  null,
+          httpCode:  cached.httpCode,
           fetchedAt: cached.fetchedAt,
         });
         return;
@@ -81,6 +81,7 @@ export function useWidgetData(widget: Widget): WidgetDataState {
           fetchedAt: Date.now(),
           error:     result.error,
           loading:   false,
+          httpCode:  result.httpCode,
         };
         setFetchCache(cacheKey, entry);
         setState({

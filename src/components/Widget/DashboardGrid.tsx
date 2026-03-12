@@ -119,7 +119,7 @@ function DraggableWidget({ widget, gridRef, onEdit, onDelete, onDuplicate, onRes
 
   return (
     <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
-      {widget.config.type === "text"
+      {(widget.config.type === "text" || widget.config.type === "clock")
         ? <WidgetCard widget={widget} dataState={STATIC_DATA_STATE} onEdit={onEdit} onDelete={onDelete} onDuplicate={onDuplicate} />
         : <FetchingWidgetContent widget={widget} onEdit={onEdit} onDelete={onDelete} onDuplicate={onDuplicate} />
       }

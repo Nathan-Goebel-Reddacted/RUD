@@ -7,6 +7,9 @@ import {
   TrendingUp,
   Type,
   Braces,
+  Clock,
+  RefreshCw,
+  HeartPulse,
   ChevronRight,
   ChevronLeft,
 } from "lucide-react";
@@ -63,6 +66,24 @@ export default function WidgetDrawer({ onAdd }: Props) {
       label:       t("widgetDrawer.types.rawResponse"),
       icon:        <Braces size={22} strokeWidth={1.75} />,
       description: t("widgetDrawer.desc.rawResponse"),
+    },
+    {
+      type:        "clock",
+      label:       t("widgetDrawer.types.clock"),
+      icon:        <Clock size={22} strokeWidth={1.75} />,
+      description: t("widgetDrawer.desc.clock"),
+    },
+    {
+      type:        "last-update",
+      label:       t("widgetDrawer.types.lastUpdate"),
+      icon:        <RefreshCw size={22} strokeWidth={1.75} />,
+      description: t("widgetDrawer.desc.lastUpdate"),
+    },
+    {
+      type:        "health-check",
+      label:       t("widgetDrawer.types.healthCheck"),
+      icon:        <HeartPulse size={22} strokeWidth={1.75} />,
+      description: t("widgetDrawer.desc.healthCheck"),
     },
   ];
 

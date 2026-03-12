@@ -8,6 +8,9 @@ import BarChart from "./types/BarChart";
 import LineChart from "./types/LineChart";
 import TextWidget from "./types/TextWidget";
 import RawResponse from "./types/RawResponse";
+import ClockWidget from "./types/ClockWidget";
+import LastUpdateWidget from "./types/LastUpdateWidget";
+import HealthCheckWidget from "./types/HealthCheckWidget";
 
 type Props = {
   widget:       Widget;
@@ -37,20 +40,36 @@ function ErrorMessage({ error }: { error: string }) {
 }
 
 function WidgetBody({ widget, dataState }: { widget: Widget; dataState: WidgetDataState }) {
-  // Text is static — render before data checks (no fetch needed)
+  // Static widgets — no fetch needed
   if (widget.config.type === "text") {
     return <TextWidget config={widget.config} />;
+  }
+  if (widget.config.type === "clock") {
+    return <ClockWidget config={widget.config} />;
+  }
+  // HealthCheck uses httpCode — render before error check so http_error doesn't block it
+  if (widget.config.type === "health-check") {
+    return <HealthCheckWidget config={widget.config} dataState={dataState} />;
+  }
+  // LastUpdate uses fetchedAt — render before error check
+  if (widget.config.type === "last-update") {
+    return <LastUpdateWidget config={widget.config} fetchedAt={dataState.fetchedAt} />;
   }
 
   if (dataState.loading && dataState.data === null) return <WidgetSkeleton />;
   if (dataState.error) return <ErrorMessage error={dataState.error} />;
 
   switch (widget.config.type) {
-    case "number-card":   return <NumberCard   data={dataState.data} config={widget.config} />;
-    case "table":         return <Table        data={dataState.data} config={widget.config} />;
-    case "bar-chart":     return <BarChart     data={dataState.data} config={widget.config} />;
-    case "line-chart":    return <LineChart    data={dataState.data} config={widget.config} />;
-    case "raw-response":  return <RawResponse  data={dataState.data} />;
+    case "number-card":
+      return <NumberCard data={dataState.data} config={widget.config} widgetId={widget.id} fetchedAt={dataState.fetchedAt} />;
+    case "table":
+      return <Table data={dataState.data} config={widget.config} />;
+    case "bar-chart":
+      return <BarChart data={dataState.data} config={widget.config} />;
+    case "line-chart":
+      return <LineChart data={dataState.data} config={widget.config} widgetId={widget.id} fetchedAt={dataState.fetchedAt} />;
+    case "raw-response":
+      return <RawResponse data={dataState.data} />;
   }
 }
 
