@@ -122,6 +122,13 @@ button:focus-visible {
   margin: -6px 10px 6px;
 }
 
+.form-warning {
+  display: block;
+  color: #c98a00;
+  font-size: 0.8rem;
+  margin: 4px 10px 6px;
+}
+
 /* Profile modal — tabs */
 .profile-tabs {
   display: flex;

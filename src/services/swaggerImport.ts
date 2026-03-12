@@ -50,6 +50,15 @@ function parseSpec(text: string, filename: string): Spec {
   return spec;
 }
 
+function isAbsoluteHttpUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
 function extractBaseUrl(spec: Spec): string {
   if (typeof spec.openapi === "string") {
     const servers = spec.servers as Array<{
@@ -65,7 +74,8 @@ function extractBaseUrl(spec: Spec): string {
         (_, name: string) => server.variables?.[name]?.default ?? name
       );
     }
-    return url;
+    // Relative URLs (e.g. "/api/v3") are not usable as baseUrl — return empty
+    return isAbsoluteHttpUrl(url) ? url : "";
   }
 
   const host = typeof spec.host === "string" ? spec.host : "";
@@ -149,7 +159,12 @@ function mapOperation(path: string, method: ValidMethod, operation: Operation): 
   return ep;
 }
 
-export async function importSwaggerFile(file: File): Promise<ApiConnection> {
+export type ImportResult = {
+  connection: ApiConnection;
+  warnings: string[];
+};
+
+export async function importSwaggerFile(file: File): Promise<ImportResult> {
   const text = await file.text();
   const spec = parseSpec(text, file.name);
 
@@ -175,10 +190,17 @@ export async function importSwaggerFile(file: File): Promise<ApiConnection> {
   }
 
   const validation = conn.isApiConnectionValid();
-  if (!validation.isSuccess()) {
-    const code = validation.getAllReason()[0]?.getreasonCode() ?? "invalid";
-    throw new Error(`Invalid spec: ${code}`);
+  const warnings: string[] = [];
+  const fatalReasons = validation.getAllReason().filter((r) => {
+    if (r.getreasonCode() === "ApiConnection.baseUrl.invalid") {
+      warnings.push("swagger.warnNoBaseUrl");
+      return false;
+    }
+    return true;
+  });
+  if (fatalReasons.length > 0) {
+    throw new Error(`Invalid spec: ${fatalReasons[0].getreasonCode()}`);
   }
 
-  return conn;
+  return { connection: conn, warnings };
 }
