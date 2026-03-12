@@ -49,6 +49,7 @@
         "display": "Display",
         "editProfile": "Edit Profile",
         "export": "Export",
+        "shareQR": "Share QR",
         "deleteProfile": "Delete Profile"
     },
 
@@ -287,5 +288,13 @@
         "install": "Install",
         "later": "Later",
         "iosInstructions": "Tap the share button ↑ then \"Add to Home Screen\""
+    },
+    "qrModal": {
+        "title":     "Share Profile via QR",
+        "copyLink":  "Copy link",
+        "copied":    "Copied!",
+        "warnSize":  "Profile is large ({{size}} KB) — QR may be hard to scan",
+        "errorSize": "Profile too large for QR ({{size}} KB > 3 KB limit)",
+        "sizeInfo":  "Compressed size: {{size}} KB"
     }
 }

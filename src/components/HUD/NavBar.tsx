@@ -6,16 +6,19 @@ import { useApiStore } from "@/stores/apiStore";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import { openModal, closeModal } from "@/components/tool/Modal";
 import ProfileSettings from "@/components/HUD/ProfilSettings";
+import QRCodeModal from "@/components/HUD/QRCodeModal";
 import { exportBackup } from "@/services/profileBackup";
 import "./NavBar.css";
 
 const EDIT_MODAL_ID = "ProfileEdit";
+const QR_MODAL_ID   = "QRCodeShare";
 
 function NavBar() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const [editKey, setEditKey] = useState(0);
+  const [editKey, setEditKey]       = useState(0);
+  const [qrOpenCount, setQrOpenCount] = useState(0);
   const profile          = useProfileStore((state) => state.profile);
   const setProfile       = useProfileStore((state) => state.setProfile);
   const connections      = useApiStore((state) => state.connections);
@@ -59,6 +62,9 @@ function NavBar() {
           <button className="nav-btn" onClick={() => exportBackup(profile, connections, dashboards)}>
             {t("navbar.export")}
           </button>
+          <button className="nav-btn" onClick={() => { setQrOpenCount((c) => c + 1); openModal(QR_MODAL_ID); }}>
+            {t("navbar.shareQR")}
+          </button>
           <button className="nav-btn nav-btn--danger" onClick={handleDeleteProfile}>
             {t("navbar.deleteProfile")}
           </button>
@@ -69,6 +75,13 @@ function NavBar() {
         modalId={EDIT_MODAL_ID}
         initialProfile={profile ?? undefined}
         onClose={() => { closeModal(EDIT_MODAL_ID); setEditKey((k) => k + 1); }}
+      />
+      <QRCodeModal
+        profile={profile}
+        connections={connections}
+        dashboards={dashboards}
+        modalId={QR_MODAL_ID}
+        openCount={qrOpenCount}
       />
     </div>
   );
