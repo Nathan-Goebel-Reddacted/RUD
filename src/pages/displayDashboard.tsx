@@ -159,6 +159,41 @@ export default function DisplayDashboard() {
     return () => window.removeEventListener("wheel", onWheel);
   }, []);
 
+  // Manual scroll via touch (mobile)
+  useEffect(() => {
+    let lastTouchY = 0;
+    const onTouchStart = (e: TouchEvent) => {
+      lastTouchY = e.touches[0].clientY;
+      if (isScrollingBackRef.current) {
+        isScrollingBackRef.current = false;
+        if (innerGridRef.current) innerGridRef.current.style.transition = "";
+      }
+      atBottomSinceRef.current = null;
+      isPausedRef.current = true;
+      if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      if (!innerGridRef.current || maxScrollRef.current <= 0) return;
+      e.preventDefault();
+      const touchY = e.touches[0].clientY;
+      const deltaY = lastTouchY - touchY;
+      lastTouchY = touchY;
+      scrollPosRef.current = Math.max(0, Math.min(scrollPosRef.current + deltaY, maxScrollRef.current));
+      innerGridRef.current.style.transform = `translateY(-${scrollPosRef.current}px)`;
+    };
+    const onTouchEnd = () => {
+      pauseTimerRef.current = setTimeout(() => { isPausedRef.current = false; }, 2000);
+    };
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
+    window.addEventListener("touchmove",  onTouchMove,  { passive: false });
+    window.addEventListener("touchend",   onTouchEnd,   { passive: true });
+    return () => {
+      window.removeEventListener("touchstart", onTouchStart);
+      window.removeEventListener("touchmove",  onTouchMove);
+      window.removeEventListener("touchend",   onTouchEnd);
+    };
+  }, []);
+
   // rAF scroll loop
   useEffect(() => {
     let prevTime: number | null = null;
