@@ -169,26 +169,26 @@ Boucle infinie (dernier → premier).
 
 ## Widgets natifs
 
-**RUD037 — Widget Horloge**
+**✅ RUD037 — Widget Horloge**
 Nouveau type natif `clock` : affiche l'heure en temps réel (format 24h / 12h configurable). Mise à jour chaque seconde via `setInterval`. Pas de connexion API.
 
-**RUD038 — Widget Dernière MAJ**
+**✅ RUD038 — Widget Dernière MAJ**
 Nouveau type natif `last-update` : affiche le timestamp de la dernière réponse reçue par un endpoint sélectionné (ou le fetch global du dashboard). Format d'affichage configurable ("il y a Xs" / timestamp absolu).
 
 ---
 
 ## Widgets API — évolutions
 
-**RUD039 — Widget HealthCheck**
+**✅ RUD039 — Widget HealthCheck**
 Nouveau type `health-check` : ping un endpoint, affiche OK (vert) / KO (rouge) selon le code HTTP reçu. Codes considérés "OK" configurables (défaut : 2xx). Refresh selon l'intervalle global. Pas de dataPath — juste le statut HTTP.
 
-**RUD040 — Seuils visuels**
+**✅ RUD040 — Seuils visuels**
 Ajouter une config optionnelle `threshold` sur les widgets **NumberCard**, **HealthCheck** et **BarChart** :
 - Définir des paliers (valeur + couleur : vert / orange / rouge)
 - Le widget change de couleur selon la valeur courante
 - Config dans le WidgetConfigPanel, section "Thresholds"
 
-**RUD041 — Historique runtime (NumberCard + LineChart)**
+**✅ RUD041 — Historique runtime (NumberCard + LineChart)**
 Sur les widgets **NumberCard** et **LineChart** uniquement : option "Keep history" + `maxPoints` (défaut 50). Stocker les N dernières valeurs en mémoire runtime (non persisté). NumberCard affiche une mini sparkline sous la valeur. LineChart utilise l'historique au lieu de la réponse courante.
 
 ---

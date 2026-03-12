@@ -438,14 +438,108 @@
   align-items: baseline;
   gap: 0.4rem;
 }
+.widget-number-card--with-history {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.25rem;
+}
+.widget-number-card__top {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
 .widget-number-card__value {
   font-size: 2.5rem;
   font-weight: 700;
   line-height: 1;
+  transition: color 0.3s;
 }
 .widget-number-card__unit {
   font-size: 1rem;
   opacity: 0.6;
+}
+.widget-number-card__sparkline {
+  width: 100%;
+  height: 40px;
+  margin-top: 0.15rem;
+}
+
+/* ─── Clock ───────────────────────────────────────────────────────── */
+.widget-clock {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+.widget-clock__time {
+  font-size: 2.2rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+}
+
+/* ─── Last Update ─────────────────────────────────────────────────── */
+.widget-last-update {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+.widget-last-update--empty { opacity: 0.45; }
+.widget-last-update__time {
+  font-size: 1.6rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Health Check ────────────────────────────────────────────────── */
+.widget-health-check {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  height: 100%;
+}
+.widget-health-check--loading { opacity: 0.5; }
+.widget-health-check--error   { opacity: 0.7; }
+.widget-health-check__dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: background 0.3s;
+}
+.widget-health-check__status {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+  transition: color 0.3s;
+}
+.widget-health-check__code {
+  font-size: 1rem;
+  opacity: 0.55;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Thresholds editor ───────────────────────────────────────────── */
+.threshold-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+.threshold-row__value { flex: 1; }
+.threshold-row__color {
+  width: 36px;
+  height: 32px;
+  padding: 2px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
 /* ─── Table ───────────────────────────────────────────────────────── */

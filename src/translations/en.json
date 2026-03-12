@@ -94,7 +94,10 @@
             "barChart": "Bar Chart",
             "lineChart": "Line Chart",
             "text": "Text",
-            "rawResponse": "Raw Response"
+            "rawResponse": "Raw Response",
+            "clock": "Clock",
+            "lastUpdate": "Last Update",
+            "healthCheck": "Health Check"
         },
         "desc": {
             "numberCard": "Single numeric value",
@@ -102,7 +105,10 @@
             "barChart": "Compare values by category",
             "lineChart": "Trend over time or sequence",
             "text": "Static text block",
-            "rawResponse": "Full JSON response"
+            "rawResponse": "Full JSON response",
+            "clock": "Real-time clock",
+            "lastUpdate": "Last fetch timestamp",
+            "healthCheck": "Endpoint status (OK / KO)"
         }
     },
 
@@ -124,6 +130,7 @@
         "connect": "Connect",
         "editConnection": "Edit connection",
         "editRoute": "Edit route",
+        "duplicateRoute": "Duplicate route",
         "noRoutes": "No routes yet",
         "corsError": "CORS error — the server blocked the request from the browser. Check the API's allowed origins.",
         "emptyBody": "No response body.",
@@ -166,6 +173,8 @@
     "apiEndpoint": {
         "titleEdit": "Edit route",
         "titleAdd": "Add route",
+        "labelPlaceholder": "Route label (optional)",
+        "copySuffix": " (copy)",
         "pathPlaceholder": "/path/{id}",
         "pathErrorEmpty": "Path is required",
         "pathErrorNoSlash": "Path must start with /",
@@ -194,7 +203,8 @@
 
     "swagger": {
         "import": "Import from Swagger / OpenAPI",
-        "importing": "Importing…"
+        "importing": "Importing…",
+        "warnNoBaseUrl": "⚠ No base URL found in spec — edit the connection to add one."
     },
 
     "widgetConfig": {
@@ -226,6 +236,21 @@
         "textPlaceholder": "Enter text to display…",
         "fontSize": "Font size (px, optional)",
         "rawHint": "Displays the full JSON response. No additional configuration needed.",
+        "clockFormat": "Clock format",
+        "clock24h": "24-hour",
+        "clock12h": "12-hour",
+        "lastUpdateFormat": "Display format",
+        "lastUpdateRelative": "Relative (e.g. 5s ago)",
+        "lastUpdateAbsolute": "Absolute time",
+        "healthOkCodes": "OK HTTP codes",
+        "healthOkCodesPlaceholder": "200, 201, 204 (empty = any 2xx)",
+        "healthOkCodesHint": "Comma-separated. Leave empty to accept any 2xx response.",
+        "thresholds": "Thresholds",
+        "addThreshold": "+ Add",
+        "thresholdsHint": "No thresholds — default colors are used.",
+        "thresholdValue": "≥ value",
+        "keepHistory": "Keep history (track over time)",
+        "keepHistoryHint": "Appends each fetch result to an in-memory history. Resets on page reload.",
         "fetchPreview": "Fetch data preview",
         "fetching": "Fetching…",
         "fetchInterval": "Fetch interval (seconds)",
@@ -234,6 +259,15 @@
         "cancel": "Cancel",
         "save": "Save",
         "addWidget": "Add widget"
+    },
+
+    "widgetLastUpdate": {
+        "never": "No data yet"
+    },
+
+    "widgetHealthCheck": {
+        "ok": "OK",
+        "ko": "KO"
     },
 
     "dataPath": {

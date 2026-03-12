@@ -94,7 +94,10 @@
             "barChart": "Barres",
             "lineChart": "Courbe",
             "text": "Texte",
-            "rawResponse": "JSON brut"
+            "rawResponse": "JSON brut",
+            "clock": "Horloge",
+            "lastUpdate": "Dernière MAJ",
+            "healthCheck": "Health Check"
         },
         "desc": {
             "numberCard": "Valeur numérique unique",
@@ -102,7 +105,10 @@
             "barChart": "Comparer des valeurs par catégorie",
             "lineChart": "Tendance dans le temps",
             "text": "Bloc de texte statique",
-            "rawResponse": "Réponse JSON complète"
+            "rawResponse": "Réponse JSON complète",
+            "clock": "Horloge en temps réel",
+            "lastUpdate": "Timestamp du dernier fetch",
+            "healthCheck": "Statut endpoint (OK / KO)"
         }
     },
 
@@ -124,6 +130,7 @@
         "connect": "Connecter",
         "editConnection": "Modifier la connexion",
         "editRoute": "Modifier la route",
+        "duplicateRoute": "Dupliquer la route",
         "noRoutes": "Aucune route",
         "corsError": "Erreur CORS — le serveur a bloqué la requête. Vérifiez les origines autorisées.",
         "emptyBody": "Aucun corps de réponse.",
@@ -166,6 +173,8 @@
     "apiEndpoint": {
         "titleEdit": "Modifier la route",
         "titleAdd": "Ajouter une route",
+        "labelPlaceholder": "Libellé de la route (optionnel)",
+        "copySuffix": " (copie)",
         "pathPlaceholder": "/chemin/{id}",
         "pathErrorEmpty": "Le chemin est requis",
         "pathErrorNoSlash": "Le chemin doit commencer par /",
@@ -194,7 +203,8 @@
 
     "swagger": {
         "import": "Importer depuis Swagger / OpenAPI",
-        "importing": "Importation…"
+        "importing": "Importation…",
+        "warnNoBaseUrl": "⚠ URL de base introuvable dans le spec — modifiez la connexion pour l'ajouter."
     },
 
     "widgetConfig": {
@@ -226,6 +236,21 @@
         "textPlaceholder": "Entrez le texte à afficher…",
         "fontSize": "Taille de police (px, optionnel)",
         "rawHint": "Affiche la réponse JSON complète. Aucune configuration supplémentaire requise.",
+        "clockFormat": "Format de l'horloge",
+        "clock24h": "24 heures",
+        "clock12h": "12 heures",
+        "lastUpdateFormat": "Format d'affichage",
+        "lastUpdateRelative": "Relatif (ex. il y a 5s)",
+        "lastUpdateAbsolute": "Heure absolue",
+        "healthOkCodes": "Codes HTTP OK",
+        "healthOkCodesPlaceholder": "200, 201, 204 (vide = tout 2xx)",
+        "healthOkCodesHint": "Séparés par des virgules. Vide = accepte tout 2xx.",
+        "thresholds": "Seuils",
+        "addThreshold": "+ Ajouter",
+        "thresholdsHint": "Aucun seuil — couleurs par défaut utilisées.",
+        "thresholdValue": "≥ valeur",
+        "keepHistory": "Conserver l'historique (suivi dans le temps)",
+        "keepHistoryHint": "Accumule les valeurs en mémoire à chaque fetch. Réinitialisé au rechargement.",
         "fetchPreview": "Prévisualiser les données",
         "fetching": "Chargement…",
         "fetchInterval": "Intervalle de fetch (secondes)",
@@ -234,6 +259,15 @@
         "cancel": "Annuler",
         "save": "Enregistrer",
         "addWidget": "Ajouter le widget"
+    },
+
+    "widgetLastUpdate": {
+        "never": "Aucune donnée reçue"
+    },
+
+    "widgetHealthCheck": {
+        "ok": "OK",
+        "ko": "KO"
     },
 
     "dataPath": {

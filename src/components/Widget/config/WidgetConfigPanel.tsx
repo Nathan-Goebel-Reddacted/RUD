@@ -12,6 +12,10 @@ import {
   type BarChartConfig,
   type LineChartConfig,
   type TextConfig,
+  type ClockConfig,
+  type LastUpdateConfig,
+  type HealthCheckConfig,
+  type Threshold,
 } from "@/types/widget";
 import EndpointSelector from "./EndpointSelector";
 import DataPathInput from "./DataPathInput";
@@ -32,6 +36,9 @@ function defaultConfig(type: WidgetType): WidgetConfig {
     case "line-chart":   return { type: "line-chart", xKey: "", yKeys: [] };
     case "text":         return { type: "text", content: "" };
     case "raw-response": return { type: "raw-response" };
+    case "clock":        return { type: "clock", format: "24h" };
+    case "last-update":  return { type: "last-update", displayFormat: "relative" };
+    case "health-check": return { type: "health-check" };
   }
 }
 
@@ -55,6 +62,9 @@ const TYPE_LABELS: Record<WidgetType, string> = {
   "line-chart":   "widgetDrawer.types.lineChart",
   "text":         "widgetDrawer.types.text",
   "raw-response": "widgetDrawer.types.rawResponse",
+  "clock":        "widgetDrawer.types.clock",
+  "last-update":  "widgetDrawer.types.lastUpdate",
+  "health-check": "widgetDrawer.types.healthCheck",
 };
 
 export default function WidgetConfigPanel({ initial, initialType, onSave, onCancel }: Props) {
@@ -76,20 +86,22 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
   const [dataKeys,     setDataKeys]     = useState<string[]>([]);
   const [fetching,     setFetching]     = useState(false);
 
-  // When type changes, reset config keeping connectionId/endpointId
+  const isStatic      = type === "text" || type === "clock";
+  const needsDataPath = !isStatic && type !== "health-check" && type !== "last-update";
+  const isValid       = isStatic || (!!connectionId && !!endpointId);
+
   function handleTypeChange(newType: WidgetType) {
     setType(newType);
     setConfig(defaultConfig(newType));
   }
 
-  // Fetch preview data to power AxisKeySelector and DataPathInput preview
   async function fetchPreview() {
     const conn = connections.find((c) => c.getId() === connectionId);
     const ep   = conn?.getEndpoints().find((e) => e.getId() === endpointId);
     if (!conn || !ep) return;
     setFetching(true);
     try {
-      const result = await fetchWidgetData(conn, ep, ""); // fetch raw
+      const result = await fetchWidgetData(conn, ep, "");
       if (result.raw !== null) {
         setRawPreview(result.raw);
         const { value } = extractData(result.raw, dataPath);
@@ -115,9 +127,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
     if (rawPreview !== null) updateDataKeys(rawPreview, path);
   }
 
-  const isStatic = type === "text";
-  const isValid  = isStatic || (!!connectionId && !!endpointId);
-
   function handleSave() {
     if (!isValid) return;
     onSave({
@@ -125,13 +134,96 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
       label:        label.trim(),
       connectionId: isStatic ? "" : connectionId,
       endpointId:   isStatic ? "" : endpointId,
-      dataPath:     isStatic ? "" : dataPath,
+      dataPath:     needsDataPath ? dataPath : "",
       config,
       refreshOverride: isStatic ? undefined : refreshOverride,
     });
   }
 
-  // Config-specific fields
+  // ─── Threshold editor (RUD040) ─────────────────────────────────────────────
+  function renderThresholds(thresholds: Threshold[], onChange: (t: Threshold[]) => void) {
+    return (
+      <div className="form-group">
+        <div className="d-flex justify-between align-center">
+          <label className="form-label">{t("widgetConfig.thresholds")}</label>
+          <button
+            type="button"
+            className="btn btn--ghost btn--sm"
+            onClick={() => onChange([...thresholds, { value: 0, color: "#ff6b6b" }])}
+          >
+            {t("widgetConfig.addThreshold")}
+          </button>
+        </div>
+        {thresholds.length === 0 && (
+          <span className="form-hint">{t("widgetConfig.thresholdsHint")}</span>
+        )}
+        {thresholds.map((th, i) => (
+          <div key={i} className="threshold-row">
+            <input
+              type="number"
+              className="form-input threshold-row__value"
+              placeholder={t("widgetConfig.thresholdValue")}
+              value={th.value}
+              onChange={(e) => {
+                const copy = [...thresholds];
+                copy[i] = { ...th, value: Number(e.target.value) };
+                onChange(copy);
+              }}
+            />
+            <input
+              type="color"
+              className="threshold-row__color"
+              value={th.color}
+              onChange={(e) => {
+                const copy = [...thresholds];
+                copy[i] = { ...th, color: e.target.value };
+                onChange(copy);
+              }}
+            />
+            <button
+              type="button"
+              className="endpoint-form__row-remove"
+              onClick={() => onChange(thresholds.filter((_, j) => j !== i))}
+            >
+              ✕
+            </button>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // ─── History config (RUD041) ───────────────────────────────────────────────
+  function renderHistoryConfig(keepHistory: boolean, maxPoints: number, onChange: (kh: boolean, mp: number) => void) {
+    return (
+      <div className="form-group">
+        <label className="column-selector__row" style={{ cursor: "pointer" }}>
+          <input
+            type="checkbox"
+            checked={keepHistory}
+            onChange={(e) => onChange(e.target.checked, maxPoints)}
+          />
+          <span style={{ marginLeft: "0.4rem" }}>{t("widgetConfig.keepHistory")}</span>
+        </label>
+        {keepHistory && (
+          <input
+            className="form-input"
+            type="number"
+            min={2}
+            max={500}
+            value={maxPoints}
+            placeholder="50"
+            onChange={(e) => onChange(keepHistory, Number(e.target.value) || 50)}
+          />
+        )}
+        {keepHistory && (
+          <span className="form-hint">{t("widgetConfig.keepHistoryHint")}</span>
+        )}
+      </div>
+    );
+  }
+
+  // ─── Per-type config fields ────────────────────────────────────────────────
   function renderConfigFields() {
     switch (type) {
       case "number-card": {
@@ -163,12 +255,17 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
                 })}
               />
             </div>
+            {renderThresholds(c.thresholds ?? [], (th) => setConfig({ ...c, thresholds: th }))}
+            {renderHistoryConfig(
+              c.keepHistory ?? false,
+              c.maxPoints ?? 50,
+              (kh, mp) => setConfig({ ...c, keepHistory: kh, maxPoints: mp }),
+            )}
           </>
         );
       }
       case "table": {
         const c = config as TableConfig;
-        // Available keys = union of live data keys + existing column keys
         const allKeys = Array.from(new Set([
           ...dataKeys,
           ...c.columns.map((col) => col.key),
@@ -307,6 +404,7 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
                 onChange={(e) => setConfig({ ...c, color: e.target.value })}
               />
             </div>
+            {renderThresholds(c.thresholds ?? [], (th) => setConfig({ ...c, thresholds: th }))}
           </>
         );
       }
@@ -314,30 +412,55 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
         const c = config as LineChartConfig;
         return (
           <>
-            <AxisKeySelector
-              label={t("widgetConfig.xAxis")}
-              value={c.xKey}
-              keys={dataKeys}
-              onChange={(k) => setConfig({ ...c, xKey: k })}
-            />
-            <div className="form-group">
-              <label className="form-label">{t("widgetConfig.yKeys")}</label>
-              <input
-                className="form-input"
-                type="text"
-                placeholder={t("widgetConfig.yKeysPlaceholder")}
-                value={c.yKeys.join(", ")}
-                onChange={(e) => setConfig({
-                  ...c,
-                  yKeys: e.target.value.split(",").map((s) => s.trim()).filter(Boolean),
-                })}
+            {!c.keepHistory && (
+              <AxisKeySelector
+                label={t("widgetConfig.xAxis")}
+                value={c.xKey}
+                keys={dataKeys}
+                onChange={(k) => setConfig({ ...c, xKey: k })}
               />
-              {dataKeys.length > 0 && (
-                <span className="form-hint">
-                  {t("widgetConfig.availableKeys", { keys: dataKeys.join(", ") })}
+            )}
+            <div className="form-group">
+              <label className="column-selector__row" style={{ cursor: "pointer" }}>
+                <input
+                  type="checkbox"
+                  checked={c.aggregation === "count"}
+                  onChange={(e) => setConfig({
+                    ...c,
+                    aggregation: e.target.checked ? "count" : undefined,
+                  })}
+                />
+                <span style={{ marginLeft: "0.4rem" }}>
+                  {t("widgetConfig.countRows")}
                 </span>
-              )}
+              </label>
+              <span className="form-hint">{t("widgetConfig.countRowsHint")}</span>
             </div>
+            {c.aggregation !== "count" && (
+              <div className="form-group">
+                <label className="form-label">{t("widgetConfig.yKeys")}</label>
+                <input
+                  className="form-input"
+                  type="text"
+                  placeholder={t("widgetConfig.yKeysPlaceholder")}
+                  value={c.yKeys.join(", ")}
+                  onChange={(e) => setConfig({
+                    ...c,
+                    yKeys: e.target.value.split(",").map((s) => s.trim()).filter(Boolean),
+                  })}
+                />
+                {dataKeys.length > 0 && (
+                  <span className="form-hint">
+                    {t("widgetConfig.availableKeys", { keys: dataKeys.join(", ") })}
+                  </span>
+                )}
+              </div>
+            )}
+            {renderHistoryConfig(
+              c.keepHistory ?? false,
+              c.maxPoints ?? 50,
+              (kh, mp) => setConfig({ ...c, keepHistory: kh, maxPoints: mp }),
+            )}
           </>
         );
       }
@@ -380,6 +503,64 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
           </p>
         );
       }
+      case "clock": {
+        const c = config as ClockConfig;
+        return (
+          <div className="form-group">
+            <label className="form-label">{t("widgetConfig.clockFormat")}</label>
+            <select
+              className="form-select"
+              value={c.format}
+              onChange={(e) => setConfig({ ...c, format: e.target.value as ClockConfig["format"] })}
+            >
+              <option value="24h">{t("widgetConfig.clock24h")}</option>
+              <option value="12h">{t("widgetConfig.clock12h")}</option>
+            </select>
+          </div>
+        );
+      }
+      case "last-update": {
+        const c = config as LastUpdateConfig;
+        return (
+          <div className="form-group">
+            <label className="form-label">{t("widgetConfig.lastUpdateFormat")}</label>
+            <select
+              className="form-select"
+              value={c.displayFormat}
+              onChange={(e) => setConfig({ ...c, displayFormat: e.target.value as LastUpdateConfig["displayFormat"] })}
+            >
+              <option value="relative">{t("widgetConfig.lastUpdateRelative")}</option>
+              <option value="absolute">{t("widgetConfig.lastUpdateAbsolute")}</option>
+            </select>
+          </div>
+        );
+      }
+      case "health-check": {
+        const c = config as HealthCheckConfig;
+        const okCodesStr = (c.okCodes ?? []).join(", ");
+        return (
+          <>
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.healthOkCodes")}</label>
+              <input
+                className="form-input"
+                type="text"
+                placeholder={t("widgetConfig.healthOkCodesPlaceholder")}
+                value={okCodesStr}
+                onChange={(e) => {
+                  const codes = e.target.value
+                    .split(",")
+                    .map((s) => parseInt(s.trim(), 10))
+                    .filter((n) => !isNaN(n));
+                  setConfig({ ...c, okCodes: codes.length ? codes : undefined });
+                }}
+              />
+              <span className="form-hint">{t("widgetConfig.healthOkCodesHint")}</span>
+            </div>
+            {renderThresholds(c.thresholds ?? [], (th) => setConfig({ ...c, thresholds: th }))}
+          </>
+        );
+      }
     }
   }
 
@@ -402,33 +583,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
           />
         </div>
 
-        {/* Endpoint selector — hidden for static widgets */}
-        {!isStatic && (
-          <>
-            <EndpointSelector
-              connectionId={connectionId}
-              endpointId={endpointId}
-              onChange={(cId, eId) => { setConnectionId(cId); setEndpointId(eId); }}
-            />
-
-            {connectionId && endpointId && (
-              <button
-                className="btn btn--secondary"
-                onClick={fetchPreview}
-                disabled={fetching}
-              >
-                {fetching ? t("widgetConfig.fetching") : t("widgetConfig.fetchPreview")}
-              </button>
-            )}
-
-            <DataPathInput
-              value={dataPath}
-              onChange={handleDataPathChange}
-              preview={rawPreview}
-            />
-          </>
-        )}
-
         {/* Widget type */}
         <div className="form-group">
           <label className="form-label">{t("widgetConfig.widgetType")}</label>
@@ -442,6 +596,35 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
             ))}
           </select>
         </div>
+
+        {/* Endpoint selector — hidden for static widgets */}
+        {!isStatic && (
+          <>
+            <EndpointSelector
+              connectionId={connectionId}
+              endpointId={endpointId}
+              onChange={(cId, eId) => { setConnectionId(cId); setEndpointId(eId); }}
+            />
+
+            {needsDataPath && connectionId && endpointId && (
+              <button
+                className="btn btn--secondary"
+                onClick={fetchPreview}
+                disabled={fetching}
+              >
+                {fetching ? t("widgetConfig.fetching") : t("widgetConfig.fetchPreview")}
+              </button>
+            )}
+
+            {needsDataPath && (
+              <DataPathInput
+                value={dataPath}
+                onChange={handleDataPathChange}
+                preview={rawPreview}
+              />
+            )}
+          </>
+        )}
 
         {/* Type-specific config */}
         {renderConfigFields()}
