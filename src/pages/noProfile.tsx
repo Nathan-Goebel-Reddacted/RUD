@@ -1,8 +1,9 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ProfileSettings from "@/components/HUD/ProfilSettings";
 import { openModal, closeModal } from "@/components/tool/Modal";
 import { useTranslation } from "react-i18next";
 import { importBackup } from "@/services/profileBackup";
+import { decodeProfileFromQR } from "@/services/profileQR";
 import { useProfileStore } from "@/stores/profileStore";
 import { useApiStore } from "@/stores/apiStore";
 import { useDashboardStore } from "@/stores/dashboardStore";
@@ -19,6 +20,26 @@ function NoProfile() {
   const addConnection    = useApiStore((s) => s.addConnection);
   const setDashboards    = useDashboardStore((s) => s.setDashboards);
   const navigate         = useNavigate();
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (!hash.startsWith("#import?data=")) return;
+    const encoded = new URLSearchParams(hash.slice("#import?".length)).get("data");
+    if (!encoded) return;
+    const result = decodeProfileFromQR(encoded);
+    if (!result.ok) {
+      setImportError(result.error);
+      window.history.replaceState(null, "", window.location.pathname);
+      return;
+    }
+    window.history.replaceState(null, "", window.location.pathname);
+    clearConnections();
+    for (const conn of result.connections) addConnection(conn);
+    setDashboards(result.dashboards);
+    applyColors(result.profile);
+    setProfile(result.profile);
+    navigate("/display");
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps -- intentional: mount-only hash import
 
   function handleImportFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];

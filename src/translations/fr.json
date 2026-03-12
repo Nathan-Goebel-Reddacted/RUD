@@ -49,6 +49,7 @@
         "display": "Affichage",
         "editProfile": "Modifier le profil",
         "export": "Exporter",
+        "shareQR": "Partager en QR",
         "deleteProfile": "Supprimer le profil"
     },
 
@@ -287,5 +288,13 @@
         "install": "Installer",
         "later": "Plus tard",
         "iosInstructions": "Appuyez sur Partager ↑ puis « Sur l'écran d'accueil »"
+    },
+    "qrModal": {
+        "title":     "Partager le profil par QR",
+        "copyLink":  "Copier le lien",
+        "copied":    "Copié !",
+        "warnSize":  "Profil volumineux ({{size}} Ko) — QR difficile à scanner",
+        "errorSize": "Profil trop grand pour le QR ({{size}} Ko > limite 3 Ko)",
+        "sizeInfo":  "Taille compressée : {{size}} Ko"
     }
 }

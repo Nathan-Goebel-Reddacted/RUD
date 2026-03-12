@@ -195,7 +195,7 @@ Sur les widgets **NumberCard** et **LineChart** uniquement : option "Keep histor
 
 ## QR Code profil
 
-**RUD042 — QR Code profil (export URL)**
+✅ **RUD042 — QR Code profil (export URL)**
 - Encoder le profil en JSON, compresser (LZ-string), encoder en base64.
 - Générer l'URL : `${window.location.origin}/#/import?data=<base64>`. Le hash n'est jamais envoyé au serveur — les données du profil restent 100% côté client.
 - Générer un QR code depuis cette URL (lib : `qrcode.react`).
