@@ -315,7 +315,7 @@ function ProfileSettings({
           {/* Display tab */}
           {tab === "display" && (
             <div className="profile-tab-content">
-              <label className="d-flex align-center gap-2 margin-10">
+              <label className="d-flex align-center justify-between gap-2 margin-10">
                 {t("profileSettings.display.mode")}
                 <select
                   value={displayMode}
@@ -327,7 +327,7 @@ function ProfileSettings({
                 </select>
               </label>
               <label
-                className="d-flex align-center gap-2 margin-10"
+                className="d-flex align-center justify-between gap-2 margin-10"
                 style={{ opacity: displayMode === "timer" ? 1 : 0.4 }}
               >
                 {t("profileSettings.display.interval")}
@@ -341,7 +341,7 @@ function ProfileSettings({
                   disabled={displayMode !== "timer"}
                 />
               </label>
-              <label className="d-flex align-center gap-2 margin-10">
+              <label className="d-flex align-center justify-between gap-2 margin-10">
                 {t("profileSettings.display.scrollSpeed")}
                 <input
                   type="number"
@@ -352,7 +352,7 @@ function ProfileSettings({
                   style={{ width: "80px" }}
                 />
               </label>
-              <label className="d-flex align-center gap-2 margin-10">
+              <label className="d-flex align-center justify-between gap-2 margin-10">
                 {t("profileSettings.display.loopPauseMs")}
                 <input
                   type="number"

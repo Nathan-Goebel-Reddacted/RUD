@@ -101,6 +101,7 @@ button:focus-visible {
   min-width: 320px;
 }
 .profileSettings .display-block { width: 100%; box-sizing: border-box; }
+.profileSettings .margin-10 { margin: 0.5rem 0; }
 
 /* QR code modal */
 .qr-modal-content {
