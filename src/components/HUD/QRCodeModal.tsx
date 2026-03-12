@@ -53,24 +53,28 @@ export default function QRCodeModal({ profile, connections, dashboards, modalId,
   const sizeKb  = qrData ? (qrData.sizeBytes / 1024).toFixed(1) : "0";
 
   return (
-    <Modal id={modalId} width={340} ariaLabelledBy="qr-modal-title">
-      <h3 id="qr-modal-title">{t("qrModal.title")}</h3>
-      {qrData && (
-        <>
-          {tooBig ? (
-            <p className="form-error">{t("qrModal.errorSize", { size: sizeKb })}</p>
-          ) : (
-            <>
-              {warning && <p className="form-warning">{t("qrModal.warnSize", { size: sizeKb })}</p>}
-              <QRCodeSVG value={qrData.url} size={300} level="L" />
-            </>
-          )}
-          <p className="qr-size-info">{t("qrModal.sizeInfo", { size: sizeKb })}</p>
-          <button className="nav-btn" onClick={handleCopy}>
-            {copied ? t("qrModal.copied") : t("qrModal.copyLink")}
-          </button>
-        </>
-      )}
+    <Modal id={modalId} width={420} ariaLabelledBy="qr-modal-title">
+      <div className="qr-modal-content">
+        <h3 id="qr-modal-title">{t("qrModal.title")}</h3>
+        {qrData && (
+          <>
+            {tooBig ? (
+              <p className="form-error">{t("qrModal.errorSize", { size: sizeKb })}</p>
+            ) : (
+              <>
+                {warning && <p className="form-warning">{t("qrModal.warnSize", { size: sizeKb })}</p>}
+                <div style={{ background: "#fff", padding: "20px", borderRadius: "8px", lineHeight: 0 }}>
+                  <QRCodeSVG value={qrData.url} size={320} level="L" bgColor="#ffffff" fgColor="#000000" />
+                </div>
+              </>
+            )}
+            <p className="qr-size-info">{t("qrModal.sizeInfo", { size: sizeKb })}</p>
+            <button className="nav-btn" onClick={handleCopy}>
+              {copied ? t("qrModal.copied") : t("qrModal.copyLink")}
+            </button>
+          </>
+        )}
+      </div>
     </Modal>
   );
 }
