@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="64" fill="#1a1a2e"/>
+  <!-- top-left widget (green) -->
+  <rect x="48" y="80" width="192" height="160" rx="16" fill="#4caf50"/>
+  <!-- top-right widget (blue) -->
+  <rect x="272" y="80" width="192" height="160" rx="16" fill="#2196f3"/>
+  <!-- bottom widget (orange, full width) -->
+  <rect x="48" y="272" width="416" height="160" rx="16" fill="#ff9800"/>
+</svg>
