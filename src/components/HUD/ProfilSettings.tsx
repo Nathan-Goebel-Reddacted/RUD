@@ -333,7 +333,7 @@ function ProfileSettings({
                 {t("profileSettings.display.interval")}
                 <input
                   type="number"
-                  min={5}
+                  min={1}
                   max={3600}
                   value={displayInterval}
                   onChange={(e) => setDisplayInterval(Number(e.target.value))}

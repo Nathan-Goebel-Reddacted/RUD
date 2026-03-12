@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate, useLocation } from "react-router";
 import { useTranslation } from "react-i18next";
 import { useProfileStore } from "@/stores/profileStore";
@@ -14,6 +15,7 @@ function NavBar() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const [editKey, setEditKey] = useState(0);
   const profile          = useProfileStore((state) => state.profile);
   const setProfile       = useProfileStore((state) => state.setProfile);
   const connections      = useApiStore((state) => state.connections);
@@ -63,9 +65,10 @@ function NavBar() {
         </div>
       </nav>
       <ProfileSettings
+        key={editKey}
         modalId={EDIT_MODAL_ID}
         initialProfile={profile ?? undefined}
-        onClose={() => closeModal(EDIT_MODAL_ID)}
+        onClose={() => { closeModal(EDIT_MODAL_ID); setEditKey((k) => k + 1); }}
       />
     </div>
   );
