@@ -49,7 +49,7 @@ export default function DisplayDashboard() {
   const maxScrollRef       = useRef<number>(0);
   const scrollSpeedRef     = useRef<number>(0);
   const loopPauseMsRef     = useRef<number>(2000);
-  const isPausedRef        = useRef<boolean>(false);
+  const isPausedRef        = useRef<boolean>(true);
   const pauseTimerRef      = useRef<ReturnType<typeof setTimeout> | null>(null);
   const atBottomSinceRef   = useRef<number | null>(null);
   const isScrollingBackRef = useRef<boolean>(false);
@@ -116,6 +116,12 @@ export default function DisplayDashboard() {
     return () => ro.disconnect();
   }, []);
 
+  // Initial pause on mount before scrolling starts
+  useEffect(() => {
+    pauseTimerRef.current = setTimeout(() => { isPausedRef.current = false; }, loopPauseMsRef.current);
+    return () => { if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current); };
+  }, []);
+
   // Pause auto-scroll for 2s on mousemove or click
   useEffect(() => {
     const pause = () => {
@@ -157,6 +163,11 @@ export default function DisplayDashboard() {
     let prevTime: number | null = null;
 
     const loop = (timestamp: number) => {
+      if (innerGridRef.current && maxScrollRef.current === 0 && scrollPosRef.current !== 0) {
+        scrollPosRef.current = 0;
+        innerGridRef.current.style.transform = "";
+      }
+
       if (
         innerGridRef.current &&
         prevTime !== null &&
@@ -207,23 +218,32 @@ export default function DisplayDashboard() {
   const displayInterval = profile?.getDisplayInterval() ?? 30;
 
   useEffect(() => {
-    if (displayMode !== "timer" || dashboards.length <= 1 || displayInterval <= 0) return;
-    // No scroll (content fits or speed=0): use loopPauseMs as display duration per dashboard
-    // With scroll: use displayInterval
-    const noScroll = maxScrollRef.current === 0 || scrollSpeedRef.current === 0;
-    const intervalMs = noScroll && loopPauseMsRef.current > 0
-      ? loopPauseMsRef.current
-      : displayInterval * 1000;
-    if (intervalMs <= 0) return;
-    const timer = setTimeout(() => {
+    if (dashboards.length <= 1) return;
+
+    const goNext = () => {
       const count = dashboards.length;
       for (let i = 1; i < count; i++) {
         const idx = (activeDashboardIndex + i) % count;
         if (dashboards[idx].showInDisplay) { setActiveDashboardIndex(idx); return; }
       }
-    }, intervalMs);
+    };
+
+    // scroll-end mode: content fits → use loopPauseMs as fallback timer
+    if (displayMode === "scroll-end" && maxScrollRef.current === 0 && loopPauseMsRef.current > 0) {
+      const timer = setTimeout(goNext, loopPauseMsRef.current);
+      return () => clearTimeout(timer);
+    }
+
+    // timer mode
+    if (displayMode !== "timer" || displayInterval <= 0) return;
+    const noScroll = maxScrollRef.current === 0 || scrollSpeedRef.current === 0;
+    const intervalMs = noScroll && loopPauseMsRef.current > 0
+      ? loopPauseMsRef.current
+      : displayInterval * 1000;
+    if (intervalMs <= 0) return;
+    const timer = setTimeout(goNext, intervalMs);
     return () => clearTimeout(timer);
-  }, [activeDashboardIndex, displayMode, displayInterval, dashboards.length, setActiveDashboardIndex]);
+  }, [activeDashboardIndex, displayMode, displayInterval, dashboards.length, gridPixelHeight, setActiveDashboardIndex]);
 
   // Slide animation + scroll reset on dashboard change
   useEffect(() => {
@@ -252,6 +272,11 @@ export default function DisplayDashboard() {
       innerGridRef.current.style.transition = "";
       innerGridRef.current.style.transform  = "translateY(0)";
     }
+
+    // Pause before starting to scroll on the new dashboard
+    isPausedRef.current = true;
+    if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
+    pauseTimerRef.current = setTimeout(() => { isPausedRef.current = false; }, loopPauseMsRef.current);
   }, [activeDashboardIndex, dashboards.length]);
 
   if (showRotateMsg) return <div className="display-dashboard__rotate"><p>{t("display.rotate")}</p></div>;
@@ -269,7 +294,7 @@ export default function DisplayDashboard() {
   const rowHeight = Math.max(ROW_HEIGHT, dynamicRowHeight);
 
   const totalContentHeight = maxRow * rowHeight + (maxRow - 1) * COL_GAP;
-  const maxScroll          = Math.max(0, totalContentHeight - gridPixelHeight);
+  const maxScroll = Math.max(0, totalContentHeight - gridPixelHeight);
 
   // Sync refs inline
   maxScrollRef.current      = maxScroll;
