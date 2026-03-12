@@ -6,8 +6,10 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Cell,
 } from "recharts";
 import type { BarChartConfig } from "@/types/widget";
+import { resolveThresholdColor } from "@/types/widget";
 
 type Props = {
   data:   unknown;
@@ -27,11 +29,13 @@ function groupAndCount(rows: unknown[], xKey: string): Record<string, unknown>[]
 }
 
 export default function BarChart({ data, config }: Props) {
-  const { xKey, yKey, xLabel, yLabel, color, aggregation } = config;
+  const { xKey, yKey, xLabel, yLabel, color, aggregation, thresholds } = config;
 
-  const rawRows = Array.isArray(data) ? data : [];
-  const rows = aggregation === "count" ? groupAndCount(rawRows, xKey) : rawRows;
+  const rawRows    = Array.isArray(data) ? data : [];
+  const rows       = aggregation === "count" ? groupAndCount(rawRows, xKey) : rawRows;
   const activeYKey = aggregation === "count" ? "count" : yKey;
+  const defaultColor = color ?? "var(--primary-color, #4a9eff)";
+  const hasThresholds = thresholds && thresholds.length > 0;
 
   if (rows.length === 0) {
     return <p className="widget-chart__empty">No data</p>;
@@ -55,7 +59,13 @@ export default function BarChart({ data, config }: Props) {
           tick={{ fontSize: 11 }}
         />
         <Tooltip />
-        <Bar dataKey={activeYKey} fill={color ?? "var(--primary-color, #4a9eff)"} />
+        <Bar dataKey={activeYKey} fill={defaultColor}>
+          {hasThresholds && rows.map((row, i) => {
+            const val = Number((row as Record<string, unknown>)[activeYKey] ?? 0);
+            const cellColor = resolveThresholdColor(val, thresholds!) ?? defaultColor;
+            return <Cell key={i} fill={cellColor} />;
+          })}
+        </Bar>
       </ReBarChart>
     </ResponsiveContainer>
   );
