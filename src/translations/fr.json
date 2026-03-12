@@ -1,0 +1,291 @@
+{
+    "noProfile": {
+        "importProfile": "Importer un profil",
+        "createProfile": "Créer un profil"
+    },
+
+    "profileSettings": {
+        "profileName": "Nom du profil",
+        "language": "Langue",
+        "loadProfile": "Charger ce profil",
+        "saveProfile": "Enregistrer le profil",
+        "colors": {
+            "background": "Couleur de fond",
+            "border": "Couleur de bordure",
+            "text": "Couleur d'accentuation",
+            "textHover": "Couleur d'accentuation au survol"
+        },
+        "tabs": {
+            "profile":    "Profil",
+            "dashboards": "Tableaux de bord",
+            "display":    "Affichage"
+        },
+        "display": {
+            "mode":          "Mode de rotation",
+            "modeTimer":     "Minuterie",
+            "modeScrollEnd": "Fin de défilement",
+            "modeDisabled":  "Désactivé",
+            "interval":      "Intervalle (s)",
+            "scrollSpeed":   "Vitesse de défilement (px/s)",
+            "loopPauseMs":   "Durée des pauses (ms)"
+        },
+        "dashboards": {
+            "delete":         "Supprimer le tableau de bord",
+            "showInDisplay":  "Afficher en mode Display"
+        }
+    },
+
+    "profile": {
+        "invalid": "Le profil n'est pas valide",
+        "invalidLanguage": "La langue du profil n'est pas valide",
+        "invalidName": "Le nom du profil n'est pas valide"
+    },
+
+    "redirecting": "Redirection...",
+
+    "navbar": {
+        "apiConfig": "Config API",
+        "dashboardEditor": "Éditeur",
+        "display": "Affichage",
+        "editProfile": "Modifier le profil",
+        "export": "Exporter",
+        "deleteProfile": "Supprimer le profil"
+    },
+
+    "dashboard": {
+        "noWidgets": "Aucun widget. Cliquez sur Ajouter un widget pour commencer."
+    },
+
+    "bubbles": {
+        "add": "Ajouter un tableau de bord",
+        "duplicate": "Dupliquer ce tableau de bord",
+        "delete": "Supprimer ce tableau de bord",
+        "copySuffix": " (copie)"
+    },
+
+    "display": {
+        "noWidgets": "Aucun widget configuré. Rendez-vous dans l'Éditeur pour en ajouter.",
+        "noDashboard": "Aucun tableau de bord disponible.",
+        "fullscreen": "Plein écran",
+        "exitFullscreen": "Quitter le plein écran",
+        "rotate": "Veuillez tourner votre appareil en mode paysage"
+    },
+
+    "toolbar": {
+        "titlePlaceholder": "Titre du tableau de bord",
+        "refreshLabel": "Rafraîchir toutes les",
+        "refresh": {
+            "10s": "10 s",
+            "30s": "30 s",
+            "1min": "1 min",
+            "5min": "5 min",
+            "manual": "Manuel"
+        },
+        "addWidget": "+ Ajouter un widget",
+        "openDisplay": "▶ Affichage"
+    },
+
+    "widgetDrawer": {
+        "heading": "Ajouter un widget",
+        "collapse": "Réduire le panneau",
+        "types": {
+            "numberCard": "Nombre",
+            "table": "Tableau",
+            "barChart": "Barres",
+            "lineChart": "Courbe",
+            "text": "Texte",
+            "rawResponse": "JSON brut",
+            "clock": "Horloge",
+            "lastUpdate": "Dernière MAJ",
+            "healthCheck": "Health Check"
+        },
+        "desc": {
+            "numberCard": "Valeur numérique unique",
+            "table": "Liste de lignes depuis un tableau",
+            "barChart": "Comparer des valeurs par catégorie",
+            "lineChart": "Tendance dans le temps",
+            "text": "Bloc de texte statique",
+            "rawResponse": "Réponse JSON complète",
+            "clock": "Horloge en temps réel",
+            "lastUpdate": "Timestamp du dernier fetch",
+            "healthCheck": "Statut endpoint (OK / KO)"
+        }
+    },
+
+    "widgetCard": {
+        "editWidget": "Modifier le widget",
+        "duplicateWidget": "Dupliquer le widget",
+        "deleteWidget": "Supprimer le widget",
+        "error": {
+            "endpointNotFound": "Endpoint introuvable — vérifier la config API",
+            "cors": "Erreur CORS — l'API a bloqué la requête",
+            "httpError": "Erreur HTTP — le serveur a retourné une erreur",
+            "parseError": "Erreur de parsing — la réponse n'est pas du JSON valide",
+            "noData": "Aucune donnée ne correspond au chemin",
+            "invalidPath": "Expression JSONPath invalide"
+        }
+    },
+
+    "apiConfig": {
+        "connect": "Connecter",
+        "editConnection": "Modifier la connexion",
+        "editRoute": "Modifier la route",
+        "duplicateRoute": "Dupliquer la route",
+        "noRoutes": "Aucune route",
+        "corsError": "Erreur CORS — le serveur a bloqué la requête. Vérifiez les origines autorisées.",
+        "emptyBody": "Aucun corps de réponse.",
+        "addRoute": "+ Ajouter une route",
+        "addApi": "+ Ajouter une connexion API",
+        "send": "Envoyer"
+    },
+
+    "apiConnection": {
+        "titleEdit": "Modifier la connexion API",
+        "titleAdd": "Ajouter une connexion API",
+        "labelPlaceholder": "Nom de la connexion (min. 3 caractères)",
+        "labelError": "Le nom doit faire au moins 3 caractères",
+        "baseUrlPlaceholder": "URL de base (https://api.exemple.com)",
+        "baseUrlError": "Entrez une URL http/https valide",
+        "auth": {
+            "none": "Sans auth",
+            "bearer": "Bearer token",
+            "apiKey": "Clé API",
+            "basic": "Auth basique (utilisateur:mot-de-passe)"
+        },
+        "authValue": {
+            "bearer": "Bearer token",
+            "apiKey": "Valeur de la clé API",
+            "basic": "utilisateur:mot-de-passe"
+        },
+        "customHeaders": "En-têtes personnalisés",
+        "addHeader": "+ Ajouter un en-tête",
+        "headerName": "Nom de l'en-tête",
+        "headerValue": "Valeur",
+        "healthCheck": "Endpoint de health check",
+        "noHealthCheck": "— Aucun —",
+        "saveChanges": "Enregistrer les modifications",
+        "save": "Enregistrer",
+        "cancel": "Annuler",
+        "delete": "Supprimer cette connexion",
+        "confirmDelete": "Confirmer la suppression ?"
+    },
+
+    "apiEndpoint": {
+        "titleEdit": "Modifier la route",
+        "titleAdd": "Ajouter une route",
+        "labelPlaceholder": "Libellé de la route (optionnel)",
+        "copySuffix": " (copie)",
+        "pathPlaceholder": "/chemin/{id}",
+        "pathErrorEmpty": "Le chemin est requis",
+        "pathErrorNoSlash": "Le chemin doit commencer par /",
+        "pathParams": "Paramètres de chemin",
+        "queryParams": "Paramètres de requête",
+        "addQueryParam": "+ Ajouter",
+        "table": {
+            "name": "Nom",
+            "type": "Type",
+            "default": "Défaut",
+            "required": "Req."
+        },
+        "defaultPlaceholder": "—",
+        "namePlaceholder": "nom",
+        "dataPath": "Chemin de données",
+        "dataPathPlaceholder": "$.data  ou  $.items[*]  (vide = racine)",
+        "body": "Corps de la requête",
+        "bodyJsonPlaceholder": "{\n  \"key\": \"value\"\n}",
+        "bodyFormPlaceholder": "key=value&key2=value2",
+        "save": "Enregistrer",
+        "addRoute": "Ajouter la route",
+        "cancel": "Annuler",
+        "delete": "Supprimer cette route",
+        "confirmDelete": "Confirmer la suppression ?"
+    },
+
+    "swagger": {
+        "import": "Importer depuis Swagger / OpenAPI",
+        "importing": "Importation…",
+        "warnNoBaseUrl": "⚠ URL de base introuvable dans le spec — modifiez la connexion pour l'ajouter."
+    },
+
+    "widgetConfig": {
+        "titleEdit": "Modifier le widget",
+        "titleAdd": "Ajouter un widget",
+        "labelField": "Nom du widget",
+        "labelPlaceholder": "ex. Total utilisateurs",
+        "widgetType": "Type de widget *",
+        "unit": "Unité (optionnel)",
+        "unitPlaceholder": "ex. ms, %, users",
+        "decimals": "Décimales",
+        "autoPlaceholder": "auto",
+        "maxRows": "Lignes max",
+        "allPlaceholder": "toutes",
+        "showHeaders": "Afficher les en-têtes",
+        "visibleColumns": "Colonnes visibles",
+        "allAuto": " — toutes (auto)",
+        "fetchColumnsHint": "Prévisualisez les données pour voir les colonnes disponibles.",
+        "clearColumns": "Effacer — afficher toutes les colonnes",
+        "xAxis": "Clé axe X",
+        "countRows": "Compter les lignes par clé X (grouper & compter)",
+        "countRowsHint": "Groupe les données par clé X et compte les occurrences — pas de clé Y requise.",
+        "yAxis": "Clé axe Y (valeur)",
+        "barColor": "Couleur des barres (optionnel)",
+        "yKeys": "Clés Y (valeurs) — séparées par des virgules",
+        "yKeysPlaceholder": "ex. value, count",
+        "availableKeys": "Clés disponibles : {{keys}}",
+        "textContent": "Contenu du texte *",
+        "textPlaceholder": "Entrez le texte à afficher…",
+        "fontSize": "Taille de police (px, optionnel)",
+        "rawHint": "Affiche la réponse JSON complète. Aucune configuration supplémentaire requise.",
+        "clockFormat": "Format de l'horloge",
+        "clock24h": "24 heures",
+        "clock12h": "12 heures",
+        "lastUpdateFormat": "Format d'affichage",
+        "lastUpdateRelative": "Relatif (ex. il y a 5s)",
+        "lastUpdateAbsolute": "Heure absolue",
+        "healthOkCodes": "Codes HTTP OK",
+        "healthOkCodesPlaceholder": "200, 201, 204 (vide = tout 2xx)",
+        "healthOkCodesHint": "Séparés par des virgules. Vide = accepte tout 2xx.",
+        "thresholds": "Seuils",
+        "addThreshold": "+ Ajouter",
+        "thresholdsHint": "Aucun seuil — couleurs par défaut utilisées.",
+        "thresholdValue": "≥ valeur",
+        "keepHistory": "Conserver l'historique (suivi dans le temps)",
+        "keepHistoryHint": "Accumule les valeurs en mémoire à chaque fetch. Réinitialisé au rechargement.",
+        "fetchPreview": "Prévisualiser les données",
+        "fetching": "Chargement…",
+        "fetchInterval": "Intervalle de fetch (secondes)",
+        "fetchIntervalPlaceholder": "défaut (30 s)",
+        "fetchIntervalHint": "Laisser vide pour utiliser le défaut global (30 s).",
+        "cancel": "Annuler",
+        "save": "Enregistrer",
+        "addWidget": "Ajouter le widget"
+    },
+
+    "widgetLastUpdate": {
+        "never": "Aucune donnée reçue"
+    },
+
+    "widgetHealthCheck": {
+        "ok": "OK",
+        "ko": "KO"
+    },
+
+    "dataPath": {
+        "label": "Chemin de données (JSONPath)",
+        "placeholder": "ex. $.data ou $.results[0].value",
+        "fullResponseHint": "Laisser vide pour utiliser la réponse complète.",
+        "fullResponsePreview": "(réponse complète)"
+    },
+
+    "axisKey": {
+        "placeholder": "nom de clé",
+        "fetchFirst": "Prévisualisez les données pour obtenir des suggestions.",
+        "selectKey": "— Sélectionner une clé —"
+    },
+    "installPrompt": {
+        "title": "Installez l'app pour la meilleure expérience",
+        "install": "Installer",
+        "later": "Plus tard",
+        "iosInstructions": "Appuyez sur Partager ↑ puis « Sur l'écran d'accueil »"
+    }
+}

@@ -4,8 +4,8 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  color: var(--text-color);
+  background-color: var(--background-color);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -15,17 +15,15 @@
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: var(--text-color);
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+  color: var(--text-hover-color);
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -47,22 +45,202 @@ button {
   transition: border-color 0.25s;
 }
 button:hover {
-  border-color: #646cff;
+  border-color: var(--text-color);
 }
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+/* Margin */
+.m-1 { margin: 0.25rem; }
+.m-2 { margin: 0.5rem; }
+.m-3 { margin: 0.75rem; }
+.m-4 { margin: 1rem; }
+.m-5 { margin: 1.5rem; }
+
+/* Padding */
+.p-1 { padding: 0.25rem; }
+.p-2 { padding: 0.5rem; }
+.p-3 { padding: 0.75rem; }
+.p-4 { padding: 1rem; }
+.p-5 { padding: 1.5rem; }
+
+/* Display */
+.d-block { display: block; }
+.d-flex  { display: flex; }
+.d-grid  { display: grid; }
+.d-none  { display: none; }
+
+/* Flex */
+.flex-col        { flex-direction: column; }
+.align-center    { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-1 { gap: 0.25rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 0.75rem; }
+.gap-4 { gap: 1rem; }
+
+/* Sizing / Text */
+.w-full      { width: 100%; }
+.text-center { text-align: center; }
+
+/* Pages avec navbar — padding pour ne pas etre masque par la zone trigger */
+.page-with-nav {
+  padding-top: 4rem;
+  width: 100%;
 }
+
+/* Retrocompatibilite (utilisees dans ProfilSettings.tsx) */
+.display-block { display: block; }
+.margin-10     { margin: 10px; }
+
+/* Form section labels */
+.form-section-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.5;
+  margin-bottom: 0.35rem;
+}
+
+/* No profile page */
+.NoProfilePage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  gap: 1rem;
+}
+
+/* Form errors */
+.form-error {
+  display: block;
+  color: #e05252;
+  font-size: 0.8rem;
+  margin: -6px 10px 6px;
+}
+
+.form-warning {
+  display: block;
+  color: #c98a00;
+  font-size: 0.8rem;
+  margin: 4px 10px 6px;
+}
+
+/* Profile modal — tabs */
+.profile-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 0.75rem;
+}
+
+.profile-tab {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-color);
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.profile-tab--active {
+  border-bottom-color: var(--text-color);
+  font-weight: 600;
+}
+
+.profile-tab-content {
+  min-height: 200px;
+}
+
+/* Profile modal — dashboards list */
+.profile-dash-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0.5rem 0;
+}
+
+.profile-dash-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: var(--background-color);
+}
+
+.profile-dash-item--active {
+  border-color: var(--text-color);
+}
+
+.profile-dash-grip {
+  cursor: grab;
+  color: var(--border-color);
+  display: flex;
+  align-items: center;
+}
+
+.profile-dash-name {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--text-color);
+  font-size: 0.9rem;
+  padding: 2px 4px;
+}
+
+.profile-dash-name:focus {
+  outline: 1px solid var(--border-color);
+  border-radius: 2px;
+}
+
+.profile-dash-delete {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--danger-color, #e74c3c);
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  opacity: 0.6;
+}
+
+.profile-dash-delete:hover:not(:disabled) { opacity: 1; }
+.profile-dash-delete:disabled { opacity: 0.2; cursor: not-allowed; }
+
+/* ─── Toggle switch ──────────────────────────────────────────────── */
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 32px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.toggle input { opacity: 0; width: 0; height: 0; }
+.toggle__track {
+  position: absolute;
+  inset: 0;
+  border-radius: 9px;
+  background: var(--border-color);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.toggle input:checked + .toggle__track { background: var(--text-color); }
+.toggle__track::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s;
+}
+.toggle input:checked + .toggle__track::after { transform: translateX(14px); }
+

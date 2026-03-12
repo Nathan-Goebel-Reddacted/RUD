@@ -1,0 +1,73 @@
+.nav-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.nav-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--background-color, #242424);
+  border-bottom: 1px solid var(--border-color, #888888);
+  transform: translateY(calc(-100% + 8px));
+  transition: transform 0.25s ease;
+  pointer-events: auto;
+}
+
+/* Invisible zone extending the hover area below the visible strip */
+.nav-bar::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 20px;
+}
+
+.nav-bar:hover {
+  transform: translateY(0);
+}
+
+.nav-btn {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--text-color, #646cff);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-family: inherit;
+  padding: 0.35rem 0.8rem;
+  border-radius: 6px;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+
+.nav-btn:hover:not(:disabled) {
+  border-color: var(--text-color, #646cff);
+  background-color: rgba(100, 108, 255, 0.1);
+}
+
+.nav-btn--active {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.nav-bar__actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.nav-btn--danger {
+  color: var(--danger-color);
+}
+
+.nav-btn--danger:hover:not(:disabled) {
+  border-color: var(--danger-color);
+  background-color: var(--danger-color-subtle);
+}

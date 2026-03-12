@@ -1,0 +1,291 @@
+{
+    "noProfile": {
+        "importProfile": "Import a profile",
+        "createProfile": "Create a profile"
+    },
+
+    "profileSettings": {
+        "profileName": "Profile name",
+        "language": "Language",
+        "loadProfile": "Load this profile",
+        "saveProfile": "Save profile",
+        "colors": {
+            "background": "Background color",
+            "border": "Border color",
+            "text": "Accent color",
+            "textHover": "Accent hover color"
+        },
+        "tabs": {
+            "profile":    "Profile",
+            "dashboards": "Dashboards",
+            "display":    "Display"
+        },
+        "display": {
+            "mode":          "Rotation mode",
+            "modeTimer":     "Timer",
+            "modeScrollEnd": "Scroll end",
+            "modeDisabled":  "Disabled",
+            "interval":      "Interval (s)",
+            "scrollSpeed":   "Scroll speed (px/s)",
+            "loopPauseMs":   "Pause duration (ms)"
+        },
+        "dashboards": {
+            "delete":        "Delete dashboard",
+            "showInDisplay": "Show in Display mode"
+        }
+    },
+
+    "profile": {
+        "invalid": "The profile is not valid",
+        "invalidLanguage": "The profile language is not valid",
+        "invalidName": "The profile name is not valid"
+    },
+
+    "redirecting": "Redirecting...",
+
+    "navbar": {
+        "apiConfig": "API Config",
+        "dashboardEditor": "Dashboard Editor",
+        "display": "Display",
+        "editProfile": "Edit Profile",
+        "export": "Export",
+        "deleteProfile": "Delete Profile"
+    },
+
+    "dashboard": {
+        "noWidgets": "No widgets yet. Click Add widget to get started."
+    },
+
+    "bubbles": {
+        "add": "Add dashboard",
+        "duplicate": "Duplicate dashboard",
+        "delete": "Delete this dashboard",
+        "copySuffix": " (copy)"
+    },
+
+    "display": {
+        "noWidgets": "No widgets configured. Go to the Dashboard Editor to add widgets.",
+        "noDashboard": "No dashboard available.",
+        "fullscreen": "Fullscreen",
+        "exitFullscreen": "Exit fullscreen",
+        "rotate": "Please rotate your device to landscape"
+    },
+
+    "toolbar": {
+        "titlePlaceholder": "Dashboard title",
+        "refreshLabel": "Refresh every",
+        "refresh": {
+            "10s": "10 s",
+            "30s": "30 s",
+            "1min": "1 min",
+            "5min": "5 min",
+            "manual": "Manual"
+        },
+        "addWidget": "+ Add widget",
+        "openDisplay": "▶ Display"
+    },
+
+    "widgetDrawer": {
+        "heading": "Add widget",
+        "collapse": "Collapse panel",
+        "types": {
+            "numberCard": "Number",
+            "table": "Table",
+            "barChart": "Bar Chart",
+            "lineChart": "Line Chart",
+            "text": "Text",
+            "rawResponse": "Raw Response",
+            "clock": "Clock",
+            "lastUpdate": "Last Update",
+            "healthCheck": "Health Check"
+        },
+        "desc": {
+            "numberCard": "Single numeric value",
+            "table": "List of rows from array",
+            "barChart": "Compare values by category",
+            "lineChart": "Trend over time or sequence",
+            "text": "Static text block",
+            "rawResponse": "Full JSON response",
+            "clock": "Real-time clock",
+            "lastUpdate": "Last fetch timestamp",
+            "healthCheck": "Endpoint status (OK / KO)"
+        }
+    },
+
+    "widgetCard": {
+        "editWidget": "Edit widget",
+        "duplicateWidget": "Duplicate widget",
+        "deleteWidget": "Delete widget",
+        "error": {
+            "endpointNotFound": "Endpoint not found — check API config",
+            "cors": "CORS error — the API blocked the request",
+            "httpError": "HTTP error — the server returned an error",
+            "parseError": "Parse error — response is not valid JSON",
+            "noData": "No data matched the data path",
+            "invalidPath": "Invalid JSONPath expression"
+        }
+    },
+
+    "apiConfig": {
+        "connect": "Connect",
+        "editConnection": "Edit connection",
+        "editRoute": "Edit route",
+        "duplicateRoute": "Duplicate route",
+        "noRoutes": "No routes yet",
+        "corsError": "CORS error — the server blocked the request from the browser. Check the API's allowed origins.",
+        "emptyBody": "No response body.",
+        "addRoute": "+ Add route",
+        "addApi": "+ Add API connection",
+        "send": "Send"
+    },
+
+    "apiConnection": {
+        "titleEdit": "Edit API Connection",
+        "titleAdd": "Add API Connection",
+        "labelPlaceholder": "Connection label (min. 3 chars)",
+        "labelError": "Label must be at least 3 characters",
+        "baseUrlPlaceholder": "Base URL (https://api.example.com)",
+        "baseUrlError": "Enter a valid http/https URL",
+        "auth": {
+            "none": "No auth",
+            "bearer": "Bearer token",
+            "apiKey": "API Key",
+            "basic": "Basic auth (user:password)"
+        },
+        "authValue": {
+            "bearer": "Bearer token",
+            "apiKey": "API key value",
+            "basic": "username:password"
+        },
+        "customHeaders": "Custom headers",
+        "addHeader": "+ Add header",
+        "headerName": "Header name",
+        "headerValue": "Value",
+        "healthCheck": "Health check endpoint",
+        "noHealthCheck": "— None —",
+        "saveChanges": "Save changes",
+        "save": "Save",
+        "cancel": "Cancel",
+        "delete": "Delete this connection",
+        "confirmDelete": "Confirm delete?"
+    },
+
+    "apiEndpoint": {
+        "titleEdit": "Edit route",
+        "titleAdd": "Add route",
+        "labelPlaceholder": "Route label (optional)",
+        "copySuffix": " (copy)",
+        "pathPlaceholder": "/path/{id}",
+        "pathErrorEmpty": "Path is required",
+        "pathErrorNoSlash": "Path must start with /",
+        "pathParams": "Path parameters",
+        "queryParams": "Query parameters",
+        "addQueryParam": "+ Add",
+        "table": {
+            "name": "Name",
+            "type": "Type",
+            "default": "Default",
+            "required": "Req."
+        },
+        "defaultPlaceholder": "—",
+        "namePlaceholder": "name",
+        "dataPath": "Response data path",
+        "dataPathPlaceholder": "$.data  or  $.items[*]  (leave empty for root)",
+        "body": "Request body",
+        "bodyJsonPlaceholder": "{\n  \"key\": \"value\"\n}",
+        "bodyFormPlaceholder": "key=value&key2=value2",
+        "save": "Save",
+        "addRoute": "Add route",
+        "cancel": "Cancel",
+        "delete": "Delete this route",
+        "confirmDelete": "Confirm delete?"
+    },
+
+    "swagger": {
+        "import": "Import from Swagger / OpenAPI",
+        "importing": "Importing…",
+        "warnNoBaseUrl": "⚠ No base URL found in spec — edit the connection to add one."
+    },
+
+    "widgetConfig": {
+        "titleEdit": "Edit Widget",
+        "titleAdd": "Add Widget",
+        "labelField": "Widget label",
+        "labelPlaceholder": "e.g. Total Users",
+        "widgetType": "Widget type *",
+        "unit": "Unit (optional)",
+        "unitPlaceholder": "e.g. ms, %, users",
+        "decimals": "Decimal places",
+        "autoPlaceholder": "auto",
+        "maxRows": "Max rows",
+        "allPlaceholder": "all",
+        "showHeaders": "Show column headers",
+        "visibleColumns": "Visible columns",
+        "allAuto": " — all (auto)",
+        "fetchColumnsHint": "Fetch data preview to see available columns.",
+        "clearColumns": "Clear — show all columns",
+        "xAxis": "X axis key",
+        "countRows": "Count rows by X key (group & count)",
+        "countRowsHint": "Groups data by the X key and counts occurrences — no Y key needed.",
+        "yAxis": "Y axis key (value)",
+        "barColor": "Bar color (optional)",
+        "yKeys": "Y keys (values) — comma-separated",
+        "yKeysPlaceholder": "e.g. value, count",
+        "availableKeys": "Available keys: {{keys}}",
+        "textContent": "Text content *",
+        "textPlaceholder": "Enter text to display…",
+        "fontSize": "Font size (px, optional)",
+        "rawHint": "Displays the full JSON response. No additional configuration needed.",
+        "clockFormat": "Clock format",
+        "clock24h": "24-hour",
+        "clock12h": "12-hour",
+        "lastUpdateFormat": "Display format",
+        "lastUpdateRelative": "Relative (e.g. 5s ago)",
+        "lastUpdateAbsolute": "Absolute time",
+        "healthOkCodes": "OK HTTP codes",
+        "healthOkCodesPlaceholder": "200, 201, 204 (empty = any 2xx)",
+        "healthOkCodesHint": "Comma-separated. Leave empty to accept any 2xx response.",
+        "thresholds": "Thresholds",
+        "addThreshold": "+ Add",
+        "thresholdsHint": "No thresholds — default colors are used.",
+        "thresholdValue": "≥ value",
+        "keepHistory": "Keep history (track over time)",
+        "keepHistoryHint": "Appends each fetch result to an in-memory history. Resets on page reload.",
+        "fetchPreview": "Fetch data preview",
+        "fetching": "Fetching…",
+        "fetchInterval": "Fetch interval (seconds)",
+        "fetchIntervalPlaceholder": "default (30 s)",
+        "fetchIntervalHint": "Leave empty to use the global default (30 s).",
+        "cancel": "Cancel",
+        "save": "Save",
+        "addWidget": "Add widget"
+    },
+
+    "widgetLastUpdate": {
+        "never": "No data yet"
+    },
+
+    "widgetHealthCheck": {
+        "ok": "OK",
+        "ko": "KO"
+    },
+
+    "dataPath": {
+        "label": "Data Path (JSONPath)",
+        "placeholder": "e.g. $.data or $.results[0].value",
+        "fullResponseHint": "Leave empty to use the full response.",
+        "fullResponsePreview": "(using full response)"
+    },
+
+    "axisKey": {
+        "placeholder": "key name",
+        "fetchFirst": "Fetch data first to get key suggestions.",
+        "selectKey": "— Select a key —"
+    },
+    "installPrompt": {
+        "title": "Install the app for the best experience",
+        "install": "Install",
+        "later": "Later",
+        "iosInstructions": "Tap the share button ↑ then \"Add to Home Screen\""
+    }
+}
