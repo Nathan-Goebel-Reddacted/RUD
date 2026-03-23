@@ -347,6 +347,28 @@ Rendre le Dashboard Editor utilisable sur tablette (≥ 768px). Principalement :
 
 ---
 
+## Widget interactif
+
+**RUD065 — Widget Form (POST interactif)**
+Nouveau type `form` : widget avec des champs texte configurables et un bouton "Envoyer" qui déclenche un appel à un endpoint (typiquement POST/PUT). Affiche la réponse inline après envoi.
+
+Config dans `WidgetConfigPanel` :
+- Endpoint cible (connexion + endpoint, comme les autres widgets)
+- Liste de champs : `{ key, label, type: "text"|"number"|"textarea", defaultValue?, required? }`
+- Label du bouton d'envoi (défaut : "Send")
+- JSONPath optionnel pour extraire un message de la réponse à afficher
+
+Comportement :
+- Les valeurs des champs sont injectées dans le body JSON de la requête (clés = `key` de chaque champ)
+- États : idle → loading → success (affiche la réponse) / error (affiche le message d'erreur)
+- La réponse s'affiche dans un `<pre>` scrollable sous le formulaire
+- Le widget fonctionne en mode Display (pas seulement en Editor) — c'est intentionnellement interactif
+- Pas de polling automatique — le fetch est uniquement déclenché par le bouton
+
+Note : seul widget "actif" de l'app. Ouvre des cas d'usage comme déclencher un build CI, soumettre une valeur de config, appeler un webhook, etc.
+
+---
+
 ## Ordre d'implémentation suggéré (Phase 3)
 
 ```
@@ -358,6 +380,7 @@ RUD051 (resize widgets)
 → RUD052 (templates) → RUD060 (marketplace)
 → RUD061 (historique configs) → RUD053 (multi-profils)
 → RUD062 (MCP)
+→ RUD065 (form widget)
 → RUD056 (WebSocket)
 → RUD063 (OAuth2 PKCE) → RUD064 (responsive editor)
 ```
