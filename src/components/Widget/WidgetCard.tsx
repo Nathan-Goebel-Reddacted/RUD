@@ -87,7 +87,7 @@ export default function WidgetCard({ widget, dataState, onEdit, onDelete, onDupl
               <button
                 className="widget-card__overlay-btn"
                 title={t("widgetCard.editWidget")}
-                onPointerDown={(e) => e.stopPropagation()}
+                onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
                 onClick={() => onEdit(widget)}
               >
                 <Pencil size={17} strokeWidth={2} />
@@ -97,7 +97,7 @@ export default function WidgetCard({ widget, dataState, onEdit, onDelete, onDupl
               <button
                 className="widget-card__overlay-btn"
                 title={t("widgetCard.duplicateWidget")}
-                onPointerDown={(e) => e.stopPropagation()}
+                onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
                 onClick={() => onDuplicate(widget)}
               >
                 <Copy size={17} strokeWidth={2} />
@@ -107,7 +107,7 @@ export default function WidgetCard({ widget, dataState, onEdit, onDelete, onDupl
               <button
                 className="widget-card__overlay-btn widget-card__overlay-btn--danger"
                 title={t("widgetCard.deleteWidget")}
-                onPointerDown={(e) => e.stopPropagation()}
+                onPointerDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
                 onClick={() => onDelete(widget.id)}
               >
                 <Trash2 size={17} strokeWidth={2} />

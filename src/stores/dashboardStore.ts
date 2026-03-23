@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { Widget, WidgetPosition, Dashboard, FetchCacheEntry } from "@/types/widget";
+import { clearHistory } from "@/stores/widgetHistory";
 
 type DashboardState = {
   // Persisté
@@ -102,12 +103,15 @@ export const useDashboardStore = create<DashboardState>()(
         return { dashboards };
       }),
 
-      removeWidget: (id) => set((state) => {
-        const dashboards = [...state.dashboards];
-        const d = dashboards[state.activeDashboardIndex];
-        dashboards[state.activeDashboardIndex] = { ...d, widgets: d.widgets.filter((w) => w.id !== id) };
-        return { dashboards };
-      }),
+      removeWidget: (id) => {
+        clearHistory(id);
+        set((state) => {
+          const dashboards = [...state.dashboards];
+          const d = dashboards[state.activeDashboardIndex];
+          dashboards[state.activeDashboardIndex] = { ...d, widgets: d.widgets.filter((w) => w.id !== id) };
+          return { dashboards };
+        });
+      },
 
       moveWidget: (id, position) => set((state) => {
         const dashboards = [...state.dashboards];

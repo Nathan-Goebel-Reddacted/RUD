@@ -89,20 +89,22 @@ export default function DisplayDashboard() {
   useEffect(() => {
     const isMobileDevice = /Mobi|Android/i.test(navigator.userAgent);
     if (!isMobileDevice) return;
+    let mounted = true;
     const tryLock = async () => {
       try {
         await (screen.orientation as ScreenOrientation & { lock: (o: string) => Promise<void> }).lock("landscape");
       } catch {
         // Not supported (iOS Safari without PWA) — show rotate message if portrait
         const mq = window.matchMedia("(orientation: portrait)");
-        setShowRotateMsg(mq.matches);
-        const handler = (e: MediaQueryListEvent) => setShowRotateMsg(e.matches);
+        if (mounted) setShowRotateMsg(mq.matches);
+        const handler = (e: MediaQueryListEvent) => { if (mounted) setShowRotateMsg(e.matches); };
         mq.addEventListener("change", handler);
         return () => mq.removeEventListener("change", handler);
       }
     };
     const cleanup = tryLock();
     return () => {
+      mounted = false;
       cleanup.then((fn) => fn?.());
       screen.orientation.unlock();
     };
@@ -272,12 +274,7 @@ export default function DisplayDashboard() {
 
     // timer mode
     if (displayMode !== "timer" || displayInterval <= 0) return;
-    const noScroll = maxScrollRef.current === 0 || scrollSpeedRef.current === 0;
-    const intervalMs = noScroll && loopPauseMsRef.current > 0
-      ? loopPauseMsRef.current
-      : displayInterval * 1000;
-    if (intervalMs <= 0) return;
-    const timer = setTimeout(goNext, intervalMs);
+    const timer = setTimeout(goNext, displayInterval * 1000);
     return () => clearTimeout(timer);
   }, [activeDashboardIndex, displayMode, displayInterval, dashboards.length, gridPixelHeight, setActiveDashboardIndex]);
 
@@ -317,7 +314,7 @@ export default function DisplayDashboard() {
 
   if (showRotateMsg) return <div className="display-dashboard__rotate"><p>{t("display.rotate")}</p></div>;
 
-  if (!currentDashboard) return <div className="display-dashboard__empty"><p>{t("display.noDashboard")}</p></div>;
+  if (!currentDashboard) return <div className="d-flex flex-1 align-center justify-center" style={{ opacity: 0.5 }}><p>{t("display.noDashboard")}</p></div>;
 
   const scrollSpeed = profile?.getScrollSpeed() ?? 0;
   const maxRow = currentDashboard.widgets.reduce(
@@ -329,7 +326,7 @@ export default function DisplayDashboard() {
     : ROW_HEIGHT;
   const rowHeight = Math.max(ROW_HEIGHT, dynamicRowHeight);
 
-  const totalContentHeight = maxRow * rowHeight + (maxRow - 1) * COL_GAP;
+  const totalContentHeight = maxRow * rowHeight + maxRow * COL_GAP;
   const maxScroll = Math.max(0, totalContentHeight - gridPixelHeight);
 
   // Sync refs inline
@@ -353,7 +350,8 @@ export default function DisplayDashboard() {
   return (
     <div
       ref={containerRef}
-      className={`display-dashboard${isFullscreen ? " display-dashboard--fullscreen" : ""}`}
+      className={`d-flex flex-col h-screen${isFullscreen ? " display-dashboard--fullscreen" : ""}`}
+      style={!isFullscreen ? { background: 'var(--background-color)', overflow: 'hidden', padding: '6px', paddingTop: '10px', boxSizing: 'border-box' } : undefined}
     >
       <DashboardClock />
 
@@ -372,16 +370,15 @@ export default function DisplayDashboard() {
       <InstallPromptBanner />
 
       {currentDashboard.widgets.length === 0 ? (
-        <div className="display-dashboard__empty">
+        <div className="d-flex flex-1 align-center justify-center" style={{ opacity: 0.5 }}>
           <p>{t("display.noWidgets")}</p>
         </div>
       ) : (
         <div
           ref={gridRef}
-          className="display-dashboard__grid"
-          style={{ width: "100%" }}
+          className="flex-1 position-relative overflow-hidden"
         >
-          <div ref={slideRef} className="display-dashboard__slide">
+          <div ref={slideRef} className="w-full h-full">
             <div
               ref={innerGridRef}
               style={{

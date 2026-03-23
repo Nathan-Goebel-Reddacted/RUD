@@ -152,6 +152,7 @@ export default function DashboardGrid({ widgets, onMove, onEdit, onDelete, onDup
     if (!widget || (!delta.x && !delta.y)) return;
 
     const gridW = gridRef.current?.getBoundingClientRect().width ?? 800;
+    if (gridW === 0) return;
     const colPx = gridW / COLS;
     const dx    = Math.round(delta.x / colPx);
     const dy    = Math.round(delta.y / (ROW_HEIGHT + COL_GAP));
@@ -164,7 +165,7 @@ export default function DashboardGrid({ widgets, onMove, onEdit, onDelete, onDup
 
   if (widgets.length === 0) {
     return (
-      <div className="dashboard-grid__empty">
+      <div className="d-flex align-center justify-center" style={{ minHeight: '320px', opacity: 0.55, fontSize: '0.95rem' }}>
         <p>{t("dashboard.noWidgets")}</p>
       </div>
     );

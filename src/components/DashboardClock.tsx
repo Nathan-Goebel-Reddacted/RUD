@@ -9,7 +9,7 @@ export default function DashboardClock() {
   useEffect(() => {
     const id = setInterval(incrementTick, 1000);
     return () => clearInterval(id);
-  }, [incrementTick]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps -- incrementTick is a stable Zustand action
 
   return null;
 }

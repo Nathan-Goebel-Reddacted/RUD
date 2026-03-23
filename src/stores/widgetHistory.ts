@@ -27,3 +27,8 @@ export function appendEntry(
 export function getEntries(widgetId: string): Record<string, unknown>[] {
   return entries.get(widgetId) ?? [];
 }
+
+export function clearHistory(widgetId: string): void {
+  scalars.delete(widgetId);
+  entries.delete(widgetId);
+}
