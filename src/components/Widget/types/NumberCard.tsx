@@ -47,15 +47,15 @@ export default function NumberCard({ data, config, widgetId, fetchedAt }: Props)
   const sparkData = history.map((v) => ({ v }));
 
   return (
-    <div className={`widget-number-card${keepHistory ? " widget-number-card--with-history" : ""}`}>
-      <div className="widget-number-card__top">
+    <div className={keepHistory ? 'd-flex flex-col align-stretch' : 'd-flex align-baseline'} style={{ gap: keepHistory ? '0.25rem' : '0.4rem' }}>
+      <div className="d-flex align-baseline" style={{ gap: '0.4rem' }}>
         <span className="widget-number-card__value" style={color ? { color } : undefined}>
           {display}
         </span>
-        {unit && <span className="widget-number-card__unit">{unit}</span>}
+        {unit && <span style={{ fontSize: '1rem', opacity: 0.6 }}>{unit}</span>}
       </div>
       {keepHistory && sparkData.length > 1 && (
-        <div className="widget-number-card__sparkline">
+        <div style={{ width: '100%', height: '40px', marginTop: '0.15rem' }}>
           <ResponsiveContainer width="100%" height={40}>
             <LineChart data={sparkData}>
               <Line

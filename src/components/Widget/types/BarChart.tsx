@@ -38,7 +38,7 @@ export default function BarChart({ data, config }: Props) {
   const hasThresholds = thresholds && thresholds.length > 0;
 
   if (rows.length === 0) {
-    return <p className="widget-chart__empty">No data</p>;
+    return <p style={{ opacity: 0.5, fontSize: '0.85rem' }}>No data</p>;
   }
 
   return (

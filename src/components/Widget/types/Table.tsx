@@ -15,7 +15,7 @@ export default function Table({ data, config }: Props) {
   })();
 
   if (rows.length === 0) {
-    return <p className="widget-table__empty">No data</p>;
+    return <p style={{ opacity: 0.5, fontSize: '0.85rem' }}>No data</p>;
   }
 
   const visibleColumns: Array<{ key: string; label: string; width?: number }> =
@@ -24,7 +24,7 @@ export default function Table({ data, config }: Props) {
       : Object.keys(rows[0]).map((k) => ({ key: k, label: k }));
 
   return (
-    <div className="widget-table__wrapper">
+    <div className="w-full h-full overflow-auto align-self-start">
       <table className="widget-table">
         {showHeader && (
           <thead>

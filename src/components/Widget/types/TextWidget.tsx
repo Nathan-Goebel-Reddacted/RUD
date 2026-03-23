@@ -5,12 +5,21 @@ type Props = {
 };
 
 export default function TextWidget({ config }: Props) {
+  const text = config.content;
   return (
     <div
-      className="widget-text"
-      style={config.fontSize ? { fontSize: config.fontSize } : undefined}
+      className="w-full h-full d-flex align-center justify-center text-center"
+      style={{
+        padding: '0.75rem',
+        whiteSpace: 'pre-wrap',
+        wordBreak: 'break-word',
+        boxSizing: 'border-box',
+        lineHeight: 1.5,
+        ...(config.fontSize ? { fontSize: config.fontSize } : {}),
+        ...(!text ? { opacity: 0.4, fontStyle: 'italic' } : {}),
+      }}
     >
-      {config.content || <em className="widget-text__empty">No text configured</em>}
+      {text || <em>No text configured</em>}
     </div>
   );
 }

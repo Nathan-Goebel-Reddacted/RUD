@@ -18,15 +18,15 @@ export default function HealthCheckWidget({ config, dataState }: Props) {
   const { httpCode, loading, error } = dataState;
 
   if (loading && httpCode === null) {
-    return <div className="widget-health-check widget-health-check--loading">…</div>;
+    return <div className="d-flex align-center gap-2 w-full h-full" style={{ opacity: 0.5 }}>…</div>;
   }
 
   if (error === "endpoint_not_found" || error === "cors") {
     return (
-      <div className="widget-health-check widget-health-check--error">
+      <div className="d-flex align-center gap-2 w-full h-full" style={{ opacity: 0.7 }}>
         <span className="widget-health-check__dot" style={{ background: "var(--danger-color, #e05252)" }} />
         <span className="widget-health-check__status">!</span>
-        <span className="widget-health-check__code">{t(`widgetCard.error.${error === "cors" ? "cors" : "endpointNotFound"}`)}</span>
+        <span style={{ fontSize: '1rem', opacity: 0.55, fontVariantNumeric: 'tabular-nums' }}>{t(`widgetCard.error.${error === "cors" ? "cors" : "endpointNotFound"}`)}</span>
       </div>
     );
   }
@@ -40,13 +40,13 @@ export default function HealthCheckWidget({ config, dataState }: Props) {
   }
 
   return (
-    <div className="widget-health-check">
+    <div className="d-flex align-center gap-2 w-full h-full">
       <span className="widget-health-check__dot" style={{ background: dotColor }} />
       <span className="widget-health-check__status" style={{ color: dotColor }}>
         {ok ? t("widgetHealthCheck.ok") : t("widgetHealthCheck.ko")}
       </span>
       {httpCode !== null && (
-        <span className="widget-health-check__code">{httpCode}</span>
+        <span style={{ fontSize: '1rem', opacity: 0.55, fontVariantNumeric: 'tabular-nums' }}>{httpCode}</span>
       )}
     </div>
   );

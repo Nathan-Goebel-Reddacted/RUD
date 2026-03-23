@@ -64,7 +64,7 @@ function NoProfile() {
   }
 
   return (
-    <div className="NoProfilePage">
+    <div className="d-flex flex-col align-center justify-center h-screen gap-4">
       <input
         ref={fileInputRef}
         type="file"

@@ -14,8 +14,8 @@ export default function ClockWidget({ config }: { config: ClockConfig }) {
     : time.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false });
 
   return (
-    <div className="widget-clock">
-      <span className="widget-clock__time">{formatted}</span>
+    <div className="d-flex align-center justify-center w-full h-full">
+      <span style={{ fontSize: '2.2rem', fontWeight: 700, fontVariantNumeric: 'tabular-nums', letterSpacing: '0.05em' }}>{formatted}</span>
     </div>
   );
 }

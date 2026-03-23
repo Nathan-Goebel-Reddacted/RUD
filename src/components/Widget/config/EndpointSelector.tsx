@@ -24,7 +24,7 @@ export default function EndpointSelector({ connectionId, endpointId, onChange }:
   const endpoints    = selectedConn?.getEndpoints() ?? [];
 
   return (
-    <div className="endpoint-selector">
+    <div className="d-flex flex-col">
       <div className="form-group">
         <label className="form-label">API Connection</label>
         <select

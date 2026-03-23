@@ -75,7 +75,7 @@ export default function LineChart({ data, config, widgetId, fetchedAt }: Props) 
   const activeXKey     = useHistoryXKey ? "_t" : xKey;
 
   if (rows.length === 0) {
-    return <p className="widget-chart__empty">No data</p>;
+    return <p style={{ opacity: 0.5, fontSize: '0.85rem' }}>No data</p>;
   }
 
   return (

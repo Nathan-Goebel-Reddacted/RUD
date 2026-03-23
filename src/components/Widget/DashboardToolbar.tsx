@@ -21,7 +21,7 @@ export default function DashboardToolbar({
 
   return (
     <div className="dashboard-toolbar">
-      <div className="dashboard-toolbar__left">
+      <div className="flex-1">
         <input
           className="dashboard-toolbar__title-input"
           type="text"
@@ -32,13 +32,13 @@ export default function DashboardToolbar({
         />
       </div>
 
-      <div className="dashboard-toolbar__center">
-        <label className="dashboard-toolbar__label" htmlFor="refresh-interval">
+      <div className="d-flex align-center gap-2">
+        <label style={{ fontSize: '0.8rem', opacity: 0.7 }} htmlFor="refresh-interval">
           {t("toolbar.refreshLabel")}
         </label>
         <select
           id="refresh-interval"
-          className="form-select dashboard-toolbar__select"
+          className="form-select w-auto"
           value={refreshInterval}
           onChange={(e) => onRefreshChange(Number(e.target.value))}
         >
@@ -50,7 +50,7 @@ export default function DashboardToolbar({
         </select>
       </div>
 
-      <div className="dashboard-toolbar__right">
+      <div className="d-flex gap-2">
         <button className="btn btn--primary" onClick={onAddWidget}>
           {t("toolbar.addWidget")}
         </button>

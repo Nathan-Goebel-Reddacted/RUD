@@ -26,7 +26,7 @@ export default function LastUpdateWidget({ config, fetchedAt }: Props) {
 
   if (fetchedAt === null) {
     return (
-      <div className="widget-last-update widget-last-update--empty">
+      <div className="d-flex align-center justify-center w-full h-full" style={{ opacity: 0.45 }}>
         {t("widgetLastUpdate.never")}
       </div>
     );
@@ -37,8 +37,8 @@ export default function LastUpdateWidget({ config, fetchedAt }: Props) {
     : new Date(fetchedAt).toLocaleTimeString();
 
   return (
-    <div className="widget-last-update">
-      <span className="widget-last-update__time">{display}</span>
+    <div className="d-flex align-center justify-center w-full h-full">
+      <span style={{ fontSize: '1.6rem', fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>{display}</span>
     </div>
   );
 }

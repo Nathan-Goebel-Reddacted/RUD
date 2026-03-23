@@ -61,10 +61,10 @@ function Dashboard() {
   }
 
   return (
-    <div className="dashboard-editor">
+    <div className="d-flex flex-col h-screen">
       <DashboardClock />
-      <div className="dashboard-editor__body">
-        <div className="dashboard-editor__canvas">
+      <div className="d-flex flex-1 overflow-hidden">
+        <div className="flex-1 overflow-auto" style={{ padding: '0.75rem 1rem' }}>
           <DashboardGrid
             widgets={currentDashboard.widgets}
             onMove={moveWidget}

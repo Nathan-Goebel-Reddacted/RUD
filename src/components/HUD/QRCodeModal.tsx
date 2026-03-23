@@ -54,8 +54,8 @@ export default function QRCodeModal({ profile, connections, dashboards, modalId,
 
   return (
     <Modal id={modalId} width={420} ariaLabelledBy="qr-modal-title">
-      <div className="qr-modal-content">
-        <h3 id="qr-modal-title">{t("qrModal.title")}</h3>
+      <div className="d-flex flex-col align-center gap-4 text-center" style={{ padding: '1.25rem' }}>
+        <h3 id="qr-modal-title" style={{ margin: 0 }}>{t("qrModal.title")}</h3>
         {qrData && (
           <>
             {tooBig ? (
@@ -68,7 +68,7 @@ export default function QRCodeModal({ profile, connections, dashboards, modalId,
                 </div>
               </>
             )}
-            <p className="qr-size-info">{t("qrModal.sizeInfo", { size: sizeKb })}</p>
+            <p style={{ margin: 0, fontSize: '0.8rem', opacity: 0.6 }}>{t("qrModal.sizeInfo", { size: sizeKb })}</p>
             <button className="nav-btn" onClick={handleCopy}>
               {copied ? t("qrModal.copied") : t("qrModal.copyLink")}
             </button>
