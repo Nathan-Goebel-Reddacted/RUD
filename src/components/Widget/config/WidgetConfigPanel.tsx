@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useApiStore } from "@/stores/apiStore";
 import { fetchWidgetData } from "@/services/widgetFetch";
@@ -20,6 +20,7 @@ import {
 import EndpointSelector from "./EndpointSelector";
 import DataPathInput from "./DataPathInput";
 import AxisKeySelector from "./AxisKeySelector";
+import ColorPicker from "@/components/tool/ColorPicker";
 
 type Props = {
   initial?:      Widget;
@@ -85,6 +86,7 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
   const [rawPreview,   setRawPreview]   = useState<unknown>(null);
   const [dataKeys,     setDataKeys]     = useState<string[]>([]);
   const [fetching,     setFetching]     = useState(false);
+  const fetchControllerRef = useRef<AbortController | null>(null);
 
   const isStatic      = type === "text" || type === "clock";
   const needsDataPath = !isStatic && type !== "health-check" && type !== "last-update";
@@ -99,16 +101,20 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
     const conn = connections.find((c) => c.getId() === connectionId);
     const ep   = conn?.getEndpoints().find((e) => e.getId() === endpointId);
     if (!conn || !ep) return;
+    fetchControllerRef.current?.abort();
+    const controller = new AbortController();
+    fetchControllerRef.current = controller;
     setFetching(true);
     try {
-      const result = await fetchWidgetData(conn, ep, "");
+      const result = await fetchWidgetData(conn, ep, "", controller.signal);
+      if (controller.signal.aborted) return;
       if (result.raw !== null) {
         setRawPreview(result.raw);
         const { value } = extractData(result.raw, dataPath);
         setDataKeys(extractKeys(value ?? result.raw));
       }
     } finally {
-      setFetching(false);
+      if (!controller.signal.aborted) setFetching(false);
     }
   }
 
@@ -158,10 +164,10 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
           <span className="form-hint">{t("widgetConfig.thresholdsHint")}</span>
         )}
         {thresholds.map((th, i) => (
-          <div key={i} className="threshold-row">
+          <div key={i} className="d-flex align-center gap-2" style={{ marginBottom: '0.35rem' }}>
             <input
               type="number"
-              className="form-input threshold-row__value"
+              className="form-input flex-1"
               placeholder={t("widgetConfig.thresholdValue")}
               value={th.value}
               onChange={(e) => {
@@ -170,13 +176,12 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
                 onChange(copy);
               }}
             />
-            <input
-              type="color"
+            <ColorPicker
               className="threshold-row__color"
               value={th.color}
-              onChange={(e) => {
+              onChange={(v) => {
                 const copy = [...thresholds];
-                copy[i] = { ...th, color: e.target.value };
+                copy[i] = { ...th, color: v };
                 onChange(copy);
               }}
             />
@@ -197,7 +202,7 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
   function renderHistoryConfig(keepHistory: boolean, maxPoints: number, onChange: (kh: boolean, mp: number) => void) {
     return (
       <div className="form-group">
-        <label className="column-selector__row" style={{ cursor: "pointer" }}>
+        <label className="d-flex align-center gap-2" style={{ cursor: "pointer" }}>
           <input
             type="checkbox"
             checked={keepHistory}
@@ -303,7 +308,7 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
               />
             </div>
             <div className="form-group">
-              <label className="column-selector__row" style={{ cursor: "pointer" }}>
+              <label className="d-flex align-center gap-2" style={{ cursor: "pointer" }}>
                 <input
                   type="checkbox"
                   checked={c.showHeader !== false}
@@ -320,21 +325,21 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
               {allKeys.length === 0 ? (
                 <span className="form-hint">{t("widgetConfig.fetchColumnsHint")}</span>
               ) : (
-                <div className="column-selector">
+                <div className="d-flex flex-col gap-1">
                   {allKeys.map((key) => {
                     const col = c.columns.find((col) => col.key === key);
                     return (
-                      <div key={key} className="column-selector__row">
+                      <div key={key} className="d-flex align-center gap-2">
                         <input
                           type="checkbox"
                           id={`col-${key}`}
                           checked={selectedKeys.has(key)}
                           onChange={(e) => toggleColumn(key, e.target.checked)}
                         />
-                        <label htmlFor={`col-${key}`} className="column-selector__key">{key}</label>
+                        <label htmlFor={`col-${key}`} className="font-mono" style={{ fontSize: '0.82rem', minWidth: '80px', opacity: 0.85, cursor: 'pointer' }}>{key}</label>
                         {selectedKeys.has(key) && (
                           <input
-                            className="form-input column-selector__label"
+                            className="form-input flex-1"
                             type="text"
                             placeholder={key}
                             value={col?.label ?? key}
@@ -370,7 +375,7 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
               onChange={(k) => setConfig({ ...c, xKey: k })}
             />
             <div className="form-group">
-              <label className="column-selector__row" style={{ cursor: "pointer" }}>
+              <label className="d-flex align-center gap-2" style={{ cursor: "pointer" }}>
                 <input
                   type="checkbox"
                   checked={c.aggregation === "count"}
@@ -397,11 +402,9 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
             )}
             <div className="form-group">
               <label className="form-label">{t("widgetConfig.barColor")}</label>
-              <input
-                className="form-input"
-                type="color"
+              <ColorPicker
                 value={c.color ?? "#4a9eff"}
-                onChange={(e) => setConfig({ ...c, color: e.target.value })}
+                onChange={(v) => setConfig({ ...c, color: v })}
               />
             </div>
             {renderThresholds(c.thresholds ?? [], (th) => setConfig({ ...c, thresholds: th }))}
@@ -421,7 +424,7 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
               />
             )}
             <div className="form-group">
-              <label className="column-selector__row" style={{ cursor: "pointer" }}>
+              <label className="d-flex align-center gap-2" style={{ cursor: "pointer" }}>
                 <input
                   type="checkbox"
                   checked={c.aggregation === "count"}
@@ -565,12 +568,12 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
   }
 
   return (
-    <div className="widget-config-panel">
-      <div className="widget-config-panel__header">
-        <h2>{initial ? t("widgetConfig.titleEdit") : t("widgetConfig.titleAdd")}</h2>
+    <div className="d-flex flex-col" style={{ maxHeight: '85vh' }}>
+      <div style={{ padding: '1rem 1.25rem 0.5rem', borderBottom: '1px solid var(--border-color)' }}>
+        <h2 style={{ margin: 0, fontSize: '1rem' }}>{initial ? t("widgetConfig.titleEdit") : t("widgetConfig.titleAdd")}</h2>
       </div>
 
-      <div className="widget-config-panel__body">
+      <div className="flex-1 overflow-auto" style={{ padding: '1rem 1.25rem' }}>
         {/* Label */}
         <div className="form-group">
           <label className="form-label">{t("widgetConfig.labelField")}</label>
@@ -648,7 +651,7 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
         )}
       </div>
 
-      <div className="widget-config-panel__footer">
+      <div className="d-flex justify-end gap-2" style={{ padding: '0.75rem 1.25rem', borderTop: '1px solid var(--border-color)' }}>
         <button className="btn btn--secondary" onClick={onCancel}>{t("widgetConfig.cancel")}</button>
         <button className="btn btn--primary" onClick={handleSave} disabled={!isValid}>
           {initial ? t("widgetConfig.save") : t("widgetConfig.addWidget")}

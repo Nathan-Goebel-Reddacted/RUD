@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
-import '@/App.css'
 
 /**
  * open/close.
@@ -189,7 +188,8 @@ const contentStyles: React.CSSProperties = {
     height: h,
     overflow: "auto",
     outline: "none",
-    background:"var(--background-color)",
+    background: "var(--background-color)",
+    borderRadius: "10px",
   };
 
 const overlayStyles: React.CSSProperties & { [key: string]: any } = {
@@ -202,8 +202,7 @@ const overlayStyles: React.CSSProperties & { [key: string]: any } = {
 };
 
   const innerWrapper: React.CSSProperties = {
-    transform: "scale(1)",
-    animation: "modalPop 160ms ease-out",
+    animation: prefersReducedMotion ? "none" : "modalPop 160ms ease-out",
   };
 
   const keyframes = (
@@ -246,7 +245,7 @@ const dialog = (
         aria-labelledby={ariaLabelledBy}
         aria-describedby={ariaDescribedBy}
         tabIndex={-1}
-        className={`border-radius ${className ?? ""}`}
+        className={className ?? ""}
         style={{ ...cardStyles, ...style }}
         onMouseDown={(e) => e.stopPropagation()}
       >

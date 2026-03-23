@@ -6,7 +6,6 @@
   --widget-bg:         rgba(255,255,255,0.04);
   --widget-padding:    0.75rem;
   --primary-color:     #4a9eff;
-  --danger-color:      #e05252;
 }
 
 /* ─── Shared form primitives ──────────────────────────────────────── */
@@ -73,23 +72,19 @@
   color: inherit;
 }
 .btn--secondary:hover:not(:disabled) { background: rgba(255,255,255,0.18); }
-
-/* ─── Dashboard Editor layout ──────────────────────────────────────── */
-.dashboard-editor {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
+.btn--ghost {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: inherit;
+  border-radius: 6px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.78rem;
+  cursor: pointer;
+  opacity: 0.65;
+  transition: opacity 0.15s;
 }
-.dashboard-editor__body {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-}
-.dashboard-editor__canvas {
-  flex: 1;
-  padding: 0.75rem 1rem;
-  overflow: auto;
-}
+.btn--ghost:hover { opacity: 1; }
+.btn--sm { padding: 0.2rem 0.5rem; font-size: 0.78rem; }
 
 /* ─── Dashboard bubbles bar ──────────────────────────────────────── */
 .db-bubbles-bar {
@@ -248,9 +243,6 @@
   background: rgba(255,255,255,0.04);
   border-bottom: 1px solid var(--border-color);
 }
-.dashboard-toolbar__left  { flex: 1; }
-.dashboard-toolbar__center { display: flex; align-items: center; gap: 0.5rem; }
-.dashboard-toolbar__right  { display: flex; gap: 0.5rem; }
 .dashboard-toolbar__title-input {
   background: transparent;
   border: none;
@@ -264,10 +256,6 @@
   max-width: 280px;
 }
 .dashboard-toolbar__title-input:focus { border-bottom-color: var(--primary-color); }
-.dashboard-toolbar__label { font-size: 0.8rem; opacity: 0.7; }
-.dashboard-toolbar__select { width: auto; }
-
-/* ─── Grid ────────────────────────────────────────────────────────── */
 
 /* ─── Resize handle ───────────────────────────────────────────────── */
 .widget-resize-handle {
@@ -297,16 +285,6 @@
 *:hover > .widget-resize-handle:hover {
   opacity: 1;
 }
-
-.dashboard-grid__empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 320px;
-  opacity: 0.55;
-  font-size: 0.95rem;
-}
-
 
 /* ─── Widget Card ─────────────────────────────────────────────────── */
 .widget-card {
@@ -432,78 +410,15 @@
   50%       { opacity: 0.9; }
 }
 
-/* ─── Number Card ─────────────────────────────────────────────────── */
-.widget-number-card {
-  display: flex;
-  align-items: baseline;
-  gap: 0.4rem;
-}
-.widget-number-card--with-history {
-  flex-direction: column;
-  align-items: stretch;
-  gap: 0.25rem;
-}
-.widget-number-card__top {
-  display: flex;
-  align-items: baseline;
-  gap: 0.4rem;
-}
+/* ─── Number Card — value only (container inlined in TSX) ─────────── */
 .widget-number-card__value {
   font-size: 2.5rem;
   font-weight: 700;
   line-height: 1;
   transition: color 0.3s;
 }
-.widget-number-card__unit {
-  font-size: 1rem;
-  opacity: 0.6;
-}
-.widget-number-card__sparkline {
-  width: 100%;
-  height: 40px;
-  margin-top: 0.15rem;
-}
 
-/* ─── Clock ───────────────────────────────────────────────────────── */
-.widget-clock {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-}
-.widget-clock__time {
-  font-size: 2.2rem;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.05em;
-}
-
-/* ─── Last Update ─────────────────────────────────────────────────── */
-.widget-last-update {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-}
-.widget-last-update--empty { opacity: 0.45; }
-.widget-last-update__time {
-  font-size: 1.6rem;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-
-/* ─── Health Check ────────────────────────────────────────────────── */
-.widget-health-check {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  width: 100%;
-  height: 100%;
-}
-.widget-health-check--loading { opacity: 0.5; }
-.widget-health-check--error   { opacity: 0.7; }
+/* ─── Health Check — dot & status only (container inlined in TSX) ─── */
 .widget-health-check__dot {
   width: 14px;
   height: 14px;
@@ -517,38 +432,17 @@
   line-height: 1;
   transition: color 0.3s;
 }
-.widget-health-check__code {
-  font-size: 1rem;
-  opacity: 0.55;
-  font-variant-numeric: tabular-nums;
-}
 
-/* ─── Thresholds editor ───────────────────────────────────────────── */
-.threshold-row {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.35rem;
-}
-.threshold-row__value { flex: 1; }
+/* ─── Thresholds editor — color picker (row inlined in TSX) ───── */
 .threshold-row__color {
+  flex-shrink: 0;
+}
+.threshold-row__color .color-picker__swatch {
   width: 36px;
   height: 32px;
-  padding: 2px;
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  background: transparent;
-  cursor: pointer;
-  flex-shrink: 0;
 }
 
 /* ─── Table ───────────────────────────────────────────────────────── */
-.widget-table__wrapper {
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  align-self: flex-start;
-}
 .widget-table {
   width: 100%;
   border-collapse: collapse;
@@ -571,75 +465,30 @@
   z-index: 1;
 }
 .widget-table tr:last-child td { border-bottom: none; }
-.widget-table__empty { opacity: 0.5; font-size: 0.85rem; }
 
-/* ─── Charts ──────────────────────────────────────────────────────── */
-.widget-chart__empty { opacity: 0.5; font-size: 0.85rem; }
-
-/* ─── WidgetConfigPanel ───────────────────────────────────────────── */
-.widget-config-panel {
-  display: flex;
-  flex-direction: column;
-  max-height: 85vh;
-}
-.widget-config-panel__header {
-  padding: 1rem 1.25rem 0.5rem;
-  border-bottom: 1px solid var(--border-color);
-}
-.widget-config-panel__header h2 {
+/* ─── Widget: Raw Response ────────────────────────────────────────── */
+.widget-raw {
+  width: 100%;
+  height: 100%;
   margin: 0;
-  font-size: 1rem;
+  padding: 0.6rem;
+  overflow: auto;
+  font-family: monospace;
+  font-size: 0.75rem;
+  white-space: pre;
+  box-sizing: border-box;
+  color: inherit;
+  background: transparent;
 }
-.widget-config-panel__body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1rem 1.25rem;
-}
-.widget-config-panel__footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  border-top: 1px solid var(--border-color);
-}
-
-/* ─── EndpointSelector ────────────────────────────────────────────── */
-.endpoint-selector { display: flex; flex-direction: column; }
 
 /* ─── Display Dashboard ───────────────────────────────────────────── */
-.display-dashboard {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: var(--background-color);
-  overflow: hidden;
-  padding: 6px;
-  padding-top: 10px; /* 4px nav trigger + 6px visual gap */
-  box-sizing: border-box;
-}
 .display-dashboard--fullscreen {
+  background: var(--background-color);
   padding-top: 6px;
   position: fixed;
   inset: 0;
   z-index: 9000;
   overflow: auto;
-}
-.display-dashboard__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.5rem 1rem;
-  border-bottom: 1px solid var(--border-color);
-}
-.display-dashboard__title {
-  margin: 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-.display-dashboard__controls {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
 }
 .display-dashboard__fs-btn {
   position: fixed;
@@ -653,6 +502,18 @@
   transition: opacity 0.2s;
 }
 .display-dashboard__fs-btn:hover { opacity: 1; }
+.display-dashboard__rotate {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--background-color);
+  font-size: 1.2rem;
+  text-align: center;
+  padding: 2rem;
+  z-index: 9999;
+}
 
 /* ─── Display mode bubbles ───────────────────────────────────────── */
 .display-bubbles {
@@ -676,15 +537,8 @@
 }
 .display-bubble:hover { background: rgba(255, 255, 255, 0.65); transform: scale(1.2); }
 .display-bubble--active { background: rgba(255, 255, 255, 0.9); transform: scale(1.2); }
-.display-dashboard__grid {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-}
-.display-dashboard__slide {
-  width: 100%;
-  height: 100%;
-}
+
+/* ─── Slide animations ────────────────────────────────────────────── */
 @keyframes slide-in-from-right {
   from { transform: translateX(100%); }
   to   { transform: translateX(0); }
@@ -699,92 +553,6 @@
 .display-dashboard__slide--from-left {
   animation: slide-in-from-left 0.5s ease-in-out;
 }
-.display-dashboard__empty {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0.5;
-}
-.display-dashboard__rotate {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--background-color);
-  font-size: 1.2rem;
-  text-align: center;
-  padding: 2rem;
-  z-index: 9999;
-}
-
-/* ─── Widget: Text ────────────────────────────────────────────────── */
-.widget-text {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.75rem;
-  white-space: pre-wrap;
-  word-break: break-word;
-  box-sizing: border-box;
-  text-align: center;
-  line-height: 1.5;
-}
-.widget-text__empty { opacity: 0.4; font-style: italic; }
-
-/* ─── Widget: Raw Response ────────────────────────────────────────── */
-.widget-raw {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0.6rem;
-  overflow: auto;
-  font-family: monospace;
-  font-size: 0.75rem;
-  white-space: pre;
-  box-sizing: border-box;
-  color: inherit;
-  background: transparent;
-}
-
-/* ─── Column selector (Table config) ─────────────────────────────── */
-.column-selector {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-.column-selector__row {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-.column-selector__key {
-  font-size: 0.82rem;
-  font-family: monospace;
-  min-width: 80px;
-  opacity: 0.85;
-  cursor: pointer;
-}
-.column-selector__label {
-  flex: 1;
-  margin-bottom: 0;
-}
-.btn--ghost {
-  background: transparent;
-  border: 1px solid var(--border-color);
-  color: inherit;
-  border-radius: 6px;
-  padding: 0.25rem 0.6rem;
-  font-size: 0.78rem;
-  cursor: pointer;
-  opacity: 0.65;
-  transition: opacity 0.15s;
-}
-.btn--ghost:hover { opacity: 1; }
-.btn--sm { padding: 0.2rem 0.5rem; font-size: 0.78rem; }
 
 /* ─── Install prompt banner ────────────────────────────────────────── */
 .install-banner {

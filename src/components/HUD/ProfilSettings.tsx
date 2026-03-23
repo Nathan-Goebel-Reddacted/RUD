@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ColorPicker from "@/components/tool/ColorPicker";
 import Profile, { type DisplayMode } from "@/class/Profiles";
 import Modal from "@/components/tool/Modal";
 import { useProfileStore } from "@/stores/profileStore";
@@ -208,7 +209,7 @@ function ProfileSettings({
     newProfile.setDisplayInterval(displayInterval);
     newProfile.setScrollSpeed(scrollSpeed);
     newProfile.setLoopPauseMs(loopPauseMs);
-    const result = newProfile.IsProfileValid();
+    const result = newProfile.isProfileValid();
     if (result.isSuccess()) {
       setErrors({});
       applyColors(newProfile);
@@ -223,7 +224,7 @@ function ProfileSettings({
     } else {
       const errs: Record<string, string> = {};
       result.getAllReason().forEach(r => {
-        errs[r.getreasonCode()] = r.getreasonMessage();
+        errs[r.getReasonCode()] = r.getReasonMessage();
       });
       setErrors(errs);
       // Switch to profile tab to show errors
@@ -233,7 +234,7 @@ function ProfileSettings({
 
   return (
     <Modal id={modalId}>
-      <div className="profileSettings">
+      <div style={{ padding: '1rem', minWidth: '320px' }}>
         {/* Tabs */}
         <div className="profile-tabs">
           {(["profile", "dashboards", "display"] as const).map((tabKey) => (
@@ -258,7 +259,8 @@ function ProfileSettings({
                 onChange={(e) => setProfileName(e.target.value)}
                 placeholder={t("profileSettings.profileName")}
                 minLength={5}
-                className="display-block margin-10"
+                className="d-block w-full"
+                style={{ margin: '0.5rem 0', boxSizing: 'border-box' }}
                 required
               />
               {errors["Profile.name.tooShort"] && (
@@ -268,7 +270,8 @@ function ProfileSettings({
                 name="Language"
                 value={language}
                 onChange={(e) => setLanguage(e.target.value as LanguageType)}
-                className="display-block margin-10"
+                className="d-block w-full"
+                style={{ margin: '0.5rem 0', boxSizing: 'border-box' }}
                 required
               >
                 <option value={Language.EN}>English</option>
@@ -277,23 +280,23 @@ function ProfileSettings({
               {errors["Profile.invalidLanguage"] && (
                 <span className="form-error">{t(errors["Profile.invalidLanguage"])}</span>
               )}
-              <div className="d-flex flex-col gap-2 margin-10">
-                <label className="d-flex align-center gap-2">
-                  <input type="color" value={backgroundColor} onChange={(e) => setBackgroundColor(e.target.value)} />
-                  {t("profileSettings.colors.background")}
-                </label>
-                <label className="d-flex align-center gap-2">
-                  <input type="color" value={borderColor} onChange={(e) => setBorderColor(e.target.value)} />
-                  {t("profileSettings.colors.border")}
-                </label>
-                <label className="d-flex align-center gap-2">
-                  <input type="color" value={textColor} onChange={(e) => setTextColor(e.target.value)} />
-                  {t("profileSettings.colors.text")}
-                </label>
-                <label className="d-flex align-center gap-2">
-                  <input type="color" value={textHoverColor} onChange={(e) => setTextHoverColor(e.target.value)} />
-                  {t("profileSettings.colors.textHover")}
-                </label>
+              <div className="d-flex flex-col gap-2" style={{ margin: '0.5rem 0' }}>
+                <div className="d-flex align-center gap-2">
+                  <ColorPicker value={backgroundColor} onChange={setBackgroundColor} />
+                  <span>{t("profileSettings.colors.background")}</span>
+                </div>
+                <div className="d-flex align-center gap-2">
+                  <ColorPicker value={borderColor} onChange={setBorderColor} />
+                  <span>{t("profileSettings.colors.border")}</span>
+                </div>
+                <div className="d-flex align-center gap-2">
+                  <ColorPicker value={textColor} onChange={setTextColor} />
+                  <span>{t("profileSettings.colors.text")}</span>
+                </div>
+                <div className="d-flex align-center gap-2">
+                  <ColorPicker value={textHoverColor} onChange={setTextHoverColor} />
+                  <span>{t("profileSettings.colors.textHover")}</span>
+                </div>
               </div>
             </div>
           )}
@@ -315,7 +318,7 @@ function ProfileSettings({
           {/* Display tab */}
           {tab === "display" && (
             <div className="profile-tab-content">
-              <label className="d-flex align-center justify-between gap-2 margin-10">
+              <label className="d-flex align-center justify-between gap-2" style={{ margin: '0.5rem 0' }}>
                 {t("profileSettings.display.mode")}
                 <select
                   value={displayMode}
@@ -327,8 +330,8 @@ function ProfileSettings({
                 </select>
               </label>
               <label
-                className="d-flex align-center justify-between gap-2 margin-10"
-                style={{ opacity: displayMode === "timer" ? 1 : 0.4 }}
+                className="d-flex align-center justify-between gap-2"
+                style={{ margin: '0.5rem 0', opacity: displayMode === "timer" ? 1 : 0.4 }}
               >
                 {t("profileSettings.display.interval")}
                 <input
@@ -341,18 +344,17 @@ function ProfileSettings({
                   disabled={displayMode !== "timer"}
                 />
               </label>
-              <label className="d-flex align-center justify-between gap-2 margin-10">
+              <label className="d-flex align-center justify-between gap-2" style={{ margin: '0.5rem 0' }}>
                 {t("profileSettings.display.scrollSpeed")}
                 <input
                   type="number"
                   min={0}
-                  max={500}
                   value={scrollSpeed}
                   onChange={(e) => setScrollSpeed(Number(e.target.value))}
                   style={{ width: "80px" }}
                 />
               </label>
-              <label className="d-flex align-center justify-between gap-2 margin-10">
+              <label className="d-flex align-center justify-between gap-2" style={{ margin: '0.5rem 0' }}>
                 {t("profileSettings.display.loopPauseMs")}
                 <input
                   type="number"
@@ -369,7 +371,7 @@ function ProfileSettings({
 
           {/* Submit — hidden on Dashboards tab (actions are immediate) */}
           {tab !== "dashboards" && (
-            <button type="submit" className="display-block margin-10">
+            <button type="submit" className="d-block w-full" style={{ margin: '0.5rem 0' }}>
               {initialProfile ? t("profileSettings.saveProfile") : t("profileSettings.loadProfile")}
             </button>
           )}
