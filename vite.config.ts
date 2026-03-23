@@ -17,7 +17,7 @@ function renameDisplayHtml(): Plugin {
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
-  const isDisplay = mode === 'display' || mode === 'gh-pages'
+  const isDisplay = mode === 'display' || mode === 'gh-pages' // gh-pages is display-only (no Editor/ApiConfig)
   const isGHPages = mode === 'gh-pages'
   const base      = isGHPages ? '/RUD/' : '/'
 
