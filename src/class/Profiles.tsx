@@ -24,9 +24,9 @@ class Profile{
         this.profileName = profileName
     }
 
-    public IsProfileValid(): ActionResult {
+    public isProfileValid(): ActionResult {
         const actionResult = new ActionResult("")
-        if (!this.IsProfileNameValid(this.profileName).isSuccess()){
+        if (!this.isProfileNameValid(this.profileName).isSuccess()){
             actionResult.addReason("Profile.invalid","profile.invalid")
         }
         if (this.language !== Language.EN && this.language !== Language.FR){
@@ -35,7 +35,7 @@ class Profile{
         return actionResult
     }
 
-    private IsProfileNameValid(ProfileName:string ): ActionResult {
+    private isProfileNameValid(ProfileName:string ): ActionResult {
         const actionResult = new ActionResult("")
         if(ProfileName.length < 5){
             actionResult.addReason("Profile.name.tooShort","profile.invalidName")
@@ -48,7 +48,7 @@ class Profile{
     }
 
     public setProfileName(profileName: string){
-        if (this.IsProfileNameValid(profileName).isSuccess()){
+        if (this.isProfileNameValid(profileName).isSuccess()){
             this.profileName = profileName
         }
     }
@@ -114,7 +114,7 @@ class Profile{
             const d = data as Record<string, unknown>
             const p = new Profile()
             p.createAProfile(typeof d.profileName === "string" ? d.profileName : "")
-            if (typeof d.language === "string") p.setLanguage(d.language as LanguageType)
+            if (typeof d.language === "string" && Object.values(Language).includes(d.language as LanguageType)) p.setLanguage(d.language as LanguageType)
             if (typeof d.backgroundColor === "string") p.setBackgroundColor(d.backgroundColor)
             if (typeof d.borderColor === "string") p.setBorderColor(d.borderColor)
             if (typeof d.textColor === "string") p.setTextColor(d.textColor)
@@ -125,7 +125,7 @@ class Profile{
             if (typeof d.displayInterval === "number") p.setDisplayInterval(d.displayInterval)
             if (typeof d.scrollSpeed === "number") p.setScrollSpeed(d.scrollSpeed)
             if (typeof d.loopPauseMs === "number") p.setLoopPauseMs(d.loopPauseMs)
-            if (!p.IsProfileValid().isSuccess()) return null
+            if (!p.isProfileValid().isSuccess()) return null
             return p
         } catch {
             return null

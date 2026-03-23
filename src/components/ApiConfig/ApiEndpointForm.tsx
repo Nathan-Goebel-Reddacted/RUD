@@ -83,7 +83,7 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
       onClose();
     } else {
       const errs: Record<string, string> = {};
-      result.getAllReason().forEach((r) => { errs[r.getreasonCode()] = r.getreasonMessage(); });
+      result.getAllReason().forEach((r) => { errs[r.getReasonCode()] = r.getReasonMessage(); });
       setErrors(errs);
     }
   };

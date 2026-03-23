@@ -9,21 +9,21 @@ class ActionResult{
         this.successMessage = successMessage
     }
 
-    public addReason(ErrorCode:string,ErrorMessage:string){
-        this.reasons.push(new Reason(ErrorCode, ErrorMessage))
+    public addReason(errorCode: string, errorMessage: string){
+        this.reasons.push(new Reason(errorCode, errorMessage))
     }
 
     public isSuccess(): boolean{
         return this.reasons.length === 0
     }
 
-    public getsuccessMessage(): string{
+    public getSuccessMessage(): string{
         return this.successMessage
     }
 
-    public getFormattedreasons(): string {
+    public getFormattedReasons(): string {
         return this.reasons
-            .map(reason => `[${reason.getreasonCode}] ${reason.getreasonMessage()}`)
+            .map(reason => `[${reason.getReasonCode()}] ${reason.getReasonMessage()}`)
             .join('\n')
     }
 
@@ -32,7 +32,7 @@ class ActionResult{
     }
 
     public getReasonByCode(reasonCode: string): Reason | undefined {
-        return this.reasons.find(r => r.getreasonCode() === reasonCode)
+        return this.reasons.find(r => r.getReasonCode() === reasonCode)
     }
 }
 
@@ -48,10 +48,10 @@ class Reason{
         this.reasonMessage = errorMessage
     }
 
-    public getreasonCode(): string{
+    public getReasonCode(): string{
         return this.reasonCode
     }
-    public getreasonMessage(): string{
+    public getReasonMessage(): string{
         return this.reasonMessage
     }
 }

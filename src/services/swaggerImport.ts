@@ -192,14 +192,14 @@ export async function importSwaggerFile(file: File): Promise<ImportResult> {
   const validation = conn.isApiConnectionValid();
   const warnings: string[] = [];
   const fatalReasons = validation.getAllReason().filter((r) => {
-    if (r.getreasonCode() === "ApiConnection.baseUrl.invalid") {
+    if (r.getReasonCode() === "ApiConnection.baseUrl.invalid") {
       warnings.push("swagger.warnNoBaseUrl");
       return false;
     }
     return true;
   });
   if (fatalReasons.length > 0) {
-    throw new Error(`Invalid spec: ${fatalReasons[0].getreasonCode()}`);
+    throw new Error(`Invalid spec: ${fatalReasons[0].getReasonCode()}`);
   }
 
   return { connection: conn, warnings };
