@@ -246,3 +246,122 @@ RUD030 (migration store) → RUD031 (bulles editor) → RUD033 (edit profile ong
 RUD030 est bloquant pour tout ce qui touche au multi-dashboard.
 RUD033 peut être fait en parallèle de RUD031-032.
 RUD044 (PWA) dépend de RUD043 (build display-only comme cible PWA prioritaire).
+
+---
+
+# Tickets V3 — Phase 3
+
+## Nouveaux widgets
+
+**RUD046 — Widget Gauge / Donut**
+Nouveau type `gauge` : affiche une valeur numérique sous forme de jauge semi-circulaire ou donut (recharts `RadialBarChart` ou `PieChart` en mode semi-cercle). Config : valeur min/max, unité, couleur, seuils visuels (intégration RUD040). Idéal pour CPU, mémoire, taux d'occupation.
+
+**RUD047 — Widget Stat + tendance**
+Nouveau type `stat` : valeur principale + delta vs valeur précédente (`+12%`, `-3 pts`). La valeur précédente est conservée en mémoire runtime (même mécanisme que RUD041). Config : format du delta (absolu ou pourcentage), couleur positive/négative. Très lisible sur écran mural pour les KPIs.
+
+**RUD048 — Widget Progress bar**
+Nouveau type `progress` : barre de progression horizontale avec valeur texte optionnelle. Config : valeur min/max, label, couleur, affichage du pourcentage. Supporte les seuils RUD040 pour changer la couleur de la barre.
+
+**RUD049 — Widget Pie chart**
+Nouveau type `pie` : camembert via `recharts PieChart`. Config : clé de label, clé de valeur, palette de couleurs personnalisable par slice. Agrégation `count` (comme RUD027) disponible pour distribution.
+
+**RUD050 — Widget Status grid**
+Nouveau type `status-grid` : grille compacte de N indicateurs health-check dans un seul widget. Chaque indicateur = un endpoint + un label + un point coloré. Utile pour afficher l'état de plusieurs microservices d'un coup. Config : liste d'entrées `{ connectionId, endpointId, label }`, nombre de colonnes.
+
+---
+
+## Ergonomie éditeur
+
+**RUD051 — Resize widgets par drag**
+Dans le Dashboard Editor, permettre le redimensionnement des widgets par drag sur les bords/coins, en plus de la saisie manuelle w/h dans le config panel. Implémenter via `@dnd-kit` ou handles CSS positionnés sur `WidgetCard`. La grille snap reste 12 colonnes / rows de 80px.
+
+**RUD052 — Templates de dashboards**
+Bibliothèque de 4-5 dashboards préconfigurés (Server monitoring, API health, KPIs business, Horloge + météo, Debug API). Accessible depuis un bouton "Start from template" sur la page `/dashboard` quand le dashboard est vide. Chaque template est un JSON statique embarqué — aucun fetch.
+
+**RUD053 — Multi-profils**
+Permettre de stocker et switcher entre plusieurs profils sans import/export manuel. Le sélecteur de profil est accessible depuis la navbar. Chaque profil a ses propres connexions API, dashboards et couleurs. Stockage : tableau de profils dans localStorage, index actif. Utile pour gérer plusieurs clients ou environnements (prod / staging).
+
+---
+
+## Données & fetch
+
+**RUD054 — Transformations de données**
+Dans `WidgetConfigPanel`, ajouter un champ optionnel "Transform" (expression JS sandboxée ou formule simple) appliqué après l'extraction JSONPath. Exemples : `value / 1024` (bytes → KB), `Math.round(value * 100) / 100`, `value + " °C"`. Évaluation via `new Function` avec timeout de sécurité ou un parseur d'expressions minimal. Prévisualisation live dans le panel.
+
+**RUD055 — Variables globales de profil**
+Définir des variables nommées `{{nom}}` dans les settings du profil (onglet dédié). Utilisables dans les champs URL base, headers, path params, query params de tous les endpoints. Exemple : `{{env}}` = `prod` ou `staging`, `{{token}}` pour un token partagé entre plusieurs connexions. Substitution à la volée au moment du fetch, sans modifier le modèle stocké.
+
+**RUD056 — Support WebSocket**
+Nouveau type de source `websocket` dans `ApiEndpoint` (en plus de GET/POST/…). Un endpoint WebSocket maintient une connexion persistante et pousse les messages reçus dans le cache du widget (même interface `WidgetDataState` que le polling). Config : URL `ws://` ou `wss://`, message d'abonnement JSON optionnel, JSONPath d'extraction. `useWidgetData` adapté pour gérer les deux modes (polling et ws).
+
+**RUD057 — Alertes visuelles sur seuil**
+Quand un widget franchit un seuil configuré (RUD040) : déclencher une alerte visuelle — flash de bordure colorée, bannière temporaire en overlay sur la grille display, optionnellement une `Notification` browser (avec permission). Config par widget : activer/désactiver les alertes, délai de cooldown entre deux alertes (éviter le spam). Fonctionne uniquement en mode Display.
+
+---
+
+## Display
+
+**RUD058 — Background custom par dashboard**
+Dans les settings du dashboard (onglet ou modal dédiée), permettre de configurer un background : couleur unie, gradient linéaire (2 couleurs + angle), ou URL d'image externe. Appliqué uniquement en mode Display, pas dans l'éditeur. Stocké dans le modèle `Dashboard` (nouveau champ `background`).
+
+**RUD059 — Animation sur changement de valeur**
+Sur les widgets NumberCard, Stat et HealthCheck : déclencher une animation courte (fade, pulse ou highlight de couleur) quand la valeur change entre deux fetches. Implémenté via CSS transition + comparaison de la valeur précédente en ref. Désactivable globalement dans les Display settings (respect `prefers-reduced-motion`).
+
+---
+
+## Partage & collaboration
+
+**RUD060 — Marketplace de templates (GitHub)**
+Repo ou dossier `templates/` dans le projet contenant des profils JSON de démonstration (Server monitoring, API publique, etc.). Page statique listant les templates avec preview (screenshot ou description). Import en un clic via le mécanisme QR/URL existant (RUD042). Contribution communautaire via PR.
+
+**RUD061 — Historique local des configs**
+Sauvegarder automatiquement un snapshot du profil complet dans localStorage à chaque modification significative (ajout/suppression widget, changement de dashboard). Conserver les 10 derniers snapshots avec timestamp. UI accessible depuis Profile Settings (onglet "Historique") : liste des snapshots avec bouton "Restaurer". Évite la perte accidentelle de config.
+
+---
+
+## MCP
+
+**RUD062 — MCP server (configuration par agent IA)**
+Companion Node.js MCP server (`packages/rud-mcp/`) exposant les outils de configuration de l'app. L'agent manipule le même format JSON que localStorage — aucun backend permanent requis. Output : URL d'import `/#/import?data=<lzstring>` que l'utilisateur ouvre dans le navigateur (même mécanisme que RUD042).
+
+Outils MCP exposés :
+- `get_config` — lire la config courante (depuis un fichier `rud-state.json` exporté)
+- `add_connection(baseUrl, headers, auth)` — ajouter une connexion API
+- `add_endpoint(connectionId, path, method, params)` — ajouter un endpoint
+- `add_widget(type, connectionId, endpointId, dataPath, config, position)` — ajouter un widget
+- `remove_widget(id)` / `update_widget(id, config)` — modifier/supprimer
+- `create_dashboard(name)` / `set_active_dashboard(index)` — gérer les dashboards
+- `generate_import_url()` — générer l'URL d'import finale
+
+Usage : `npx rud-mcp` dans Claude Desktop → dire "crée un dashboard avec un widget température depuis mon API météo" → Claude appelle les outils → ouvre l'URL générée.
+
+---
+
+## Technique
+
+**RUD063 — OAuth2 PKCE (auth frontend-only)**
+Support d'un nouveau type d'auth `oauth2-pkce` dans `ApiConnection`. Flow : redirect vers l'authorization server, callback avec code, échange PKCE pour access token (stocké en sessionStorage, jamais en localStorage). Rafraîchissement automatique via refresh token si disponible. Ouvre l'accès aux APIs OAuth2 standard (GitHub, Google, etc.) sans backend.
+
+**RUD064 — Responsive editor (tablette)**
+Rendre le Dashboard Editor utilisable sur tablette (≥ 768px). Principalement : toolbar adaptée (menu hamburger sur petite largeur), WidgetConfigPanel en bottom sheet sur mobile au lieu de modal centrée, grille réductible à 6 colonnes sur tablette. L'éditeur sur smartphone reste hors-scope — l'usage mobile = Display uniquement.
+
+---
+
+## Ordre d'implémentation suggéré (Phase 3)
+
+```
+RUD051 (resize widgets)
+→ RUD054 (transformations) → RUD055 (variables globales)
+→ RUD046 (gauge) → RUD047 (stat+tendance) → RUD048 (progress) → RUD049 (pie) → RUD050 (status grid)
+→ RUD057 (alertes) → RUD059 (animations)
+→ RUD058 (backgrounds)
+→ RUD052 (templates) → RUD060 (marketplace)
+→ RUD061 (historique configs) → RUD053 (multi-profils)
+→ RUD062 (MCP)
+→ RUD056 (WebSocket)
+→ RUD063 (OAuth2 PKCE) → RUD064 (responsive editor)
+```
+
+RUD054/055 débloquent la valeur des widgets existants avant d'en ajouter de nouveaux.
+RUD062 (MCP) dépend d'un format de config stable — à faire après les ajouts de widgets.
+RUD056 (WebSocket) et RUD063 (OAuth2) sont les plus lourds techniquement — en fin de phase.
