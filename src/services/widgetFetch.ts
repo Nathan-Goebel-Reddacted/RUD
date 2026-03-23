@@ -106,7 +106,7 @@ export async function fetchWidgetData(
     if (err instanceof TypeError) {
       console.error("[widgetFetch] network error:", err.message);
     }
-    const isCors = err instanceof TypeError;
-    return { raw: null, data: null, httpCode: null, error: isCors ? "cors" : "http_error" };
+    const isNetworkError = err instanceof TypeError; // includes CORS, no internet, bad URL
+    return { raw: null, data: null, httpCode: null, error: isNetworkError ? "cors" : "http_error" };
   }
 }
