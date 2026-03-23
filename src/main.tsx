@@ -9,9 +9,12 @@ import Dashboard from '@/pages/dashboard.tsx'
 import ApiConfig from '@/pages/apiConfig.tsx'
 import DisplayDashboard from '@/pages/displayDashboard.tsx'
 import "@/translations/i18n";
-import '@/index.css'
 import '@/assets/Color.css'
+import '@/assets/global.css'
+import '@/assets/utilities.css'
 import '@/assets/dashboard.css'
+import '@/assets/navbar.css'
+import '@/assets/api-config.css'
 
 const basename = import.meta.env.BASE_URL.replace(/\/$/, '')
 

@@ -15,7 +15,6 @@ import { sendEndpoint } from "@/services/apiFetch";
 import type { FetchStatus, FetchResult } from "@/services/apiFetch";
 import ApiConnection from "@/class/ApiConnection";
 import ApiEndpoint from "@/class/ApiEndpoint";
-import "@/components/ApiConfig/ApiConfig.css";
 
 const PencilIcon = () => (
   <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
@@ -56,6 +55,7 @@ function ApiConfig() {
 
   // Auto-connect health check endpoints on mount
   useEffect(() => {
+    let mounted = true;
     connections.forEach((conn) => {
       const hcId = conn.getHealthCheckEndpointId();
       if (!hcId) return;
@@ -63,9 +63,10 @@ function ApiConfig() {
       if (!ep) return;
       setConnectionStatuses((prev) => ({ ...prev, [conn.getId()]: "loading" }));
       sendEndpoint(conn, ep).then((result) => {
-        setConnectionStatuses((prev) => ({ ...prev, [conn.getId()]: result.status }));
+        if (mounted) setConnectionStatuses((prev) => ({ ...prev, [conn.getId()]: result.status }));
       });
     });
+    return () => { mounted = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -1,37 +1,25 @@
+/* ─── Base resets & element styles ───────────────────────────────────── */
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
   color-scheme: light dark;
   color: var(--text-color);
   background-color: var(--background-color);
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: var(--text-color);
-  text-decoration: inherit;
-}
-a:hover {
-  color: var(--text-hover-color);
-}
+#root { width: 100%; min-height: 100vh; }
 
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-}
+body { margin: 0; min-width: 320px; min-height: 100vh; }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
+h1 { font-size: 3.2em; line-height: 1.1; }
+
+a { font-weight: 500; color: var(--text-color); text-decoration: inherit; }
+a:hover { color: var(--text-hover-color); }
 
 button {
   border-radius: 8px;
@@ -44,97 +32,17 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
-button:hover {
-  border-color: var(--text-color);
-}
+button:hover { border-color: var(--text-color); }
 button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
+button:focus-visible { outline: 4px auto -webkit-focus-ring-color; }
 
-/* Margin */
-.m-1 { margin: 0.25rem; }
-.m-2 { margin: 0.5rem; }
-.m-3 { margin: 0.75rem; }
-.m-4 { margin: 1rem; }
-.m-5 { margin: 1.5rem; }
-
-/* Padding */
-.p-1 { padding: 0.25rem; }
-.p-2 { padding: 0.5rem; }
-.p-3 { padding: 0.75rem; }
-.p-4 { padding: 1rem; }
-.p-5 { padding: 1.5rem; }
-
-/* Display */
-.d-block { display: block; }
-.d-flex  { display: flex; }
-.d-grid  { display: grid; }
-.d-none  { display: none; }
-
-/* Flex */
-.flex-col        { flex-direction: column; }
-.align-center    { align-items: center; }
-.justify-between { justify-content: space-between; }
-.gap-1 { gap: 0.25rem; }
-.gap-2 { gap: 0.5rem; }
-.gap-3 { gap: 0.75rem; }
-.gap-4 { gap: 1rem; }
-
-/* Sizing / Text */
-.w-full      { width: 100%; }
-.text-center { text-align: center; }
-
-/* Pages avec navbar — padding pour ne pas etre masque par la zone trigger */
+/* ─── Pages avec navbar ───────────────────────────────────────────────── */
 .page-with-nav {
   padding-top: 4rem;
   width: 100%;
 }
 
-/* Retrocompatibilite (utilisees dans ProfilSettings.tsx) */
-.display-block { display: block; }
-.margin-10     { margin: 10px; }
-
-/* Profile settings modal */
-.profileSettings {
-  padding: 1rem;
-  min-width: 320px;
-}
-.profileSettings .display-block { width: 100%; box-sizing: border-box; }
-.profileSettings .margin-10 { margin: 0.5rem 0; }
-
-/* QR code modal */
-.qr-modal-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  padding: 1.25rem;
-  text-align: center;
-}
-.qr-modal-content h3 { margin: 0; }
-.qr-size-info { margin: 0; font-size: 0.8rem; opacity: 0.6; }
-
-/* Form section labels */
-.form-section-label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  opacity: 0.5;
-  margin-bottom: 0.35rem;
-}
-
-/* No profile page */
-.NoProfilePage {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  gap: 1rem;
-}
-
-/* Form errors */
+/* ─── Form feedback ───────────────────────────────────────────────────── */
 .form-error {
   display: block;
   color: #e05252;
@@ -149,7 +57,7 @@ button:focus-visible {
   margin: 4px 10px 6px;
 }
 
-/* Profile modal — tabs */
+/* ─── Profile modal — tabs ────────────────────────────────────────────── */
 .profile-tabs {
   display: flex;
   border-bottom: 1px solid var(--border-color);
@@ -176,7 +84,7 @@ button:focus-visible {
   min-height: 200px;
 }
 
-/* Profile modal — dashboards list */
+/* ─── Profile modal — dashboards list ────────────────────────────────── */
 .profile-dash-list {
   display: flex;
   flex-direction: column;
@@ -233,7 +141,7 @@ button:focus-visible {
 .profile-dash-delete:hover:not(:disabled) { opacity: 1; }
 .profile-dash-delete:disabled { opacity: 0.2; cursor: not-allowed; }
 
-/* ─── Toggle switch ──────────────────────────────────────────────── */
+/* ─── Toggle switch ───────────────────────────────────────────────────── */
 .toggle {
   position: relative;
   display: inline-block;
@@ -263,4 +171,3 @@ button:focus-visible {
   transition: transform 0.2s;
 }
 .toggle input:checked + .toggle__track::after { transform: translateX(14px); }
-

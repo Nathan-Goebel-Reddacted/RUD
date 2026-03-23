@@ -237,7 +237,7 @@
    Endpoint Form — Swagger-like style
    ============================================= */
 
-/* HTTP method color palette (CSS variables — customizable) */
+/* HTTP method color palette */
 :root {
   --method-get:    #61affe;
   --method-post:   #49cc90;
@@ -246,7 +246,6 @@
   --method-patch:  #50e3c2;
 }
 
-/* Fallback for any unlisted method */
 [class^="method--"],
 [class*=" method--"] {
   --method-color: rgba(255,255,255,0.5);
@@ -257,7 +256,7 @@
 .method--delete { --method-color: var(--method-delete); }
 .method--patch  { --method-color: var(--method-patch);  }
 
-/* Route bar: method badge + path */
+/* Route bar */
 .endpoint-form__route-bar {
   display: flex;
   align-items: stretch;
@@ -341,13 +340,11 @@
   gap: 0;
 }
 
-/* Path params: Name | Type | Default */
 .endpoint-form__table--path .endpoint-form__table-header,
 .endpoint-form__table--path .endpoint-form__table-row {
   grid-template-columns: 90px 90px 1fr;
 }
 
-/* Query params: Name | Type | Req | Default | ✕ */
 .endpoint-form__table--query .endpoint-form__table-header,
 .endpoint-form__table--query .endpoint-form__table-row {
   grid-template-columns: 1fr 80px 40px 1fr 28px;
@@ -517,4 +514,13 @@
 .api-item__btn--icon {
   padding: 0.2rem 0.3rem;
   line-height: 0;
+}
+
+/* ─── Form section labels ─────────────────────────────────────────────── */
+.form-section-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.5;
+  margin-bottom: 0.35rem;
 }

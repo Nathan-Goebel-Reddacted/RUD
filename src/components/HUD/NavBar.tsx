@@ -8,7 +8,6 @@ import { openModal, closeModal } from "@/components/tool/Modal";
 import ProfileSettings from "@/components/HUD/ProfilSettings";
 import QRCodeModal from "@/components/HUD/QRCodeModal";
 import { exportBackup } from "@/services/profileBackup";
-import "./NavBar.css";
 
 const EDIT_MODAL_ID = "ProfileEdit";
 const QR_MODAL_ID   = "QRCodeShare";

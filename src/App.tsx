@@ -1,4 +1,3 @@
-import "@/App.css";
 import { useNavigate } from "react-router";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";

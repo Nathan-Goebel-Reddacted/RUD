@@ -8,8 +8,9 @@ import { Language } from '@/enum/language'
 import NoProfile from '@/pages/noProfile.tsx'
 import DisplayDashboard from '@/pages/displayDashboard.tsx'
 import "@/translations/i18n"
-import '@/index.css'
 import '@/assets/Color.css'
+import '@/assets/global.css'
+import '@/assets/utilities.css'
 import '@/assets/dashboard.css'
 
 function DisplayRoot() {
