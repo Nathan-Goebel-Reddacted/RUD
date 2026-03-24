@@ -348,7 +348,58 @@ Comportement :
 - Le widget fonctionne en mode Display (pas seulement en Editor) — c'est intentionnellement interactif
 - Pas de polling automatique — le fetch est uniquement déclenché par le bouton
 
-Note : seul widget "actif" de l'app. Ouvre des cas d'usage comme déclencher un build CI, soumettre une valeur de config, appeler un webhook, etc.
+Note : premier widget "actif" de l'app. Ouvre des cas d'usage comme déclencher un build CI, soumettre une valeur de config, appeler un webhook, etc.
+
+**RUD061 — Widget Button**
+Nouveau type `button` : un ou plusieurs boutons configurables dans un même widget, chacun associé à un endpoint distinct. Pas de champ de saisie — le clic déclenche directement l'appel. Affiche brièvement le statut de la réponse (✓ / ✗) après chaque appui.
+
+Config :
+- Liste de boutons : `{ label, connectionId, endpointId, variant: "primary"|"danger"|"ghost" }`
+- Disposition : horizontal ou vertical
+- JSONPath optionnel pour afficher un extrait de la réponse sous le bouton
+
+Cas d'usage : déclencher un build, vider un cache, redémarrer un service, appeler un webhook.
+
+**RUD062 — Widget Toggle**
+Nouveau type `toggle` : interrupteur ON/OFF qui lit l'état courant via un endpoint GET au montage (JSONPath pour extraire le booléen), puis envoie un PUT/PATCH à chaque changement d'état. Affiche l'état visuel en temps réel avec animation de transition.
+
+Config :
+- Endpoint GET (lecture de l'état) + JSONPath d'extraction
+- Endpoint PUT/PATCH (écriture) + body template `{ "key": true/false }`
+- Labels ON/OFF personnalisables
+
+Cas d'usage : feature flags, activer/désactiver un mode, allumer/éteindre un service.
+
+**RUD063 — Widget Slider**
+Nouveau type `slider` : curseur numérique qui lit la valeur courante via GET au montage et envoie la nouvelle valeur via PATCH avec debounce (300ms). Affiche la valeur courante en chiffre à côté du curseur.
+
+Config :
+- Endpoint GET (lecture) + JSONPath d'extraction
+- Endpoint PATCH (écriture) + clé du body (`{ "brightness": 75 }`)
+- min, max, step, unité (ex: `%`, `px/s`, `°C`)
+
+Cas d'usage : ajuster une luminosité, une vitesse, un seuil, un volume.
+
+**RUD064 — Widget Select**
+Nouveau type `select` : dropdown dont les options sont soit statiques (liste configurée dans le panel), soit dynamiques (chargées depuis un endpoint GET avec JSONPath). La sélection déclenche un POST/PUT avec la valeur choisie. Affiche l'option courante sélectionnée au montage via un GET optionnel.
+
+Config :
+- Source des options : `static` (liste `{ label, value }[]`) ou `dynamic` (endpoint GET + JSONPath)
+- Endpoint POST/PUT de sélection + clé du body
+- Endpoint GET optionnel pour lire la valeur courante au montage
+
+Cas d'usage : choisir un environnement (prod/staging), un mode de fonctionnement, une région.
+
+**RUD065 — Widget Search**
+Nouveau type `search` : champ texte qui envoie un GET à chaque frappe (debounce 300ms) avec le terme comme query param, et affiche les résultats dans un tableau ou liste compacte. Réutilise la logique de rendu de `Table.tsx`.
+
+Config :
+- Endpoint GET cible + nom du query param (ex: `q`, `search`, `query`)
+- JSONPath pour extraire le tableau de résultats
+- Colonnes à afficher (comme widget Table)
+- Placeholder du champ de saisie
+
+Cas d'usage : recherche dans un catalogue, lookup utilisateur, autocomplete.
 
 ---
 
@@ -358,7 +409,7 @@ Note : seul widget "actif" de l'app. Ouvre des cas d'usage comme déclencher un 
 RUD051 (resize widgets)
 → RUD052 (transformations) → RUD053 (variables globales)
 → RUD046 (gauge) → RUD047 (stat+tendance) → RUD048 (progress) → RUD049 (pie) → RUD050 (status grid)
-→ RUD060 (form widget)
+→ RUD060 (form) → RUD061 (button) → RUD062 (toggle) → RUD063 (slider) → RUD064 (select) → RUD065 (search)
 → RUD055 (alertes) → RUD056 (animations)
 → RUD057 (marketplace)
 → RUD058 (MCP)
@@ -367,5 +418,6 @@ RUD051 (resize widgets)
 ```
 
 RUD052/053 débloquent la valeur des widgets existants avant d'en ajouter de nouveaux.
+RUD060-065 (widgets interactifs) partagent une logique commune — les implémenter en séquence.
 RUD058 (MCP) dépend d'un format de config stable — à faire après les ajouts de widgets.
 RUD054 (WebSocket) et RUD059 (OAuth2) sont les plus lourds techniquement — en fin de phase.
