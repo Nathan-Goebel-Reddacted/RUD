@@ -11,6 +11,7 @@ export const WidgetType = {
   GAUGE:         "gauge",
   STAT:          "stat",
   PROGRESS:      "progress",
+  PIE_CHART:     "pie-chart",
 } as const;
 export type WidgetType = typeof WidgetType[keyof typeof WidgetType];
 
@@ -102,6 +103,15 @@ export type GaugeConfig = {
   color?:         string;
 };
 
+export type PieChartConfig = {
+  type:         "pie-chart";
+  labelKey:     string;
+  valueKey:     string;
+  colors?:      string[];
+  aggregation?: "count";
+  showLabels?:  boolean;
+};
+
 export type ProgressConfig = {
   type:           "progress";
   min?:           number;
@@ -135,7 +145,8 @@ export type WidgetConfig =
   | HealthCheckConfig
   | GaugeConfig
   | StatConfig
-  | ProgressConfig;
+  | ProgressConfig
+  | PieChartConfig;
 
 export type Widget = {
   id:              string;

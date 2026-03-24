@@ -101,7 +101,8 @@
             "healthCheck": "Health Check",
             "gauge": "Gauge",
             "stat": "Stat",
-            "progress": "Progress Bar"
+            "progress": "Progress Bar",
+            "pieChart": "Pie Chart"
         },
         "desc": {
             "numberCard": "Single numeric value",
@@ -115,7 +116,8 @@
             "healthCheck": "Endpoint status (OK / KO)",
             "gauge": "Semi-circular gauge with thresholds",
             "stat": "Value with delta vs previous fetch",
-            "progress": "Horizontal progress bar with min/max"
+            "progress": "Horizontal progress bar with min/max",
+            "pieChart": "Distribution by category (pie / donut)"
         }
     },
 
@@ -267,6 +269,9 @@
         "gaugeMax": "Max value",
         "gaugeColor": "Default color",
         "progressShowPercent": "Show percentage",
+        "pieLabelKey": "Label key (slice name)",
+        "pieValueKey": "Value key",
+        "pieShowLabels": "Show labels on slices",
         "statDeltaFormat": "Delta format",
         "statDeltaAbsolute": "Absolute (e.g. +12, -3)",
         "statDeltaPercent": "Percent (e.g. +5.2%)",

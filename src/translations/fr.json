@@ -101,7 +101,8 @@
             "healthCheck": "Health Check",
             "gauge": "Jauge",
             "stat": "Stat",
-            "progress": "Barre de progression"
+            "progress": "Barre de progression",
+            "pieChart": "Camembert"
         },
         "desc": {
             "numberCard": "Valeur numérique unique",
@@ -115,7 +116,8 @@
             "healthCheck": "Statut endpoint (OK / KO)",
             "gauge": "Jauge semi-circulaire avec seuils",
             "stat": "Valeur + delta vs fetch précédent",
-            "progress": "Barre de progression horizontale avec min/max"
+            "progress": "Barre de progression horizontale avec min/max",
+            "pieChart": "Distribution par catégorie (camembert)"
         }
     },
 
@@ -267,6 +269,9 @@
         "gaugeMax": "Valeur max",
         "gaugeColor": "Couleur par défaut",
         "progressShowPercent": "Afficher le pourcentage",
+        "pieLabelKey": "Clé de label (nom des parts)",
+        "pieValueKey": "Clé de valeur",
+        "pieShowLabels": "Afficher les labels sur les parts",
         "statDeltaFormat": "Format du delta",
         "statDeltaAbsolute": "Absolu (ex : +12, -3)",
         "statDeltaPercent": "Pourcentage (ex : +5,2%)",

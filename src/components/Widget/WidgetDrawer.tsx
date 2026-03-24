@@ -13,6 +13,7 @@ import {
   Gauge,
   TrendingUpDown,
   StretchHorizontal,
+  ChartPie,
   ChevronRight,
   ChevronLeft,
 } from "lucide-react";
@@ -105,6 +106,12 @@ export default function WidgetDrawer({ onAdd }: Props) {
       label:       t("widgetDrawer.types.progress"),
       icon:        <StretchHorizontal size={22} strokeWidth={1.75} />,
       description: t("widgetDrawer.desc.progress"),
+    },
+    {
+      type:        "pie-chart",
+      label:       t("widgetDrawer.types.pieChart"),
+      icon:        <ChartPie size={22} strokeWidth={1.75} />,
+      description: t("widgetDrawer.desc.pieChart"),
     },
   ];
 

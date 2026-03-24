@@ -16,6 +16,7 @@ import {
   type LastUpdateConfig,
   type HealthCheckConfig,
   type GaugeConfig,
+  type PieChartConfig,
   type ProgressConfig,
   type StatConfig,
   type Threshold,
@@ -46,6 +47,7 @@ function defaultConfig(type: WidgetType): WidgetConfig {
     case "gauge":        return { type: "gauge", min: 0, max: 100 };
     case "stat":         return { type: "stat", deltaFormat: "absolute" };
     case "progress":     return { type: "progress", min: 0, max: 100 };
+    case "pie-chart":    return { type: "pie-chart", labelKey: "", valueKey: "" };
   }
 }
 
@@ -75,6 +77,7 @@ const TYPE_LABELS: Record<WidgetType, string> = {
   "gauge":        "widgetDrawer.types.gauge",
   "stat":         "widgetDrawer.types.stat",
   "progress":     "widgetDrawer.types.progress",
+  "pie-chart":    "widgetDrawer.types.pieChart",
 };
 
 export default function WidgetConfigPanel({ initial, initialType, onSave, onCancel }: Props) {
@@ -754,6 +757,51 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
               />
             </div>
             {renderThresholds(c.thresholds ?? [], (th) => setConfig({ ...c, thresholds: th }))}
+          </>
+        );
+      }
+      case "pie-chart": {
+        const c = config as PieChartConfig;
+        return (
+          <>
+            <div className="form-group">
+              <label className="d-flex align-center gap-2" style={{ cursor: "pointer" }}>
+                <input
+                  type="checkbox"
+                  checked={c.aggregation === "count"}
+                  onChange={(e) => setConfig({
+                    ...c,
+                    aggregation: e.target.checked ? "count" : undefined,
+                  })}
+                />
+                <span style={{ marginLeft: "0.4rem" }}>{t("widgetConfig.countRows")}</span>
+              </label>
+              <span className="form-hint">{t("widgetConfig.countRowsHint")}</span>
+            </div>
+            <AxisKeySelector
+              label={t("widgetConfig.pieLabelKey")}
+              value={c.labelKey}
+              keys={dataKeys}
+              onChange={(k) => setConfig({ ...c, labelKey: k })}
+            />
+            {c.aggregation !== "count" && (
+              <AxisKeySelector
+                label={t("widgetConfig.pieValueKey")}
+                value={c.valueKey}
+                keys={dataKeys}
+                onChange={(k) => setConfig({ ...c, valueKey: k })}
+              />
+            )}
+            <div className="form-group">
+              <label className="d-flex align-center gap-2" style={{ cursor: "pointer" }}>
+                <input
+                  type="checkbox"
+                  checked={c.showLabels !== false}
+                  onChange={(e) => setConfig({ ...c, showLabels: e.target.checked })}
+                />
+                <span style={{ marginLeft: "0.4rem" }}>{t("widgetConfig.pieShowLabels")}</span>
+              </label>
+            </div>
           </>
         );
       }

@@ -14,6 +14,7 @@ import HealthCheckWidget from "./types/HealthCheckWidget";
 import GaugeWidget from "./types/GaugeWidget";
 import StatWidget from "./types/StatWidget";
 import ProgressWidget from "./types/ProgressWidget";
+import PieChart from "./types/PieChart";
 
 type Props = {
   widget:       Widget;
@@ -79,6 +80,8 @@ function WidgetBody({ widget, dataState }: { widget: Widget; dataState: WidgetDa
       return <StatWidget data={dataState.data} config={widget.config} widgetId={widget.id} fetchedAt={dataState.fetchedAt} />;
     case "progress":
       return <ProgressWidget data={dataState.data} config={widget.config} widgetId={widget.id} fetchedAt={dataState.fetchedAt} />;
+    case "pie-chart":
+      return <PieChart data={dataState.data} config={widget.config} />;
   }
 }
 
