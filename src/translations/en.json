@@ -99,7 +99,8 @@
             "clock": "Clock",
             "lastUpdate": "Last Update",
             "healthCheck": "Health Check",
-            "gauge": "Gauge"
+            "gauge": "Gauge",
+            "stat": "Stat"
         },
         "desc": {
             "numberCard": "Single numeric value",
@@ -111,7 +112,8 @@
             "clock": "Real-time clock",
             "lastUpdate": "Last fetch timestamp",
             "healthCheck": "Endpoint status (OK / KO)",
-            "gauge": "Semi-circular gauge with thresholds"
+            "gauge": "Semi-circular gauge with thresholds",
+            "stat": "Value with delta vs previous fetch"
         }
     },
 
@@ -262,6 +264,11 @@
         "gaugeMin": "Min value",
         "gaugeMax": "Max value",
         "gaugeColor": "Default color",
+        "statDeltaFormat": "Delta format",
+        "statDeltaAbsolute": "Absolute (e.g. +12, -3)",
+        "statDeltaPercent": "Percent (e.g. +5.2%)",
+        "statPositiveColor": "Positive color",
+        "statNegativeColor": "Negative color",
         "cancel": "Cancel",
         "save": "Save",
         "addWidget": "Add widget"

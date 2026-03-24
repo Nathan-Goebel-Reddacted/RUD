@@ -9,6 +9,7 @@ export const WidgetType = {
   LAST_UPDATE:   "last-update",
   HEALTH_CHECK:  "health-check",
   GAUGE:         "gauge",
+  STAT:          "stat",
 } as const;
 export type WidgetType = typeof WidgetType[keyof typeof WidgetType];
 
@@ -100,6 +101,16 @@ export type GaugeConfig = {
   color?:         string;
 };
 
+export type StatConfig = {
+  type:           "stat";
+  unit?:          string;
+  decimalPlaces?: number;
+  deltaFormat?:   "absolute" | "percent"; // default "absolute"
+  positiveColor?: string; // default "#4caf50"
+  negativeColor?: string; // default "#f44336"
+  thresholds?:    Threshold[];
+};
+
 export type WidgetConfig =
   | NumberCardConfig
   | TableConfig
@@ -110,7 +121,8 @@ export type WidgetConfig =
   | ClockConfig
   | LastUpdateConfig
   | HealthCheckConfig
-  | GaugeConfig;
+  | GaugeConfig
+  | StatConfig;
 
 export type Widget = {
   id:              string;

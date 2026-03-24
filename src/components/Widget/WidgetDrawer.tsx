@@ -11,6 +11,7 @@ import {
   RefreshCw,
   HeartPulse,
   Gauge,
+  TrendingUpDown,
   ChevronRight,
   ChevronLeft,
 } from "lucide-react";
@@ -91,6 +92,12 @@ export default function WidgetDrawer({ onAdd }: Props) {
       label:       t("widgetDrawer.types.gauge"),
       icon:        <Gauge size={22} strokeWidth={1.75} />,
       description: t("widgetDrawer.desc.gauge"),
+    },
+    {
+      type:        "stat",
+      label:       t("widgetDrawer.types.stat"),
+      icon:        <TrendingUpDown size={22} strokeWidth={1.75} />,
+      description: t("widgetDrawer.desc.stat"),
     },
   ];
 

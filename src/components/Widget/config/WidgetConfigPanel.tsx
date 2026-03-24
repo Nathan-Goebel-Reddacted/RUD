@@ -16,6 +16,7 @@ import {
   type LastUpdateConfig,
   type HealthCheckConfig,
   type GaugeConfig,
+  type StatConfig,
   type Threshold,
 } from "@/types/widget";
 import EndpointSelector from "./EndpointSelector";
@@ -42,6 +43,7 @@ function defaultConfig(type: WidgetType): WidgetConfig {
     case "last-update":  return { type: "last-update", displayFormat: "relative" };
     case "health-check": return { type: "health-check" };
     case "gauge":        return { type: "gauge", min: 0, max: 100 };
+    case "stat":         return { type: "stat", deltaFormat: "absolute" };
   }
 }
 
@@ -69,6 +71,7 @@ const TYPE_LABELS: Record<WidgetType, string> = {
   "last-update":  "widgetDrawer.types.lastUpdate",
   "health-check": "widgetDrawer.types.healthCheck",
   "gauge":        "widgetDrawer.types.gauge",
+  "stat":         "widgetDrawer.types.stat",
 };
 
 export default function WidgetConfigPanel({ initial, initialType, onSave, onCancel }: Props) {
@@ -619,6 +622,64 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
               <ColorPicker
                 value={c.color ?? "#4a9eff"}
                 onChange={(v) => setConfig({ ...c, color: v })}
+              />
+            </div>
+            {renderThresholds(c.thresholds ?? [], (th) => setConfig({ ...c, thresholds: th }))}
+          </>
+        );
+      }
+      case "stat": {
+        const c = config as StatConfig;
+        return (
+          <>
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.unit")}</label>
+              <input
+                className="form-input"
+                type="text"
+                placeholder={t("widgetConfig.unitPlaceholder")}
+                value={c.unit ?? ""}
+                onChange={(e) => setConfig({ ...c, unit: e.target.value || undefined })}
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.decimals")}</label>
+              <input
+                className="form-input"
+                type="number"
+                min={0}
+                max={10}
+                value={c.decimalPlaces ?? ""}
+                placeholder={t("widgetConfig.autoPlaceholder")}
+                onChange={(e) => setConfig({
+                  ...c,
+                  decimalPlaces: e.target.value ? Number(e.target.value) : undefined,
+                })}
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.statDeltaFormat")}</label>
+              <select
+                className="form-select"
+                value={c.deltaFormat ?? "absolute"}
+                onChange={(e) => setConfig({ ...c, deltaFormat: e.target.value as StatConfig["deltaFormat"] })}
+              >
+                <option value="absolute">{t("widgetConfig.statDeltaAbsolute")}</option>
+                <option value="percent">{t("widgetConfig.statDeltaPercent")}</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.statPositiveColor")}</label>
+              <ColorPicker
+                value={c.positiveColor ?? "#4caf50"}
+                onChange={(v) => setConfig({ ...c, positiveColor: v })}
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.statNegativeColor")}</label>
+              <ColorPicker
+                value={c.negativeColor ?? "#f44336"}
+                onChange={(v) => setConfig({ ...c, negativeColor: v })}
               />
             </div>
             {renderThresholds(c.thresholds ?? [], (th) => setConfig({ ...c, thresholds: th }))}

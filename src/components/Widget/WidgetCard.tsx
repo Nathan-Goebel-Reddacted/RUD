@@ -12,6 +12,7 @@ import ClockWidget from "./types/ClockWidget";
 import LastUpdateWidget from "./types/LastUpdateWidget";
 import HealthCheckWidget from "./types/HealthCheckWidget";
 import GaugeWidget from "./types/GaugeWidget";
+import StatWidget from "./types/StatWidget";
 
 type Props = {
   widget:       Widget;
@@ -73,6 +74,8 @@ function WidgetBody({ widget, dataState }: { widget: Widget; dataState: WidgetDa
       return <RawResponse data={dataState.data} />;
     case "gauge":
       return <GaugeWidget data={dataState.data} config={widget.config} widgetId={widget.id} fetchedAt={dataState.fetchedAt} />;
+    case "stat":
+      return <StatWidget data={dataState.data} config={widget.config} widgetId={widget.id} fetchedAt={dataState.fetchedAt} />;
   }
 }
 
