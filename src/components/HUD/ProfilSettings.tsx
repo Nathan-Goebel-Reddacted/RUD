@@ -27,7 +27,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, Trash2 } from "lucide-react";
 import type { Dashboard } from "@/types/widget";
 
-type Tab = "profile" | "dashboards" | "display";
+type Tab = "profile" | "dashboards" | "display" | "variables";
 
 // ---------------------------------------------------------------------------
 // SortableDashboardItem
@@ -179,6 +179,9 @@ function ProfileSettings({
   const [textColor,       setTextColor]       = useState<string>(initialProfile?.getTextColor()       ?? "#646cff");
   const [textHoverColor,  setTextHoverColor]  = useState<string>(initialProfile?.getTextHoverColor()  ?? "#535bf2");
 
+  // Variables tab state
+  const [variables, setVariables] = useState<Record<string, string>>(initialProfile?.getVariables() ?? {});
+
   // Display tab state
   const [displayMode,     setDisplayMode]     = useState<DisplayMode>(initialProfile?.getDisplayMode()     ?? "timer");
   const [displayInterval, setDisplayInterval] = useState<number>(initialProfile?.getDisplayInterval() ?? 30);
@@ -209,6 +212,7 @@ function ProfileSettings({
     newProfile.setDisplayInterval(displayInterval);
     newProfile.setScrollSpeed(scrollSpeed);
     newProfile.setLoopPauseMs(loopPauseMs);
+    newProfile.setVariables(variables);
     const result = newProfile.isProfileValid();
     if (result.isSuccess()) {
       setErrors({});
@@ -237,7 +241,7 @@ function ProfileSettings({
       <div style={{ padding: '1rem', minWidth: '320px' }}>
         {/* Tabs */}
         <div className="profile-tabs">
-          {(["profile", "dashboards", "display"] as const).map((tabKey) => (
+          {(["profile", "dashboards", "display", "variables"] as const).map((tabKey) => (
             <button
               key={tabKey}
               className={`profile-tab${tab === tabKey ? " profile-tab--active" : ""}`}
@@ -366,6 +370,57 @@ function ProfileSettings({
                   style={{ width: "80px" }}
                 />
               </label>
+            </div>
+          )}
+
+          {/* Variables tab */}
+          {tab === "variables" && (
+            <div className="profile-tab-content">
+              <p className="form-hint" style={{ marginBottom: "0.75rem" }}>
+                {t("profileSettings.variables.hint")}
+              </p>
+              {Object.entries(variables).map(([key, value]) => (
+                <div key={key} className="d-flex align-center gap-2" style={{ marginBottom: "0.4rem" }}>
+                  <input
+                    className="form-input font-mono flex-1"
+                    type="text"
+                    placeholder={t("profileSettings.variables.keyPlaceholder")}
+                    value={key}
+                    onChange={(e) => {
+                      const newKey = e.target.value;
+                      const entries = Object.entries(variables).map(([k, v]) =>
+                        k === key ? [newKey, v] : [k, v]
+                      );
+                      setVariables(Object.fromEntries(entries));
+                    }}
+                  />
+                  <input
+                    className="form-input flex-1"
+                    type="text"
+                    placeholder={t("profileSettings.variables.valuePlaceholder")}
+                    value={value}
+                    onChange={(e) => setVariables({ ...variables, [key]: e.target.value })}
+                  />
+                  <button
+                    type="button"
+                    className="endpoint-form__row-remove"
+                    onClick={() => {
+                      const { [key]: _, ...rest } = variables;
+                      setVariables(rest);
+                    }}
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+              <button
+                type="button"
+                className="btn btn--ghost btn--sm"
+                style={{ marginTop: "0.5rem" }}
+                onClick={() => setVariables({ ...variables, "": "" })}
+              >
+                {t("profileSettings.variables.add")}
+              </button>
             </div>
           )}
 

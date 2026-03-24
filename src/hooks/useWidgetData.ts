@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useApiStore } from "@/stores/apiStore";
 import { useDashboardStore } from "@/stores/dashboardStore";
+import { useProfileStore } from "@/stores/profileStore";
 import { fetchWidgetData, applyTransform } from "@/services/widgetFetch";
 import type { Widget, WidgetDataState, FetchCacheEntry } from "@/types/widget";
 
@@ -23,6 +24,8 @@ export function useWidgetData(widget: Widget): WidgetDataState {
   const fetchCache    = useDashboardStore((s) => s.fetchCache);
   const setFetchCache = useDashboardStore((s) => s.setFetchCache);
   const tick          = useDashboardStore((s) => s.tick);
+  const profile       = useProfileStore((s) => s.profile);
+  const vars          = profile?.getVariables() ?? {};
 
   const intervalMs = (refreshOverride ?? DEFAULT_INTERVAL) * 1000;
   const cacheKey   = `${connectionId}::${endpointId}::${dataPath}`;
@@ -84,7 +87,7 @@ export function useWidgetData(widget: Widget): WidgetDataState {
     const controller = new AbortController();
     controllerRef.current = controller;
 
-    fetchWidgetData(conn, ep, dataPath, controller.signal)
+    fetchWidgetData(conn, ep, dataPath, controller.signal, vars)
       .then((result) => {
         if (controller.signal.aborted) return;
         const entry: FetchCacheEntry = {

@@ -18,6 +18,8 @@ class Profile{
     private scrollSpeed:     number      = 0;
     private loopPauseMs:     number      = 2000;
 
+    private variables: Record<string, string> = {};
+
     constructor(){}
 
     public createAProfile(profileName: string) {
@@ -93,6 +95,9 @@ class Profile{
     public setScrollSpeed(px: number):     void { this.scrollSpeed = px; }
     public setLoopPauseMs(ms: number):     void { this.loopPauseMs = ms; }
 
+    public getVariables(): Record<string, string> { return { ...this.variables }; }
+    public setVariables(vars: Record<string, string>): void { this.variables = { ...vars }; }
+
     public toJSON(): object {
         return {
             profileName:     this.profileName,
@@ -105,6 +110,7 @@ class Profile{
             displayInterval: this.displayInterval,
             scrollSpeed:     this.scrollSpeed,
             loopPauseMs:     this.loopPauseMs,
+            variables:       this.variables,
         }
     }
 
@@ -125,6 +131,13 @@ class Profile{
             if (typeof d.displayInterval === "number") p.setDisplayInterval(d.displayInterval)
             if (typeof d.scrollSpeed === "number") p.setScrollSpeed(d.scrollSpeed)
             if (typeof d.loopPauseMs === "number") p.setLoopPauseMs(d.loopPauseMs)
+            if (d.variables && typeof d.variables === "object" && !Array.isArray(d.variables)) {
+                const vars: Record<string, string> = {};
+                for (const [k, v] of Object.entries(d.variables as Record<string, unknown>)) {
+                    if (typeof v === "string") vars[k] = v;
+                }
+                p.setVariables(vars);
+            }
             if (!p.isProfileValid().isSuccess()) return null
             return p
         } catch {

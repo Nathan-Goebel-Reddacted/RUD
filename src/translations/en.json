@@ -18,7 +18,14 @@
         "tabs": {
             "profile":    "Profile",
             "dashboards": "Dashboards",
-            "display":    "Display"
+            "display":    "Display",
+            "variables":  "Variables"
+        },
+        "variables": {
+            "hint": "Define global variables usable as {{name}} in URLs, headers, and parameters.",
+            "keyPlaceholder": "name",
+            "valuePlaceholder": "value",
+            "add": "+ Add variable"
         },
         "display": {
             "mode":          "Rotation mode",

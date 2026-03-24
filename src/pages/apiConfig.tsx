@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useApiStore } from "@/stores/apiStore";
+import { useProfileStore } from "@/stores/profileStore";
 import { openModal, closeModal } from "@/components/tool/Modal";
 import ApiConnectionForm, {
   MODAL_CREATE_ID,
@@ -43,6 +44,8 @@ function ApiConfig() {
   const connections        = useApiStore((state) => state.connections);
   const addConnection      = useApiStore((state) => state.addConnection);
   const duplicateEndpoint  = useApiStore((state) => state.duplicateEndpoint);
+  const profile            = useProfileStore((state) => state.profile);
+  const vars               = profile?.getVariables() ?? {};
 
   const [openId,               setOpenId]               = useState<string | null>(null);
   const [editingConnection,    setEditingConnection]    = useState<ApiConnection | null>(null);
@@ -62,7 +65,7 @@ function ApiConfig() {
       const ep = conn.getEndpoints().find((e) => e.getId() === hcId);
       if (!ep) return;
       setConnectionStatuses((prev) => ({ ...prev, [conn.getId()]: "loading" }));
-      sendEndpoint(conn, ep).then((result) => {
+      sendEndpoint(conn, ep, vars).then((result) => {
         if (mounted) setConnectionStatuses((prev) => ({ ...prev, [conn.getId()]: result.status }));
       });
     });
@@ -96,7 +99,7 @@ function ApiConfig() {
   const handleSendEndpoint = async (conn: ApiConnection, ep: ApiEndpoint, e: React.MouseEvent) => {
     e.stopPropagation();
     setEndpointLoading((prev) => ({ ...prev, [ep.getId()]: true }));
-    const result = await sendEndpoint(conn, ep);
+    const result = await sendEndpoint(conn, ep, vars);
     setEndpointLoading((prev) => ({ ...prev, [ep.getId()]: false }));
     setEndpointResults((prev) => ({ ...prev, [ep.getId()]: result }));
   };
@@ -104,7 +107,7 @@ function ApiConfig() {
   const handleConnectHealth = async (conn: ApiConnection, ep: ApiEndpoint, e: React.MouseEvent) => {
     e.stopPropagation();
     setConnectionStatuses((prev) => ({ ...prev, [conn.getId()]: "loading" }));
-    const result = await sendEndpoint(conn, ep);
+    const result = await sendEndpoint(conn, ep, vars);
     setConnectionStatuses((prev) => ({ ...prev, [conn.getId()]: result.status }));
   };
 

@@ -3,6 +3,7 @@ import ApiConnection from "@/class/ApiConnection";
 import ApiEndpoint from "@/class/ApiEndpoint";
 import { AuthType } from "@/enum/authType";
 import type { WidgetDataError } from "@/types/widget";
+import { substituteVars } from "@/services/substituteVars";
 
 export type WidgetFetchResult = {
   raw:      unknown;
@@ -11,34 +12,39 @@ export type WidgetFetchResult = {
   error:    WidgetDataError | null;
 };
 
-function buildHeaders(conn: ApiConnection): Record<string, string> {
-  const headers: Record<string, string> = { ...conn.getHeaders() };
+function buildHeaders(conn: ApiConnection, vars: Record<string, string>): Record<string, string> {
+  const rawHeaders = conn.getHeaders();
+  const headers: Record<string, string> = {};
+  for (const [k, v] of Object.entries(rawHeaders)) {
+    headers[k] = substituteVars(v, vars);
+  }
+  const authValue = substituteVars(conn.getAuthValue(), vars);
   switch (conn.getAuthType()) {
     case AuthType.BEARER:
-      headers["Authorization"] = `Bearer ${conn.getAuthValue()}`;
+      headers["Authorization"] = `Bearer ${authValue}`;
       break;
     case AuthType.API_KEY:
-      headers["X-API-Key"] = conn.getAuthValue();
+      headers["X-API-Key"] = authValue;
       break;
     case AuthType.BASIC:
-      headers["Authorization"] = `Basic ${btoa(conn.getAuthValue())}`;
+      headers["Authorization"] = `Basic ${btoa(authValue)}`;
       break;
   }
   return headers;
 }
 
-function buildUrl(conn: ApiConnection, ep: ApiEndpoint): string {
+function buildUrl(conn: ApiConnection, ep: ApiEndpoint, vars: Record<string, string>): string {
   let path = ep.getPath();
   for (const param of ep.getPathParams()) {
     if (param.defaultValue) {
-      path = path.replace(`{${param.name}}`, encodeURIComponent(param.defaultValue));
+      path = path.replace(`{${param.name}}`, encodeURIComponent(substituteVars(param.defaultValue, vars)));
     }
   }
   const queryParts = ep
     .getQueryParams()
     .filter((p) => p.defaultValue)
-    .map((p) => `${encodeURIComponent(p.name)}=${encodeURIComponent(p.defaultValue)}`);
-  const base = conn.getBaseUrl().replace(/\/$/, "");
+    .map((p) => `${encodeURIComponent(p.name)}=${encodeURIComponent(substituteVars(p.defaultValue, vars))}`);
+  const base = substituteVars(conn.getBaseUrl(), vars).replace(/\/$/, "");
   return `${base}${path}${queryParts.length ? "?" + queryParts.join("&") : ""}`;
 }
 
@@ -84,16 +90,17 @@ export async function fetchWidgetData(
   conn: ApiConnection,
   ep: ApiEndpoint,
   dataPath: string,
-  signal?: AbortSignal
+  signal?: AbortSignal,
+  vars: Record<string, string> = {}
 ): Promise<WidgetFetchResult> {
-  const headers = buildHeaders(conn);
+  const headers = buildHeaders(conn, vars);
   const options: RequestInit = { method: ep.getMethod(), headers, signal };
   if (ep.hasBody() && ep.getBody()) {
     options.body = ep.getBody();
     headers["Content-Type"] = ep.getBodyContentType();
   }
 
-  const url = buildUrl(conn, ep);
+  const url = buildUrl(conn, ep, vars);
   console.debug("[widgetFetch] →", ep.getMethod(), url);
 
   try {
