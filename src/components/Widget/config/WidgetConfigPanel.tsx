@@ -16,6 +16,7 @@ import {
   type LastUpdateConfig,
   type HealthCheckConfig,
   type GaugeConfig,
+  type ProgressConfig,
   type StatConfig,
   type Threshold,
 } from "@/types/widget";
@@ -44,6 +45,7 @@ function defaultConfig(type: WidgetType): WidgetConfig {
     case "health-check": return { type: "health-check" };
     case "gauge":        return { type: "gauge", min: 0, max: 100 };
     case "stat":         return { type: "stat", deltaFormat: "absolute" };
+    case "progress":     return { type: "progress", min: 0, max: 100 };
   }
 }
 
@@ -72,6 +74,7 @@ const TYPE_LABELS: Record<WidgetType, string> = {
   "health-check": "widgetDrawer.types.healthCheck",
   "gauge":        "widgetDrawer.types.gauge",
   "stat":         "widgetDrawer.types.stat",
+  "progress":     "widgetDrawer.types.progress",
 };
 
 export default function WidgetConfigPanel({ initial, initialType, onSave, onCancel }: Props) {
@@ -680,6 +683,74 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
               <ColorPicker
                 value={c.negativeColor ?? "#f44336"}
                 onChange={(v) => setConfig({ ...c, negativeColor: v })}
+              />
+            </div>
+            {renderThresholds(c.thresholds ?? [], (th) => setConfig({ ...c, thresholds: th }))}
+          </>
+        );
+      }
+      case "progress": {
+        const c = config as ProgressConfig;
+        return (
+          <>
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.gaugeMin")}</label>
+              <input
+                className="form-input"
+                type="number"
+                value={c.min ?? 0}
+                onChange={(e) => setConfig({ ...c, min: Number(e.target.value) })}
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.gaugeMax")}</label>
+              <input
+                className="form-input"
+                type="number"
+                value={c.max ?? 100}
+                onChange={(e) => setConfig({ ...c, max: Number(e.target.value) })}
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.unit")}</label>
+              <input
+                className="form-input"
+                type="text"
+                placeholder={t("widgetConfig.unitPlaceholder")}
+                value={c.unit ?? ""}
+                onChange={(e) => setConfig({ ...c, unit: e.target.value || undefined })}
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.decimals")}</label>
+              <input
+                className="form-input"
+                type="number"
+                min={0}
+                max={10}
+                value={c.decimalPlaces ?? ""}
+                placeholder={t("widgetConfig.autoPlaceholder")}
+                onChange={(e) => setConfig({
+                  ...c,
+                  decimalPlaces: e.target.value ? Number(e.target.value) : undefined,
+                })}
+              />
+            </div>
+            <div className="form-group">
+              <label className="d-flex align-center gap-2" style={{ cursor: "pointer" }}>
+                <input
+                  type="checkbox"
+                  checked={c.showPercent !== false}
+                  onChange={(e) => setConfig({ ...c, showPercent: e.target.checked })}
+                />
+                <span style={{ marginLeft: "0.4rem" }}>{t("widgetConfig.progressShowPercent")}</span>
+              </label>
+            </div>
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.gaugeColor")}</label>
+              <ColorPicker
+                value={c.color ?? "#4a9eff"}
+                onChange={(v) => setConfig({ ...c, color: v })}
               />
             </div>
             {renderThresholds(c.thresholds ?? [], (th) => setConfig({ ...c, thresholds: th }))}

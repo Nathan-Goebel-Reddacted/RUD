@@ -100,7 +100,8 @@
             "lastUpdate": "Last Update",
             "healthCheck": "Health Check",
             "gauge": "Gauge",
-            "stat": "Stat"
+            "stat": "Stat",
+            "progress": "Progress Bar"
         },
         "desc": {
             "numberCard": "Single numeric value",
@@ -113,7 +114,8 @@
             "lastUpdate": "Last fetch timestamp",
             "healthCheck": "Endpoint status (OK / KO)",
             "gauge": "Semi-circular gauge with thresholds",
-            "stat": "Value with delta vs previous fetch"
+            "stat": "Value with delta vs previous fetch",
+            "progress": "Horizontal progress bar with min/max"
         }
     },
 
@@ -264,6 +266,7 @@
         "gaugeMin": "Min value",
         "gaugeMax": "Max value",
         "gaugeColor": "Default color",
+        "progressShowPercent": "Show percentage",
         "statDeltaFormat": "Delta format",
         "statDeltaAbsolute": "Absolute (e.g. +12, -3)",
         "statDeltaPercent": "Percent (e.g. +5.2%)",

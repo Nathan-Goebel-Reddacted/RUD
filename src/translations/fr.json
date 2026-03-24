@@ -100,7 +100,8 @@
             "lastUpdate": "Dernière MAJ",
             "healthCheck": "Health Check",
             "gauge": "Jauge",
-            "stat": "Stat"
+            "stat": "Stat",
+            "progress": "Barre de progression"
         },
         "desc": {
             "numberCard": "Valeur numérique unique",
@@ -113,7 +114,8 @@
             "lastUpdate": "Timestamp du dernier fetch",
             "healthCheck": "Statut endpoint (OK / KO)",
             "gauge": "Jauge semi-circulaire avec seuils",
-            "stat": "Valeur + delta vs fetch précédent"
+            "stat": "Valeur + delta vs fetch précédent",
+            "progress": "Barre de progression horizontale avec min/max"
         }
     },
 
@@ -264,6 +266,7 @@
         "gaugeMin": "Valeur min",
         "gaugeMax": "Valeur max",
         "gaugeColor": "Couleur par défaut",
+        "progressShowPercent": "Afficher le pourcentage",
         "statDeltaFormat": "Format du delta",
         "statDeltaAbsolute": "Absolu (ex : +12, -3)",
         "statDeltaPercent": "Pourcentage (ex : +5,2%)",

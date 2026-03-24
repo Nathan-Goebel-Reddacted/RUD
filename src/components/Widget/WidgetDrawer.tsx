@@ -12,6 +12,7 @@ import {
   HeartPulse,
   Gauge,
   TrendingUpDown,
+  StretchHorizontal,
   ChevronRight,
   ChevronLeft,
 } from "lucide-react";
@@ -98,6 +99,12 @@ export default function WidgetDrawer({ onAdd }: Props) {
       label:       t("widgetDrawer.types.stat"),
       icon:        <TrendingUpDown size={22} strokeWidth={1.75} />,
       description: t("widgetDrawer.desc.stat"),
+    },
+    {
+      type:        "progress",
+      label:       t("widgetDrawer.types.progress"),
+      icon:        <StretchHorizontal size={22} strokeWidth={1.75} />,
+      description: t("widgetDrawer.desc.progress"),
     },
   ];
 

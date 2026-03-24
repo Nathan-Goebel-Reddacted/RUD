@@ -10,6 +10,7 @@ export const WidgetType = {
   HEALTH_CHECK:  "health-check",
   GAUGE:         "gauge",
   STAT:          "stat",
+  PROGRESS:      "progress",
 } as const;
 export type WidgetType = typeof WidgetType[keyof typeof WidgetType];
 
@@ -101,6 +102,17 @@ export type GaugeConfig = {
   color?:         string;
 };
 
+export type ProgressConfig = {
+  type:           "progress";
+  min?:           number;
+  max?:           number;
+  unit?:          string;
+  decimalPlaces?: number;
+  showPercent?:   boolean;
+  color?:         string;
+  thresholds?:    Threshold[];
+};
+
 export type StatConfig = {
   type:           "stat";
   unit?:          string;
@@ -122,7 +134,8 @@ export type WidgetConfig =
   | LastUpdateConfig
   | HealthCheckConfig
   | GaugeConfig
-  | StatConfig;
+  | StatConfig
+  | ProgressConfig;
 
 export type Widget = {
   id:              string;
