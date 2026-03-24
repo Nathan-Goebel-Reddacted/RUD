@@ -10,6 +10,7 @@ import {
   Clock,
   RefreshCw,
   HeartPulse,
+  Gauge,
   ChevronRight,
   ChevronLeft,
 } from "lucide-react";
@@ -84,6 +85,12 @@ export default function WidgetDrawer({ onAdd }: Props) {
       label:       t("widgetDrawer.types.healthCheck"),
       icon:        <HeartPulse size={22} strokeWidth={1.75} />,
       description: t("widgetDrawer.desc.healthCheck"),
+    },
+    {
+      type:        "gauge",
+      label:       t("widgetDrawer.types.gauge"),
+      icon:        <Gauge size={22} strokeWidth={1.75} />,
+      description: t("widgetDrawer.desc.gauge"),
     },
   ];
 

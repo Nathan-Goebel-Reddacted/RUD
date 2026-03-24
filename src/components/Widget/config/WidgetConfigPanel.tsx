@@ -15,6 +15,7 @@ import {
   type ClockConfig,
   type LastUpdateConfig,
   type HealthCheckConfig,
+  type GaugeConfig,
   type Threshold,
 } from "@/types/widget";
 import EndpointSelector from "./EndpointSelector";
@@ -40,6 +41,7 @@ function defaultConfig(type: WidgetType): WidgetConfig {
     case "clock":        return { type: "clock", format: "24h" };
     case "last-update":  return { type: "last-update", displayFormat: "relative" };
     case "health-check": return { type: "health-check" };
+    case "gauge":        return { type: "gauge", min: 0, max: 100 };
   }
 }
 
@@ -66,6 +68,7 @@ const TYPE_LABELS: Record<WidgetType, string> = {
   "clock":        "widgetDrawer.types.clock",
   "last-update":  "widgetDrawer.types.lastUpdate",
   "health-check": "widgetDrawer.types.healthCheck",
+  "gauge":        "widgetDrawer.types.gauge",
 };
 
 export default function WidgetConfigPanel({ initial, initialType, onSave, onCancel }: Props) {
@@ -559,6 +562,64 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
                 }}
               />
               <span className="form-hint">{t("widgetConfig.healthOkCodesHint")}</span>
+            </div>
+            {renderThresholds(c.thresholds ?? [], (th) => setConfig({ ...c, thresholds: th }))}
+          </>
+        );
+      }
+      case "gauge": {
+        const c = config as GaugeConfig;
+        return (
+          <>
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.gaugeMin")}</label>
+              <input
+                className="form-input"
+                type="number"
+                value={c.min ?? 0}
+                onChange={(e) => setConfig({ ...c, min: Number(e.target.value) })}
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.gaugeMax")}</label>
+              <input
+                className="form-input"
+                type="number"
+                value={c.max ?? 100}
+                onChange={(e) => setConfig({ ...c, max: Number(e.target.value) })}
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.unit")}</label>
+              <input
+                className="form-input"
+                type="text"
+                placeholder={t("widgetConfig.unitPlaceholder")}
+                value={c.unit ?? ""}
+                onChange={(e) => setConfig({ ...c, unit: e.target.value || undefined })}
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.decimals")}</label>
+              <input
+                className="form-input"
+                type="number"
+                min={0}
+                max={10}
+                value={c.decimalPlaces ?? ""}
+                placeholder={t("widgetConfig.autoPlaceholder")}
+                onChange={(e) => setConfig({
+                  ...c,
+                  decimalPlaces: e.target.value ? Number(e.target.value) : undefined,
+                })}
+              />
+            </div>
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.gaugeColor")}</label>
+              <ColorPicker
+                value={c.color ?? "#4a9eff"}
+                onChange={(v) => setConfig({ ...c, color: v })}
+              />
             </div>
             {renderThresholds(c.thresholds ?? [], (th) => setConfig({ ...c, thresholds: th }))}
           </>

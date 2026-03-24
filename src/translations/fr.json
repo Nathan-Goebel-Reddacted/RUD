@@ -98,7 +98,8 @@
             "rawResponse": "JSON brut",
             "clock": "Horloge",
             "lastUpdate": "Dernière MAJ",
-            "healthCheck": "Health Check"
+            "healthCheck": "Health Check",
+            "gauge": "Jauge"
         },
         "desc": {
             "numberCard": "Valeur numérique unique",
@@ -109,7 +110,8 @@
             "rawResponse": "Réponse JSON complète",
             "clock": "Horloge en temps réel",
             "lastUpdate": "Timestamp du dernier fetch",
-            "healthCheck": "Statut endpoint (OK / KO)"
+            "healthCheck": "Statut endpoint (OK / KO)",
+            "gauge": "Jauge semi-circulaire avec seuils"
         }
     },
 
@@ -257,6 +259,9 @@
         "fetchInterval": "Intervalle de fetch (secondes)",
         "fetchIntervalPlaceholder": "défaut (30 s)",
         "fetchIntervalHint": "Laisser vide pour utiliser le défaut global (30 s).",
+        "gaugeMin": "Valeur min",
+        "gaugeMax": "Valeur max",
+        "gaugeColor": "Couleur par défaut",
         "cancel": "Annuler",
         "save": "Enregistrer",
         "addWidget": "Ajouter le widget"

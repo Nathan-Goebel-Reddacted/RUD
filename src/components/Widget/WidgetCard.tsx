@@ -11,6 +11,7 @@ import RawResponse from "./types/RawResponse";
 import ClockWidget from "./types/ClockWidget";
 import LastUpdateWidget from "./types/LastUpdateWidget";
 import HealthCheckWidget from "./types/HealthCheckWidget";
+import GaugeWidget from "./types/GaugeWidget";
 
 type Props = {
   widget:       Widget;
@@ -70,6 +71,8 @@ function WidgetBody({ widget, dataState }: { widget: Widget; dataState: WidgetDa
       return <LineChart data={dataState.data} config={widget.config} widgetId={widget.id} fetchedAt={dataState.fetchedAt} />;
     case "raw-response":
       return <RawResponse data={dataState.data} />;
+    case "gauge":
+      return <GaugeWidget data={dataState.data} config={widget.config} widgetId={widget.id} fetchedAt={dataState.fetchedAt} />;
   }
 }
 

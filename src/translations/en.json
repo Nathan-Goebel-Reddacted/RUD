@@ -98,7 +98,8 @@
             "rawResponse": "Raw Response",
             "clock": "Clock",
             "lastUpdate": "Last Update",
-            "healthCheck": "Health Check"
+            "healthCheck": "Health Check",
+            "gauge": "Gauge"
         },
         "desc": {
             "numberCard": "Single numeric value",
@@ -109,7 +110,8 @@
             "rawResponse": "Full JSON response",
             "clock": "Real-time clock",
             "lastUpdate": "Last fetch timestamp",
-            "healthCheck": "Endpoint status (OK / KO)"
+            "healthCheck": "Endpoint status (OK / KO)",
+            "gauge": "Semi-circular gauge with thresholds"
         }
     },
 
@@ -257,6 +259,9 @@
         "fetchInterval": "Fetch interval (seconds)",
         "fetchIntervalPlaceholder": "default (30 s)",
         "fetchIntervalHint": "Leave empty to use the global default (30 s).",
+        "gaugeMin": "Min value",
+        "gaugeMax": "Max value",
+        "gaugeColor": "Default color",
         "cancel": "Cancel",
         "save": "Save",
         "addWidget": "Add widget"

@@ -8,6 +8,7 @@ export const WidgetType = {
   CLOCK:         "clock",
   LAST_UPDATE:   "last-update",
   HEALTH_CHECK:  "health-check",
+  GAUGE:         "gauge",
 } as const;
 export type WidgetType = typeof WidgetType[keyof typeof WidgetType];
 
@@ -89,6 +90,16 @@ export type HealthCheckConfig = {
   thresholds?: Threshold[];
 };
 
+export type GaugeConfig = {
+  type:           "gauge";
+  min?:           number;
+  max?:           number;
+  unit?:          string;
+  decimalPlaces?: number;
+  thresholds?:    Threshold[];
+  color?:         string;
+};
+
 export type WidgetConfig =
   | NumberCardConfig
   | TableConfig
@@ -98,7 +109,8 @@ export type WidgetConfig =
   | RawResponseConfig
   | ClockConfig
   | LastUpdateConfig
-  | HealthCheckConfig;
+  | HealthCheckConfig
+  | GaugeConfig;
 
 export type Widget = {
   id:              string;
