@@ -34,6 +34,7 @@ function ErrorMessage({ error }: { error: string }) {
     parse_error:        t("widgetCard.error.parseError"),
     no_data:            t("widgetCard.error.noData"),
     invalid_path:       t("widgetCard.error.invalidPath"),
+    transform_error:    t("widgetCard.error.transformError"),
   };
   return (
     <div className="widget-card__error">

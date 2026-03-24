@@ -1,8 +1,7 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useApiStore } from "@/stores/apiStore";
-import { fetchWidgetData } from "@/services/widgetFetch";
-import { extractData } from "@/services/widgetFetch";
+import { fetchWidgetData, extractData, applyTransform } from "@/services/widgetFetch";
 import {
   WidgetType,
   type Widget,
@@ -95,6 +94,7 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
     initial?.config ?? defaultConfig(initialType ?? WidgetType.NUMBER_CARD)
   );
   const [refreshOverride, setRefreshOverride] = useState<number | undefined>(initial?.refreshOverride);
+  const [transform,      setTransform]      = useState<string>(initial?.transform ?? "");
   const [rawPreview,   setRawPreview]   = useState<unknown>(null);
   const [dataKeys,     setDataKeys]     = useState<string[]>([]);
   const [fetching,     setFetching]     = useState(false);
@@ -155,8 +155,18 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
       dataPath:     needsDataPath ? dataPath : "",
       config,
       refreshOverride: isStatic ? undefined : refreshOverride,
+      transform:    transform.trim() || undefined,
     });
   }
+
+  // ─── Transform preview (RUD052) ────────────────────────────────────────────
+  const transformPreview = useMemo(() => {
+    if (!transform.trim() || rawPreview === null) return null;
+    const { value } = extractData(rawPreview, dataPath);
+    const result = applyTransform(value, transform);
+    if (result.error) return { error: true, display: t("widgetConfig.transformError") };
+    return { error: false, display: JSON.stringify(result.value) };
+  }, [transform, rawPreview, dataPath]);
 
   // ─── Threshold editor (RUD040) ─────────────────────────────────────────────
   function renderThresholds(thresholds: Threshold[], onChange: (t: Threshold[]) => void) {
@@ -866,6 +876,28 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
                 onChange={handleDataPathChange}
                 preview={rawPreview}
               />
+            )}
+
+            {needsDataPath && (
+              <div className="form-group">
+                <label className="form-label">{t("widgetConfig.transform")}</label>
+                <input
+                  className="form-input font-mono"
+                  type="text"
+                  placeholder={t("widgetConfig.transformPlaceholder")}
+                  value={transform}
+                  onChange={(e) => setTransform(e.target.value)}
+                />
+                <span className="form-hint">{t("widgetConfig.transformHint")}</span>
+                {transformPreview && (
+                  <span
+                    className="form-hint"
+                    style={{ color: transformPreview.error ? "var(--danger-color)" : "var(--text-color)", opacity: 1 }}
+                  >
+                    → {transformPreview.display}
+                  </span>
+                )}
+              </div>
             )}
           </>
         )}

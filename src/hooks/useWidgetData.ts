@@ -1,13 +1,23 @@
 import { useEffect, useRef, useState } from "react";
 import { useApiStore } from "@/stores/apiStore";
 import { useDashboardStore } from "@/stores/dashboardStore";
-import { fetchWidgetData } from "@/services/widgetFetch";
+import { fetchWidgetData, applyTransform } from "@/services/widgetFetch";
 import type { Widget, WidgetDataState, FetchCacheEntry } from "@/types/widget";
 
 const DEFAULT_INTERVAL = 30; // seconds
 
+function withTransform(
+  data: unknown,
+  error: WidgetDataState["error"],
+  transform: string | undefined
+): { data: unknown; error: WidgetDataState["error"] } {
+  if (!transform?.trim() || error !== null) return { data, error };
+  const result = applyTransform(data, transform);
+  return { data: result.value, error: result.error };
+}
+
 export function useWidgetData(widget: Widget): WidgetDataState {
-  const { connectionId, endpointId, dataPath, refreshOverride } = widget;
+  const { connectionId, endpointId, dataPath, refreshOverride, transform } = widget;
 
   const connections   = useApiStore((s) => s.connections);
   const fetchCache    = useDashboardStore((s) => s.fetchCache);
@@ -52,10 +62,11 @@ export function useWidgetData(widget: Widget): WidgetDataState {
     if (cached) {
       const age = Date.now() - cached.fetchedAt;
       if (age < intervalMs) {
+        const transformed = withTransform(cached.data, cached.error as WidgetDataState["error"], transform);
         setState({
-          data:      cached.data,
+          data:      transformed.data,
           loading:   false,
-          error:     cached.error as WidgetDataState["error"],
+          error:     transformed.error,
           httpCode:  cached.httpCode,
           fetchedAt: cached.fetchedAt,
         });
@@ -84,10 +95,11 @@ export function useWidgetData(widget: Widget): WidgetDataState {
           httpCode:  result.httpCode,
         };
         setFetchCache(cacheKey, entry);
+        const transformed = withTransform(result.data, result.error, transform);
         setState({
-          data:      result.data,
+          data:      transformed.data,
           loading:   false,
-          error:     result.error,
+          error:     transformed.error,
           httpCode:  result.httpCode,
           fetchedAt: entry.fetchedAt,
         });

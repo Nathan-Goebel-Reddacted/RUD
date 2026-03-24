@@ -131,7 +131,8 @@
             "httpError": "Erreur HTTP — le serveur a retourné une erreur",
             "parseError": "Erreur de parsing — la réponse n'est pas du JSON valide",
             "noData": "Aucune donnée ne correspond au chemin",
-            "invalidPath": "Expression JSONPath invalide"
+            "invalidPath": "Expression JSONPath invalide",
+            "transformError": "Erreur de transformation — vérifier la syntaxe de l'expression"
         }
     },
 
@@ -268,6 +269,10 @@
         "gaugeMin": "Valeur min",
         "gaugeMax": "Valeur max",
         "gaugeColor": "Couleur par défaut",
+        "transform": "Transformation (optionnelle)",
+        "transformPlaceholder": "ex : value / 1024  ou  Math.round(value * 10) / 10",
+        "transformHint": "Expression JS — utiliser `value` pour référencer la donnée extraite.",
+        "transformError": "Erreur dans l'expression",
         "progressShowPercent": "Afficher le pourcentage",
         "pieLabelKey": "Clé de label (nom des parts)",
         "pieValueKey": "Clé de valeur",

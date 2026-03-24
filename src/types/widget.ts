@@ -149,14 +149,15 @@ export type WidgetConfig =
   | PieChartConfig;
 
 export type Widget = {
-  id:              string;
-  label:           string;
-  connectionId:    string;
-  endpointId:      string;
-  dataPath:        string;
-  position:        WidgetPosition;
-  config:          WidgetConfig;
+  id:               string;
+  label:            string;
+  connectionId:     string;
+  endpointId:       string;
+  dataPath:         string;
+  position:         WidgetPosition;
+  config:           WidgetConfig;
   refreshOverride?: number;
+  transform?:       string; // JS expression applied after JSONPath extraction
 };
 
 export type Dashboard = {
@@ -173,7 +174,8 @@ export type WidgetDataError =
   | "http_error"
   | "parse_error"
   | "no_data"
-  | "invalid_path";
+  | "invalid_path"
+  | "transform_error";
 
 export type WidgetDataState = {
   data:      unknown;

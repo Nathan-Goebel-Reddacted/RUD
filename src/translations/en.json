@@ -131,7 +131,8 @@
             "httpError": "HTTP error — the server returned an error",
             "parseError": "Parse error — response is not valid JSON",
             "noData": "No data matched the data path",
-            "invalidPath": "Invalid JSONPath expression"
+            "invalidPath": "Invalid JSONPath expression",
+            "transformError": "Transform error — check the expression syntax"
         }
     },
 
@@ -268,6 +269,10 @@
         "gaugeMin": "Min value",
         "gaugeMax": "Max value",
         "gaugeColor": "Default color",
+        "transform": "Transform (optional)",
+        "transformPlaceholder": "e.g. value / 1024  or  Math.round(value * 10) / 10",
+        "transformHint": "JS expression — use `value` to reference the extracted data.",
+        "transformError": "Error in expression",
         "progressShowPercent": "Show percentage",
         "pieLabelKey": "Label key (slice name)",
         "pieValueKey": "Value key",

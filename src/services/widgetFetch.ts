@@ -67,6 +67,19 @@ export function extractData(
   }
 }
 
+export function applyTransform(
+  value: unknown,
+  transform: string
+): { value: unknown; error: "transform_error" | null } {
+  try {
+    // eslint-disable-next-line no-new-func
+    const result = new Function("value", `"use strict"; return (${transform})`)(value);
+    return { value: result, error: null };
+  } catch {
+    return { value: null, error: "transform_error" };
+  }
+}
+
 export async function fetchWidgetData(
   conn: ApiConnection,
   ep: ApiEndpoint,
