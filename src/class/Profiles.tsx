@@ -20,6 +20,8 @@ class Profile{
 
     private variables: Record<string, string> = {};
 
+    private animationsEnabled: boolean = true;
+
     constructor(){}
 
     public createAProfile(profileName: string) {
@@ -98,6 +100,9 @@ class Profile{
     public getVariables(): Record<string, string> { return { ...this.variables }; }
     public setVariables(vars: Record<string, string>): void { this.variables = { ...vars }; }
 
+    public getAnimationsEnabled(): boolean { return this.animationsEnabled; }
+    public setAnimationsEnabled(v: boolean): void { this.animationsEnabled = v; }
+
     public toJSON(): object {
         return {
             profileName:     this.profileName,
@@ -110,7 +115,8 @@ class Profile{
             displayInterval: this.displayInterval,
             scrollSpeed:     this.scrollSpeed,
             loopPauseMs:     this.loopPauseMs,
-            variables:       this.variables,
+            variables:          this.variables,
+            animationsEnabled:  this.animationsEnabled,
         }
     }
 
@@ -138,6 +144,7 @@ class Profile{
                 }
                 p.setVariables(vars);
             }
+            if (typeof d.animationsEnabled === "boolean") p.setAnimationsEnabled(d.animationsEnabled)
             if (!p.isProfileValid().isSuccess()) return null
             return p
         } catch {

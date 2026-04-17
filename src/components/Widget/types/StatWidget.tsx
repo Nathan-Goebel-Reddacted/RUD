@@ -3,6 +3,7 @@ import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 import type { StatConfig } from "@/types/widget";
 import { resolveThresholdColor } from "@/types/widget";
 import { appendScalar, getScalars } from "@/stores/widgetHistory";
+import { useValueChange } from "@/hooks/useValueChange";
 
 type Props = {
   data:      unknown;
@@ -63,6 +64,8 @@ export default function StatWidget({ data, config, widgetId, fetchedAt }: Props)
     display = decimalPlaces !== undefined ? num.toFixed(decimalPlaces) : String(num);
   }
 
+  const changed = useValueChange(display, fetchedAt);
+
   let deltaDisplay = "—";
   let deltaColor   = "var(--text-color)";
   let DeltaIcon    = Minus;
@@ -90,7 +93,7 @@ export default function StatWidget({ data, config, widgetId, fetchedAt }: Props)
     <div className="d-flex flex-col align-stretch" style={{ gap: "0.35rem" }}>
       {/* Main value */}
       <div className="d-flex align-baseline" style={{ gap: "0.4rem" }}>
-        <span className="widget-number-card__value" style={valueColor ? { color: valueColor } : undefined}>
+        <span className={`widget-number-card__value${changed ? " widget-value--changed" : ""}`} style={valueColor ? { color: valueColor } : undefined}>
           {display}
         </span>
         {unit && <span style={{ fontSize: "1rem", opacity: 0.6 }}>{unit}</span>}

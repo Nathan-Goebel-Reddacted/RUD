@@ -34,7 +34,8 @@
             "modeDisabled":  "Désactivé",
             "interval":      "Intervalle (s)",
             "scrollSpeed":   "Vitesse de défilement (px/s)",
-            "loopPauseMs":   "Durée des pauses (ms)"
+            "loopPauseMs":       "Durée des pauses (ms)",
+            "animationsEnabled": "Animations sur changement de valeur"
         },
         "dashboards": {
             "delete":         "Supprimer le tableau de bord",
@@ -109,7 +110,13 @@
             "gauge": "Jauge",
             "stat": "Stat",
             "progress": "Barre de progression",
-            "pieChart": "Camembert"
+            "pieChart": "Camembert",
+            "form":   "Formulaire",
+            "button": "Bouton",
+            "toggle": "Interrupteur",
+            "slider": "Curseur",
+            "select": "Liste déroulante",
+            "search": "Recherche"
         },
         "desc": {
             "numberCard": "Valeur numérique unique",
@@ -124,7 +131,13 @@
             "gauge": "Jauge semi-circulaire avec seuils",
             "stat": "Valeur + delta vs fetch précédent",
             "progress": "Barre de progression horizontale avec min/max",
-            "pieChart": "Distribution par catégorie (camembert)"
+            "pieChart": "Distribution par catégorie (camembert)",
+            "form":   "Formulaire avec champs configurables et bouton d'envoi",
+            "button": "Un ou plusieurs boutons déclenchant des appels API au clic",
+            "toggle": "Interrupteur ON/OFF lisant et écrivant l'état via API",
+            "slider": "Curseur lisant et écrivant une valeur numérique via API",
+            "select": "Liste déroulante lisant et écrivant une valeur via API",
+            "search": "Champ de recherche en direct — interroge l'API à chaque frappe"
         }
     },
 
@@ -291,7 +304,138 @@
         "statNegativeColor": "Couleur négative",
         "cancel": "Annuler",
         "save": "Enregistrer",
-        "addWidget": "Ajouter le widget"
+        "addWidget": "Ajouter le widget",
+        "alertEnabled": "Activer les alertes de seuil (mode Display)",
+        "alertEnabledHint": "Flash et bannière quand la valeur franchit un seuil. Requiert des seuils configurés ci-dessus.",
+        "alertCooldown": "Cooldown d'alerte (secondes)",
+        "alertCooldownHint": "Délai minimum entre deux alertes pour ce widget. Minimum : 5 s.",
+        "form": {
+            "submitLabel":              "Libellé du bouton d'envoi",
+            "submitLabelPlaceholder":   "ex. Envoyer, Valider, Déclencher…",
+            "fields":                   "Champs du formulaire",
+            "addField":                 "+ Ajouter un champ",
+            "noFields":                 "Aucun champ configuré. Ajoutez au moins un champ.",
+            "fieldKey":                 "clé",
+            "fieldLabel":               "libellé",
+            "fieldDefault":             "défaut",
+            "required":                 "Req.",
+            "typeText":                 "Texte",
+            "typeNumber":               "Nombre",
+            "typeTextarea":             "Zone de texte",
+            "responseDataPath":         "Chemin de données de la réponse (optionnel)",
+            "responseDataPathPlaceholder": "$.message ou $.result.id",
+            "responseDataPathHint":     "JSONPath pour extraire un champ spécifique de la réponse. Laisser vide pour afficher la réponse complète."
+        },
+        "button": {
+            "layout":           "Disposition des boutons",
+            "horizontal":       "Horizontal",
+            "vertical":         "Vertical",
+            "buttons":          "Boutons",
+            "addButton":        "+ Ajouter un bouton",
+            "noButtons":        "Aucun bouton configuré. Ajoutez-en au moins un.",
+            "buttonLabel":      "Libellé du bouton",
+            "variantPrimary":   "Principal",
+            "variantDanger":    "Danger",
+            "variantGhost":     "Fantôme",
+            "selectConnection": "— Sélectionner une connexion —",
+            "selectEndpoint":   "— Sélectionner un endpoint —",
+            "responseDataPath": "JSONPath réponse (optionnel, ex : $.message)"
+        },
+        "toggle": {
+            "readEndpoint":       "Endpoint de lecture (GET)",
+            "readDataPath":       "Chemin de données (JSONPath)",
+            "readDataPathHint":   "JSONPath pour extraire la valeur booléenne (ex : $.enabled). Vrai : true, 1, \"true\".",
+            "writeEndpoint":      "Endpoint d'écriture (PUT / PATCH)",
+            "writeKey":           "Clé du body",
+            "writeKeyPlaceholder":"ex : enabled, active, status",
+            "writeKeyHint":       "La clé injectée dans le body JSON : { \"clé\": true/false }.",
+            "labelOn":            "Label ON",
+            "labelOff":           "Label OFF"
+        },
+        "slider": {
+            "readEndpoint":        "Lecture de la valeur courante (GET, optionnel)",
+            "readDataPath":        "Chemin de données (JSONPath)",
+            "readDataPathHint":    "JSONPath pour extraire la valeur numérique courante. Laisser vide pour ignorer la lecture.",
+            "writeEndpoint":       "Endpoint d'écriture (PUT / PATCH) *",
+            "writeKey":            "Clé du body *",
+            "writeKeyPlaceholder": "ex : volume, luminosité, vitesse",
+            "writeKeyHint":        "La clé injectée dans le body JSON : { \"clé\": nombre }.",
+            "min":                 "Min",
+            "max":                 "Max",
+            "step":                "Pas",
+            "unit":                "Unité (optionnel)",
+            "unitPlaceholder":     "ex : %, dB, px"
+        },
+        "search": {
+            "endpoint":              "Endpoint de recherche (GET) *",
+            "queryParam":            "Nom du paramètre de requête *",
+            "queryParamPlaceholder": "ex : q, search, query",
+            "queryParamHint":        "Le paramètre ajouté à l'URL : ?q=terme",
+            "dataPath":              "Chemin des résultats (JSONPath)",
+            "dataPathHint":          "JSONPath pour extraire le tableau de résultats. Laisser vide pour utiliser la réponse complète.",
+            "placeholder":           "Placeholder du champ de saisie",
+            "placeholderPlaceholder":"ex : Rechercher un utilisateur…",
+            "minChars":              "Nb de caractères minimum pour déclencher la recherche",
+            "minCharsHint":          "La recherche se déclenche uniquement quand la saisie atteint cette longueur. Minimum : 1."
+        },
+        "select": {
+            "optionsSource":       "Source des options *",
+            "static":              "Statique (définies ici)",
+            "dynamic":             "Dynamique (depuis l'API)",
+            "options":             "Options",
+            "addOption":           "+ Ajouter une option",
+            "noOptions":           "Aucune option définie. Ajoutez-en au moins une.",
+            "optionLabel":         "Libellé",
+            "optionValue":         "Valeur",
+            "optionsEndpoint":     "Endpoint des options (GET) *",
+            "optionsDataPath":     "Chemin des options (JSONPath)",
+            "optionsLabelKey":     "Clé du libellé",
+            "optionsValueKey":     "Clé de la valeur",
+            "readEndpoint":        "Lecture de la valeur courante (GET, optionnel)",
+            "readDataPath":        "Chemin de données (JSONPath)",
+            "readDataPathHint":    "JSONPath pour extraire la valeur sélectionnée. Laisser vide pour ignorer la lecture.",
+            "writeEndpoint":       "Endpoint d'écriture (PUT / PATCH) *",
+            "writeKey":            "Clé du body *",
+            "writeKeyPlaceholder": "ex : thème, mode, langue",
+            "writeKeyHint":        "La clé injectée dans le body JSON : { \"clé\": \"valeur\" }."
+        }
+    },
+
+    "widgetToggle": {
+        "on":         "ON",
+        "off":        "OFF",
+        "writeError": "Écriture échouée — état rétabli"
+    },
+
+    "widgetSearch": {
+        "placeholder":    "Rechercher…",
+        "typeToSearch":   "Tapez pour rechercher",
+        "typeMinChars":   "Entrez au moins {{count}} caractères",
+        "noResults":      "Aucun résultat"
+    },
+
+    "widgetSlider": {
+        "writeError": "Écriture échouée"
+    },
+
+    "widgetSelect": {
+        "placeholder": "— Sélectionner —",
+        "writeError":  "Écriture échouée"
+    },
+
+    "widgetButton": {
+        "noButtons": "Aucun bouton configuré.",
+        "unnamed":   "Bouton"
+    },
+
+    "widgetForm": {
+        "submit":  "Envoyer",
+        "sending": "Envoi en cours…"
+    },
+
+    "alert": {
+        "thresholdCrossed": "Seuil franchi — valeur : {{value}}",
+        "dismiss": "Fermer"
     },
 
     "widgetLastUpdate": {

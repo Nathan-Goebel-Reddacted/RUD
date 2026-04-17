@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import type { HealthCheckConfig, WidgetDataState } from "@/types/widget";
 import { resolveThresholdColor } from "@/types/widget";
+import { useValueChange } from "@/hooks/useValueChange";
 
 function isOk(httpCode: number | null, okCodes?: number[]): boolean {
   if (httpCode === null) return false;
@@ -31,7 +32,8 @@ export default function HealthCheckWidget({ config, dataState }: Props) {
     );
   }
 
-  const ok = isOk(httpCode, config.okCodes);
+  const ok      = isOk(httpCode, config.okCodes);
+  const changed = useValueChange(String(ok), dataState.fetchedAt);
 
   // RUD040: threshold color overrides default ok/ko color
   let dotColor = ok ? "#51cf66" : "#ff6b6b";
@@ -41,7 +43,7 @@ export default function HealthCheckWidget({ config, dataState }: Props) {
 
   return (
     <div className="d-flex align-center gap-2 w-full h-full">
-      <span className="widget-health-check__dot" style={{ background: dotColor }} />
+      <span className={`widget-health-check__dot${changed ? " widget-value--changed" : ""}`} style={{ background: dotColor }} />
       <span className="widget-health-check__status" style={{ color: dotColor }}>
         {ok ? t("widgetHealthCheck.ok") : t("widgetHealthCheck.ko")}
       </span>

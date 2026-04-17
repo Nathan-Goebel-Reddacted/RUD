@@ -3,6 +3,7 @@ import { LineChart, Line, ResponsiveContainer } from "recharts";
 import type { NumberCardConfig } from "@/types/widget";
 import { resolveThresholdColor } from "@/types/widget";
 import { appendScalar, getScalars } from "@/stores/widgetHistory";
+import { useValueChange } from "@/hooks/useValueChange";
 
 type Props = {
   data:      unknown;
@@ -39,9 +40,10 @@ export default function NumberCard({ data, config, widgetId, fetchedAt }: Props)
     display = decimalPlaces !== undefined ? num.toFixed(decimalPlaces) : String(num);
   }
 
-  const color = (!isNaN(num) && thresholds?.length)
+  const color   = (!isNaN(num) && thresholds?.length)
     ? resolveThresholdColor(num, thresholds)
     : undefined;
+  const changed = useValueChange(display, fetchedAt);
 
   const history   = keepHistory ? getScalars(widgetId) : [];
   const sparkData = history.map((v) => ({ v }));
@@ -49,7 +51,7 @@ export default function NumberCard({ data, config, widgetId, fetchedAt }: Props)
   return (
     <div className={keepHistory ? 'd-flex flex-col align-stretch' : 'd-flex align-baseline'} style={{ gap: keepHistory ? '0.25rem' : '0.4rem' }}>
       <div className="d-flex align-baseline" style={{ gap: '0.4rem' }}>
-        <span className="widget-number-card__value" style={color ? { color } : undefined}>
+        <span className={`widget-number-card__value${changed ? " widget-value--changed" : ""}`} style={color ? { color } : undefined}>
           {display}
         </span>
         {unit && <span style={{ fontSize: '1rem', opacity: 0.6 }}>{unit}</span>}

@@ -34,7 +34,8 @@
             "modeDisabled":  "Disabled",
             "interval":      "Interval (s)",
             "scrollSpeed":   "Scroll speed (px/s)",
-            "loopPauseMs":   "Pause duration (ms)"
+            "loopPauseMs":       "Pause duration (ms)",
+            "animationsEnabled": "Value change animations"
         },
         "dashboards": {
             "delete":        "Delete dashboard",
@@ -109,7 +110,13 @@
             "gauge": "Gauge",
             "stat": "Stat",
             "progress": "Progress Bar",
-            "pieChart": "Pie Chart"
+            "pieChart": "Pie Chart",
+            "form":   "Form",
+            "button": "Button",
+            "toggle": "Toggle",
+            "slider": "Slider",
+            "select": "Select",
+            "search": "Search"
         },
         "desc": {
             "numberCard": "Single numeric value",
@@ -124,7 +131,13 @@
             "gauge": "Semi-circular gauge with thresholds",
             "stat": "Value with delta vs previous fetch",
             "progress": "Horizontal progress bar with min/max",
-            "pieChart": "Distribution by category (pie / donut)"
+            "pieChart": "Distribution by category (pie / donut)",
+            "form":   "Form with configurable fields and submit button",
+            "button": "One or more buttons triggering API calls on click",
+            "toggle": "ON/OFF switch that reads and writes state via API",
+            "slider": "Range slider that reads and writes a numeric value via API",
+            "select": "Dropdown that reads and writes a value via API",
+            "search": "Live search field — queries the API on each keystroke"
         }
     },
 
@@ -291,7 +304,138 @@
         "statNegativeColor": "Negative color",
         "cancel": "Cancel",
         "save": "Save",
-        "addWidget": "Add widget"
+        "addWidget": "Add widget",
+        "alertEnabled": "Enable threshold alerts (Display mode)",
+        "alertEnabledHint": "Flash and banner when the value crosses a threshold. Requires thresholds to be configured above.",
+        "alertCooldown": "Alert cooldown (seconds)",
+        "alertCooldownHint": "Minimum delay between two alerts for this widget. Minimum: 5 s.",
+        "form": {
+            "submitLabel":              "Submit button label",
+            "submitLabelPlaceholder":   "e.g. Send, Submit, Trigger…",
+            "fields":                   "Form fields",
+            "addField":                 "+ Add field",
+            "noFields":                 "No fields configured. Add at least one field.",
+            "fieldKey":                 "key",
+            "fieldLabel":               "label",
+            "fieldDefault":             "default",
+            "required":                 "Req.",
+            "typeText":                 "Text",
+            "typeNumber":               "Number",
+            "typeTextarea":             "Textarea",
+            "responseDataPath":         "Response data path (optional)",
+            "responseDataPathPlaceholder": "$.message or $.result.id",
+            "responseDataPathHint":     "JSONPath to extract a specific field from the response. Leave empty to show the full response."
+        },
+        "button": {
+            "layout":           "Button layout",
+            "horizontal":       "Horizontal",
+            "vertical":         "Vertical",
+            "buttons":          "Buttons",
+            "addButton":        "+ Add button",
+            "noButtons":        "No buttons configured. Add at least one.",
+            "buttonLabel":      "Button label",
+            "variantPrimary":   "Primary",
+            "variantDanger":    "Danger",
+            "variantGhost":     "Ghost",
+            "selectConnection": "— Select connection —",
+            "selectEndpoint":   "— Select endpoint —",
+            "responseDataPath": "Response JSONPath (optional, e.g. $.message)"
+        },
+        "toggle": {
+            "readEndpoint":       "Read endpoint (GET)",
+            "readDataPath":       "Data path (JSONPath)",
+            "readDataPathHint":   "JSONPath to extract the boolean value (e.g. $.enabled). Truthy: true, 1, \"true\".",
+            "writeEndpoint":      "Write endpoint (PUT / PATCH)",
+            "writeKey":           "Body key",
+            "writeKeyPlaceholder":"e.g. enabled, active, status",
+            "writeKeyHint":       "The key injected in the JSON body: { \"key\": true/false }.",
+            "labelOn":            "Label ON",
+            "labelOff":           "Label OFF"
+        },
+        "slider": {
+            "readEndpoint":        "Read current value (GET, optional)",
+            "readDataPath":        "Data path (JSONPath)",
+            "readDataPathHint":    "JSONPath to extract the current numeric value. Leave empty to skip read.",
+            "writeEndpoint":       "Write endpoint (PUT / PATCH) *",
+            "writeKey":            "Body key *",
+            "writeKeyPlaceholder": "e.g. volume, brightness, speed",
+            "writeKeyHint":        "The key injected in the JSON body: { \"key\": number }.",
+            "min":                 "Min",
+            "max":                 "Max",
+            "step":                "Step",
+            "unit":                "Unit (optional)",
+            "unitPlaceholder":     "e.g. %, dB, px"
+        },
+        "search": {
+            "endpoint":              "Search endpoint (GET) *",
+            "queryParam":            "Query parameter name *",
+            "queryParamPlaceholder": "e.g. q, search, query",
+            "queryParamHint":        "The query param appended to the URL: ?q=term",
+            "dataPath":              "Results data path (JSONPath)",
+            "dataPathHint":          "JSONPath to extract the results array. Leave empty to use the full response.",
+            "placeholder":           "Input placeholder",
+            "placeholderPlaceholder":"e.g. Search users…",
+            "minChars":              "Min characters to trigger search",
+            "minCharsHint":          "Search fires only when the input reaches this length. Minimum: 1."
+        },
+        "select": {
+            "optionsSource":       "Options source *",
+            "static":              "Static (defined here)",
+            "dynamic":             "Dynamic (from API)",
+            "options":             "Options",
+            "addOption":           "+ Add option",
+            "noOptions":           "No options defined. Add at least one.",
+            "optionLabel":         "Label",
+            "optionValue":         "Value",
+            "optionsEndpoint":     "Options endpoint (GET) *",
+            "optionsDataPath":     "Options data path (JSONPath)",
+            "optionsLabelKey":     "Label key",
+            "optionsValueKey":     "Value key",
+            "readEndpoint":        "Read current value (GET, optional)",
+            "readDataPath":        "Data path (JSONPath)",
+            "readDataPathHint":    "JSONPath to extract the currently selected value. Leave empty to skip read.",
+            "writeEndpoint":       "Write endpoint (PUT / PATCH) *",
+            "writeKey":            "Body key *",
+            "writeKeyPlaceholder": "e.g. theme, mode, language",
+            "writeKeyHint":        "The key injected in the JSON body: { \"key\": \"value\" }."
+        }
+    },
+
+    "widgetToggle": {
+        "on":         "ON",
+        "off":        "OFF",
+        "writeError": "Write failed — state reverted"
+    },
+
+    "widgetSearch": {
+        "placeholder":    "Search…",
+        "typeToSearch":   "Type to search",
+        "typeMinChars":   "Type at least {{count}} characters",
+        "noResults":      "No results"
+    },
+
+    "widgetSlider": {
+        "writeError": "Write failed"
+    },
+
+    "widgetSelect": {
+        "placeholder": "— Select —",
+        "writeError":  "Write failed"
+    },
+
+    "widgetButton": {
+        "noButtons": "No buttons configured.",
+        "unnamed":   "Button"
+    },
+
+    "widgetForm": {
+        "submit":  "Send",
+        "sending": "Sending…"
+    },
+
+    "alert": {
+        "thresholdCrossed": "Threshold crossed — value: {{value}}",
+        "dismiss": "Dismiss"
     },
 
     "widgetLastUpdate": {

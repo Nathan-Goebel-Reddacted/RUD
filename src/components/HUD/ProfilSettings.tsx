@@ -186,7 +186,8 @@ function ProfileSettings({
   const [displayMode,     setDisplayMode]     = useState<DisplayMode>(initialProfile?.getDisplayMode()     ?? "timer");
   const [displayInterval, setDisplayInterval] = useState<number>(initialProfile?.getDisplayInterval() ?? 30);
   const [scrollSpeed,     setScrollSpeed]     = useState<number>(initialProfile?.getScrollSpeed()     ?? 0);
-  const [loopPauseMs,     setLoopPauseMs]     = useState<number>(initialProfile?.getLoopPauseMs()     ?? 2000);
+  const [loopPauseMs,       setLoopPauseMs]       = useState<number>(initialProfile?.getLoopPauseMs()       ?? 2000);
+  const [animationsEnabled, setAnimationsEnabled] = useState<boolean>(initialProfile?.getAnimationsEnabled() ?? true);
 
   const setProfile        = useProfileStore((state) => state.setProfile);
   const clearConnections  = useApiStore((state) => state.clearConnections);
@@ -212,6 +213,7 @@ function ProfileSettings({
     newProfile.setDisplayInterval(displayInterval);
     newProfile.setScrollSpeed(scrollSpeed);
     newProfile.setLoopPauseMs(loopPauseMs);
+    newProfile.setAnimationsEnabled(animationsEnabled);
     newProfile.setVariables(variables);
     const result = newProfile.isProfileValid();
     if (result.isSuccess()) {
@@ -368,6 +370,14 @@ function ProfileSettings({
                   value={loopPauseMs}
                   onChange={(e) => setLoopPauseMs(Number(e.target.value))}
                   style={{ width: "80px" }}
+                />
+              </label>
+              <label className="d-flex align-center justify-between gap-2" style={{ margin: '0.5rem 0', cursor: 'pointer' }}>
+                {t("profileSettings.display.animationsEnabled")}
+                <input
+                  type="checkbox"
+                  checked={animationsEnabled}
+                  onChange={(e) => setAnimationsEnabled(e.target.checked)}
                 />
               </label>
             </div>

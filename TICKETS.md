@@ -253,7 +253,7 @@ RUD044 (PWA) dépend de RUD043 (build display-only comme cible PWA prioritaire).
 
 ## Nouveaux widgets
 
-**RUD046 — Widget Gauge / Donut**
+**✅ RUD046 — Widget Gauge / Donut**
 Nouveau type `gauge` : affiche une valeur numérique sous forme de jauge semi-circulaire ou donut (recharts `RadialBarChart` ou `PieChart` en mode semi-cercle). Config : valeur min/max, unité, couleur, seuils visuels (intégration RUD040). Idéal pour CPU, mémoire, taux d'occupation.
 
 **RUD047 — Widget Stat + tendance**
@@ -265,15 +265,13 @@ Nouveau type `progress` : barre de progression horizontale avec valeur texte opt
 **RUD049 — Widget Pie chart**
 Nouveau type `pie` : camembert via `recharts PieChart`. Config : clé de label, clé de valeur, palette de couleurs personnalisable par slice. Agrégation `count` (comme RUD027) disponible pour distribution.
 
-**RUD050 — Widget Status grid**
-Nouveau type `status-grid` : grille compacte de N indicateurs health-check dans un seul widget. Chaque indicateur = un endpoint + un label + un point coloré. Utile pour afficher l'état de plusieurs microservices d'un coup. Config : liste d'entrées `{ connectionId, endpointId, label }`, nombre de colonnes.
+**~~RUD050 — Widget Status grid~~** ❌ Annulé — redondant avec health-check (1×1) + contradictions architecturales (N fetches par widget).
 
 ---
 
 ## Ergonomie éditeur
 
-**RUD051 — Resize widgets par drag**
-Dans le Dashboard Editor, permettre le redimensionnement des widgets par drag sur les bords/coins, en plus de la saisie manuelle w/h dans le config panel. Implémenter via `@dnd-kit` ou handles CSS positionnés sur `WidgetCard`. La grille snap reste 12 colonnes / rows de 80px.
+**✅ RUD051 — Resize widgets par drag**  Déjà implémenté — `ResizeHandle` (coin SE, drag pointer) dans `DashboardGrid.tsx`.
 
 ## Données & fetch
 
@@ -286,14 +284,14 @@ Définir des variables nommées `{{nom}}` dans les settings du profil (onglet d�
 **RUD054 — Support WebSocket**
 Nouveau type de source `websocket` dans `ApiEndpoint` (en plus de GET/POST/…). Un endpoint WebSocket maintient une connexion persistante et pousse les messages reçus dans le cache du widget (même interface `WidgetDataState` que le polling). Config : URL `ws://` ou `wss://`, message d'abonnement JSON optionnel, JSONPath d'extraction. `useWidgetData` adapté pour gérer les deux modes (polling et ws).
 
-**RUD055 — Alertes visuelles sur seuil**
+**✅ RUD055 — Alertes visuelles sur seuil**
 Quand un widget franchit un seuil configuré (RUD040) : déclencher une alerte visuelle — flash de bordure colorée, bannière temporaire en overlay sur la grille display, optionnellement une `Notification` browser (avec permission). Config par widget : activer/désactiver les alertes, délai de cooldown entre deux alertes (éviter le spam). Fonctionne uniquement en mode Display.
 
 ---
 
 ## Display
 
-**RUD056 — Animation sur changement de valeur**
+**✅ RUD056 — Animation sur changement de valeur**
 Sur les widgets NumberCard, Stat et HealthCheck : déclencher une animation courte (fade, pulse ou highlight de couleur) quand la valeur change entre deux fetches. Implémenté via CSS transition + comparaison de la valeur précédente en ref. Désactivable globalement dans les Display settings (respect `prefers-reduced-motion`).
 
 ---
@@ -332,7 +330,7 @@ Support d'un nouveau type d'auth `oauth2-pkce` dans `ApiConnection`. Flow : redi
 
 ## Widget interactif
 
-**RUD060 — Widget Form (POST interactif)**
+**✅ RUD060 — Widget Form (POST interactif)**
 Nouveau type `form` : widget avec des champs texte configurables et un bouton "Envoyer" qui déclenche un appel à un endpoint (typiquement POST/PUT). Affiche la réponse inline après envoi.
 
 Config dans `WidgetConfigPanel` :
@@ -350,7 +348,7 @@ Comportement :
 
 Note : premier widget "actif" de l'app. Ouvre des cas d'usage comme déclencher un build CI, soumettre une valeur de config, appeler un webhook, etc.
 
-**RUD061 — Widget Button**
+**✅ RUD061 — Widget Button**
 Nouveau type `button` : un ou plusieurs boutons configurables dans un même widget, chacun associé à un endpoint distinct. Pas de champ de saisie — le clic déclenche directement l'appel. Affiche brièvement le statut de la réponse (✓ / ✗) après chaque appui.
 
 Config :
@@ -360,7 +358,7 @@ Config :
 
 Cas d'usage : déclencher un build, vider un cache, redémarrer un service, appeler un webhook.
 
-**RUD062 — Widget Toggle**
+**✅ RUD062 — Widget Toggle**
 Nouveau type `toggle` : interrupteur ON/OFF qui lit l'état courant via un endpoint GET au montage (JSONPath pour extraire le booléen), puis envoie un PUT/PATCH à chaque changement d'état. Affiche l'état visuel en temps réel avec animation de transition.
 
 Config :
@@ -370,7 +368,7 @@ Config :
 
 Cas d'usage : feature flags, activer/désactiver un mode, allumer/éteindre un service.
 
-**RUD063 — Widget Slider**
+**✅ RUD063 — Widget Slider**
 Nouveau type `slider` : curseur numérique qui lit la valeur courante via GET au montage et envoie la nouvelle valeur via PATCH avec debounce (300ms). Affiche la valeur courante en chiffre à côté du curseur.
 
 Config :
@@ -380,7 +378,7 @@ Config :
 
 Cas d'usage : ajuster une luminosité, une vitesse, un seuil, un volume.
 
-**RUD064 — Widget Select**
+**✅ RUD064 — Widget Select**
 Nouveau type `select` : dropdown dont les options sont soit statiques (liste configurée dans le panel), soit dynamiques (chargées depuis un endpoint GET avec JSONPath). La sélection déclenche un POST/PUT avec la valeur choisie. Affiche l'option courante sélectionnée au montage via un GET optionnel.
 
 Config :
@@ -390,7 +388,7 @@ Config :
 
 Cas d'usage : choisir un environnement (prod/staging), un mode de fonctionnement, une région.
 
-**RUD065 — Widget Search**
+**RUD065 — Widget Search** ✅
 Nouveau type `search` : champ texte qui envoie un GET à chaque frappe (debounce 300ms) avec le terme comme query param, et affiche les résultats dans un tableau ou liste compacte. Réutilise la logique de rendu de `Table.tsx`.
 
 Config :
