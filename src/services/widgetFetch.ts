@@ -91,7 +91,8 @@ export async function fetchWidgetData(
   ep: ApiEndpoint,
   dataPath: string,
   signal?: AbortSignal,
-  vars: Record<string, string> = {}
+  vars: Record<string, string> = {},
+  extraQueryParams?: Record<string, string>
 ): Promise<WidgetFetchResult> {
   const headers = buildHeaders(conn, vars);
   const options: RequestInit = { method: ep.getMethod(), headers, signal };
@@ -100,7 +101,13 @@ export async function fetchWidgetData(
     headers["Content-Type"] = ep.getBodyContentType();
   }
 
-  const url = buildUrl(conn, ep, vars);
+  let url = buildUrl(conn, ep, vars);
+  if (extraQueryParams && Object.keys(extraQueryParams).length > 0) {
+    const sep = url.includes("?") ? "&" : "?";
+    url += sep + Object.entries(extraQueryParams)
+      .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+      .join("&");
+  }
   console.debug("[widgetFetch] →", ep.getMethod(), url);
 
   try {

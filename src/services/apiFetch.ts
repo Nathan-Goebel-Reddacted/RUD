@@ -51,7 +51,7 @@ export async function sendEndpoint(
   conn: ApiConnection,
   ep: ApiEndpoint,
   vars: Record<string, string> = {}
-): Promise<FetchResult> {
+): Promise<FetchResult & { rawText?: string }> {
   const headers = buildFetchHeaders(conn, vars);
   const options: RequestInit = { method: ep.getMethod(), headers };
   if (ep.hasBody() && ep.getBody()) {
@@ -60,12 +60,38 @@ export async function sendEndpoint(
   }
   try {
     const res = await fetch(buildEndpointUrl(conn, ep, vars), options);
-    let preview: string | undefined;
-    try {
-      const text = await res.text();
-      preview = text.trimEnd().slice(0, 400) || undefined;
-    } catch { /* ignore read errors */ }
-    return { status: res.ok ? "ok" : "error", httpCode: res.status, preview, corsError: false };
+    let rawText: string | undefined;
+    try { rawText = await res.text(); } catch { /* ignore */ }
+    const preview = rawText?.trimEnd().slice(0, 400) || undefined;
+    return { status: res.ok ? "ok" : "error", httpCode: res.status, preview, corsError: false, rawText };
+  } catch (err) {
+    return { status: "error", corsError: err instanceof TypeError };
+  }
+}
+
+/**
+ * Sends a form widget submission: injects formData as a JSON body, overriding
+ * any body configured on the endpoint. Used by FormWidget (RUD060).
+ */
+export async function sendFormEndpoint(
+  conn: ApiConnection,
+  ep: ApiEndpoint,
+  formData: Record<string, string | number | boolean>,
+  vars: Record<string, string> = {}
+): Promise<FetchResult & { rawText?: string }> {
+  const headers = buildFetchHeaders(conn, vars);
+  headers["Content-Type"] = "application/json";
+  const options: RequestInit = {
+    method: ep.getMethod(),
+    headers,
+    body: JSON.stringify(formData),
+  };
+  try {
+    const res = await fetch(buildEndpointUrl(conn, ep, vars), options);
+    let rawText: string | undefined;
+    try { rawText = await res.text(); } catch { /* ignore */ }
+    const preview = rawText?.trimEnd().slice(0, 400);
+    return { status: res.ok ? "ok" : "error", httpCode: res.status, preview, corsError: false, rawText };
   } catch (err) {
     return { status: "error", corsError: err instanceof TypeError };
   }

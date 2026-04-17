@@ -15,6 +15,12 @@ import GaugeWidget from "./types/GaugeWidget";
 import StatWidget from "./types/StatWidget";
 import ProgressWidget from "./types/ProgressWidget";
 import PieChart from "./types/PieChart";
+import FormWidget from "./types/FormWidget";
+import ButtonWidget from "./types/ButtonWidget";
+import ToggleWidget from "./types/ToggleWidget";
+import SliderWidget from "./types/SliderWidget";
+import SelectWidget from "./types/SelectWidget";
+import SearchWidget from "./types/SearchWidget";
 
 type Props = {
   widget:       Widget;
@@ -45,6 +51,13 @@ function ErrorMessage({ error }: { error: string }) {
 }
 
 function WidgetBody({ widget, dataState }: { widget: Widget; dataState: WidgetDataState }) {
+  // Interactive widgets — manage their own fetch state
+  if (widget.config.type === "form")   return <FormWidget widget={widget} />;
+  if (widget.config.type === "button") return <ButtonWidget widget={widget} />;
+  if (widget.config.type === "toggle") return <ToggleWidget widget={widget} />;
+  if (widget.config.type === "slider") return <SliderWidget widget={widget} />;
+  if (widget.config.type === "select") return <SelectWidget widget={widget} />;
+  if (widget.config.type === "search") return <SearchWidget widget={widget} />;
   // Static widgets — no fetch needed
   if (widget.config.type === "text") {
     return <TextWidget config={widget.config} />;

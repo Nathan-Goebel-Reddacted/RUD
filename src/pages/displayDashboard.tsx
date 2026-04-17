@@ -1,14 +1,16 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Maximize2, Minimize2 } from "lucide-react";
 import { useDashboardStore } from "@/stores/dashboardStore";
 import { useProfileStore } from "@/stores/profileStore";
 import DisplayBubbles from "@/components/Widget/DisplayBubbles";
 import { useWidgetData } from "@/hooks/useWidgetData";
+import { useThresholdAlert } from "@/hooks/useThresholdAlert";
 import { useFullscreen } from "@/hooks/useFullscreen";
 import DashboardClock from "@/components/DashboardClock";
 import WidgetCard from "@/components/Widget/WidgetCard";
-import type { Widget, WidgetDataState } from "@/types/widget";
+import AlertBanner, { type ActiveAlert } from "@/components/Widget/AlertBanner";
+import type { Widget, WidgetDataState, AlertEvent } from "@/types/widget";
 import InstallPromptBanner from "@/components/tool/InstallPromptBanner";
 
 const COL_GAP              = 8;
@@ -20,16 +22,32 @@ const STATIC_DATA_STATE: WidgetDataState = {
   data: null, loading: false, error: null, httpCode: null, fetchedAt: null,
 };
 
-function FetchingReadonlyWidget({ widget }: { widget: Widget }) {
-  const dataState = useWidgetData(widget);
-  return <WidgetCard widget={widget} dataState={dataState} readonly />;
+function FetchingReadonlyWidget({
+  widget,
+  onAlert,
+}: {
+  widget:  Widget;
+  onAlert: (event: AlertEvent) => void;
+}) {
+  const dataState              = useWidgetData(widget);
+  const { alertColor }         = useThresholdAlert(widget, dataState, onAlert);
+
+  return (
+    <div
+      className={alertColor ? "widget-alert-wrapper--alerting" : undefined}
+      style={alertColor ? ({ "--alert-color": alertColor, height: "100%" } as React.CSSProperties) : { height: "100%" }}
+    >
+      <WidgetCard widget={widget} dataState={dataState} readonly />
+    </div>
+  );
 }
 
-function ReadonlyWidget({ widget }: { widget: Widget }) {
-  if (widget.config.type === "text") {
+function ReadonlyWidget({ widget, onAlert }: { widget: Widget; onAlert: (event: AlertEvent) => void }) {
+  const INTERACTIVE: string[] = ["text", "form", "button", "toggle", "slider", "select", "search"];
+  if (INTERACTIVE.includes(widget.config.type)) {
     return <WidgetCard widget={widget} dataState={STATIC_DATA_STATE} readonly />;
   }
-  return <FetchingReadonlyWidget widget={widget} />;
+  return <FetchingReadonlyWidget widget={widget} onAlert={onAlert} />;
 }
 
 function colToPercent(x: number) { return `${(x / COLS) * 100}%`; }
@@ -73,6 +91,33 @@ export default function DisplayDashboard() {
 
   const [gridPixelHeight, setGridPixelHeight] = useState(0);
   const [showRotateMsg, setShowRotateMsg]     = useState(false);
+  const [alerts, setAlerts]                   = useState<ActiveAlert[]>([]);
+  const alertTimeoutsRef                      = useRef<Set<ReturnType<typeof setTimeout>>>(new Set());
+
+  const handleAlert = useCallback((event: AlertEvent) => {
+    const uid = `${event.widgetId}-${Date.now()}`;
+    setAlerts((prev) => [{ ...event, uid }, ...prev].slice(0, 5));
+    const t = setTimeout(() => {
+      setAlerts((prev) => prev.filter((a) => a.uid !== uid));
+      alertTimeoutsRef.current.delete(t);
+    }, 5000);
+    alertTimeoutsRef.current.add(t);
+  }, []);
+
+  const dismissAlert = useCallback((uid: string) => {
+    setAlerts((prev) => prev.filter((a) => a.uid !== uid));
+  }, []);
+
+  // Cleanup all alert dismiss timeouts on unmount
+  useEffect(() => {
+    const set = alertTimeoutsRef.current;
+    return () => { set.forEach(clearTimeout); set.clear(); };
+  }, []);
+
+  // Reset alerts when the active dashboard changes
+  useEffect(() => {
+    setAlerts([]);
+  }, [activeDashboardIndex]);
 
   // Wake Lock — keep screen on while in display mode
   useEffect(() => {
@@ -357,6 +402,8 @@ export default function DisplayDashboard() {
 
       <DisplayBubbles />
 
+      <AlertBanner alerts={alerts} onDismiss={dismissAlert} />
+
       <button
         className="display-dashboard__fs-btn"
         onClick={() => isFullscreen ? exit() : enter(containerRef.current)}
@@ -400,7 +447,7 @@ export default function DisplayDashboard() {
                       height:   h * rowHeight + (h - 1) * COL_GAP,
                     }}
                   >
-                    <ReadonlyWidget widget={widget} />
+                    <ReadonlyWidget widget={widget} onAlert={handleAlert} />
                   </div>
                 );
               })}

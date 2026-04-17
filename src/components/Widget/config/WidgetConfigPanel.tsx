@@ -18,6 +18,15 @@ import {
   type PieChartConfig,
   type ProgressConfig,
   type StatConfig,
+  type FormConfig,
+  type FormFieldConfig,
+  type ButtonConfig,
+  type ButtonItemConfig,
+  type ToggleConfig,
+  type SliderConfig,
+  type SelectConfig,
+  type SelectOptionConfig,
+  type SearchConfig,
   type Threshold,
 } from "@/types/widget";
 import EndpointSelector from "./EndpointSelector";
@@ -47,6 +56,12 @@ function defaultConfig(type: WidgetType): WidgetConfig {
     case "stat":         return { type: "stat", deltaFormat: "absolute" };
     case "progress":     return { type: "progress", min: 0, max: 100 };
     case "pie-chart":    return { type: "pie-chart", labelKey: "", valueKey: "" };
+    case "form":         return { type: "form", fields: [] };
+    case "button":       return { type: "button", buttons: [], layout: "horizontal" };
+    case "toggle":       return { type: "toggle", readConnectionId: "", readEndpointId: "", readDataPath: "", writeConnectionId: "", writeEndpointId: "", writeKey: "" };
+    case "slider":       return { type: "slider", writeConnectionId: "", writeEndpointId: "", writeKey: "", min: 0, max: 100, step: 1 };
+    case "select":       return { type: "select", optionsSource: "static", staticOptions: [], writeConnectionId: "", writeEndpointId: "", writeKey: "" };
+    case "search":       return { type: "search", connectionId: "", endpointId: "", queryParam: "q" };
   }
 }
 
@@ -77,6 +92,12 @@ const TYPE_LABELS: Record<WidgetType, string> = {
   "stat":         "widgetDrawer.types.stat",
   "progress":     "widgetDrawer.types.progress",
   "pie-chart":    "widgetDrawer.types.pieChart",
+  "form":         "widgetDrawer.types.form",
+  "button":       "widgetDrawer.types.button",
+  "toggle":       "widgetDrawer.types.toggle",
+  "slider":       "widgetDrawer.types.slider",
+  "select":       "widgetDrawer.types.select",
+  "search":       "widgetDrawer.types.search",
 };
 
 export default function WidgetConfigPanel({ initial, initialType, onSave, onCancel }: Props) {
@@ -95,14 +116,20 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
   );
   const [refreshOverride, setRefreshOverride] = useState<number | undefined>(initial?.refreshOverride);
   const [transform,      setTransform]      = useState<string>(initial?.transform ?? "");
+  const [alertEnabled,   setAlertEnabled]   = useState<boolean>(initial?.alertEnabled ?? false);
+  const [alertCooldown,  setAlertCooldown]  = useState<number>(initial?.alertCooldown ?? 60);
   const [rawPreview,   setRawPreview]   = useState<unknown>(null);
   const [dataKeys,     setDataKeys]     = useState<string[]>([]);
   const [fetching,     setFetching]     = useState(false);
   const fetchControllerRef = useRef<AbortController | null>(null);
 
-  const isStatic      = type === "text" || type === "clock";
-  const needsDataPath = !isStatic && type !== "health-check" && type !== "last-update";
-  const isValid       = isStatic || (!!connectionId && !!endpointId);
+  const isStatic       = type === "text" || type === "clock";
+  const isForm         = type === "form";
+  // Types that manage their own endpoint selection internally
+  const SELF_MANAGED: WidgetType[] = ["button", "toggle", "slider", "select", "search"];
+  const isSelfManaged  = SELF_MANAGED.includes(type);
+  const needsDataPath  = !isStatic && !isForm && !isSelfManaged && type !== "health-check" && type !== "last-update";
+  const isValid        = isStatic || isSelfManaged || (!!connectionId && !!endpointId);
 
   function handleTypeChange(newType: WidgetType) {
     setType(newType);
@@ -145,6 +172,9 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
     if (rawPreview !== null) updateDataKeys(rawPreview, path);
   }
 
+  const ALERT_TYPES: WidgetType[] = ["number-card", "bar-chart", "health-check", "gauge", "stat", "progress"];
+  const supportsAlerts = ALERT_TYPES.includes(type);
+
   function handleSave() {
     if (!isValid) return;
     onSave({
@@ -154,8 +184,10 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
       endpointId:   isStatic ? "" : endpointId,
       dataPath:     needsDataPath ? dataPath : "",
       config,
-      refreshOverride: isStatic ? undefined : refreshOverride,
-      transform:    transform.trim() || undefined,
+      refreshOverride:  isStatic || isForm || isSelfManaged ? undefined : refreshOverride,
+      transform:        isStatic || isForm || isSelfManaged ? undefined : transform.trim() || undefined,
+      alertEnabled:     supportsAlerts ? alertEnabled : undefined,
+      alertCooldown:    supportsAlerts && alertEnabled ? alertCooldown : undefined,
     });
   }
 
@@ -252,6 +284,45 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
 
   // ─── Per-type config fields ────────────────────────────────────────────────
   function renderConfigFields() {
+    // Shared helper: connection + endpoint selector pair (used by toggle, slider, select)
+    const connEpSelector = (
+      label: string,
+      connId: string, epId: string,
+      onConnChange: (cId: string) => void,
+      onEpChange: (eId: string) => void,
+    ) => {
+      const selConn = connections.find((cc) => cc.getId() === connId);
+      const eps     = selConn?.getEndpoints() ?? [];
+      return (
+        <div className="form-group">
+          <label className="form-label">{label}</label>
+          <div className="d-flex gap-2">
+            <select
+              className="form-select flex-1"
+              value={connId}
+              onChange={(e) => onConnChange(e.target.value)}
+            >
+              <option value="">{t("widgetConfig.button.selectConnection")}</option>
+              {connections.map((cc) => (
+                <option key={cc.getId()} value={cc.getId()}>{cc.getLabel()}</option>
+              ))}
+            </select>
+            <select
+              className="form-select flex-1"
+              value={epId}
+              onChange={(e) => onEpChange(e.target.value)}
+              disabled={!selConn}
+            >
+              <option value="">{t("widgetConfig.button.selectEndpoint")}</option>
+              {eps.map((ep) => (
+                <option key={ep.getId()} value={ep.getId()}>{ep.getLabel() || ep.getPath()}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      );
+    };
+
     switch (type) {
       case "number-card": {
         const c = config as NumberCardConfig;
@@ -815,6 +886,570 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
           </>
         );
       }
+      case "form": {
+        const c = config as FormConfig;
+        const updateField = (i: number, patch: Partial<FormFieldConfig>) => {
+          const fields = c.fields.map((f, idx) => idx === i ? { ...f, ...patch } : f);
+          setConfig({ ...c, fields });
+        };
+        const removeField = (i: number) => setConfig({ ...c, fields: c.fields.filter((_, idx) => idx !== i) });
+        const addField    = () => setConfig({ ...c, fields: [...c.fields, { key: "", label: "", type: "text" }] });
+        return (
+          <>
+            {/* Submit button label */}
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.form.submitLabel")}</label>
+              <input
+                className="form-input"
+                type="text"
+                placeholder={t("widgetConfig.form.submitLabelPlaceholder")}
+                value={c.submitLabel ?? ""}
+                onChange={(e) => setConfig({ ...c, submitLabel: e.target.value || undefined })}
+              />
+            </div>
+
+            {/* Fields */}
+            <div className="form-group">
+              <div className="d-flex justify-between align-center" style={{ marginBottom: "0.4rem" }}>
+                <label className="form-label" style={{ margin: 0 }}>{t("widgetConfig.form.fields")}</label>
+                <button type="button" className="btn btn--ghost btn--sm" onClick={addField}>
+                  {t("widgetConfig.form.addField")}
+                </button>
+              </div>
+              {c.fields.length === 0 && (
+                <span className="form-hint">{t("widgetConfig.form.noFields")}</span>
+              )}
+              {c.fields.map((field, i) => (
+                <div key={i} className="form-field-row" style={{ border: "1px solid var(--border-color)", borderRadius: 4, padding: "0.5rem", marginBottom: "0.4rem" }}>
+                  <div className="d-flex gap-2" style={{ marginBottom: "0.3rem" }}>
+                    <input
+                      className="form-input flex-1"
+                      type="text"
+                      placeholder={t("widgetConfig.form.fieldKey")}
+                      value={field.key}
+                      onChange={(e) => updateField(i, { key: e.target.value })}
+                    />
+                    <input
+                      className="form-input flex-1"
+                      type="text"
+                      placeholder={t("widgetConfig.form.fieldLabel")}
+                      value={field.label}
+                      onChange={(e) => updateField(i, { label: e.target.value })}
+                    />
+                    <button type="button" className="btn btn--ghost btn--sm" style={{ color: "var(--danger-color)" }} onClick={() => removeField(i)}>✕</button>
+                  </div>
+                  <div className="d-flex gap-2 align-center">
+                    <select
+                      className="form-select"
+                      style={{ flex: 1 }}
+                      value={field.type}
+                      onChange={(e) => updateField(i, { type: e.target.value as FormFieldConfig["type"] })}
+                    >
+                      <option value="text">{t("widgetConfig.form.typeText")}</option>
+                      <option value="number">{t("widgetConfig.form.typeNumber")}</option>
+                      <option value="textarea">{t("widgetConfig.form.typeTextarea")}</option>
+                    </select>
+                    <input
+                      className="form-input flex-1"
+                      type="text"
+                      placeholder={t("widgetConfig.form.fieldDefault")}
+                      value={field.defaultValue ?? ""}
+                      onChange={(e) => updateField(i, { defaultValue: e.target.value || undefined })}
+                    />
+                    <label className="d-flex align-center gap-1" style={{ cursor: "pointer", whiteSpace: "nowrap", fontSize: "0.8rem" }}>
+                      <input
+                        type="checkbox"
+                        checked={field.required ?? false}
+                        onChange={(e) => updateField(i, { required: e.target.checked })}
+                      />
+                      {t("widgetConfig.form.required")}
+                    </label>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Response data path */}
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.form.responseDataPath")}</label>
+              <input
+                className="form-input"
+                type="text"
+                placeholder={t("widgetConfig.form.responseDataPathPlaceholder")}
+                value={c.responseDataPath ?? ""}
+                onChange={(e) => setConfig({ ...c, responseDataPath: e.target.value || undefined })}
+              />
+              <span className="form-hint">{t("widgetConfig.form.responseDataPathHint")}</span>
+            </div>
+          </>
+        );
+      }
+      case "button": {
+        const c = config as ButtonConfig;
+        const updateBtn = (i: number, patch: Partial<ButtonItemConfig>) => {
+          const buttons = c.buttons.map((b, idx) => idx === i ? { ...b, ...patch } : b);
+          setConfig({ ...c, buttons });
+        };
+        const removeBtn = (i: number) => setConfig({ ...c, buttons: c.buttons.filter((_, idx) => idx !== i) });
+        const addBtn    = () => setConfig({ ...c, buttons: [...c.buttons, { label: "", connectionId: "", endpointId: "", variant: "primary" }] });
+        return (
+          <>
+            {/* Layout */}
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.button.layout")}</label>
+              <select
+                className="form-select"
+                value={c.layout ?? "horizontal"}
+                onChange={(e) => setConfig({ ...c, layout: e.target.value as ButtonConfig["layout"] })}
+              >
+                <option value="horizontal">{t("widgetConfig.button.horizontal")}</option>
+                <option value="vertical">{t("widgetConfig.button.vertical")}</option>
+              </select>
+            </div>
+
+            {/* Buttons list */}
+            <div className="form-group">
+              <div className="d-flex justify-between align-center" style={{ marginBottom: "0.4rem" }}>
+                <label className="form-label" style={{ margin: 0 }}>{t("widgetConfig.button.buttons")}</label>
+                <button type="button" className="btn btn--ghost btn--sm" onClick={addBtn}>
+                  {t("widgetConfig.button.addButton")}
+                </button>
+              </div>
+              {c.buttons.length === 0 && (
+                <span className="form-hint">{t("widgetConfig.button.noButtons")}</span>
+              )}
+              {c.buttons.map((btn, i) => {
+                const btnConn = connections.find((cc) => cc.getId() === btn.connectionId);
+                const btnEps  = btnConn?.getEndpoints() ?? [];
+                return (
+                  <div key={i} style={{ border: "1px solid var(--border-color)", borderRadius: 4, padding: "0.5rem", marginBottom: "0.4rem" }}>
+                    <div className="d-flex gap-2 align-center" style={{ marginBottom: "0.3rem" }}>
+                      <input
+                        className="form-input flex-1"
+                        type="text"
+                        placeholder={t("widgetConfig.button.buttonLabel")}
+                        value={btn.label}
+                        onChange={(e) => updateBtn(i, { label: e.target.value })}
+                      />
+                      <select
+                        className="form-select"
+                        style={{ flex: "0 0 auto", width: "110px" }}
+                        value={btn.variant ?? "primary"}
+                        onChange={(e) => updateBtn(i, { variant: e.target.value as ButtonItemConfig["variant"] })}
+                      >
+                        <option value="primary">{t("widgetConfig.button.variantPrimary")}</option>
+                        <option value="danger">{t("widgetConfig.button.variantDanger")}</option>
+                        <option value="ghost">{t("widgetConfig.button.variantGhost")}</option>
+                      </select>
+                      <button type="button" className="btn btn--ghost btn--sm" style={{ color: "var(--danger-color)" }} onClick={() => removeBtn(i)}>✕</button>
+                    </div>
+                    <div className="d-flex gap-2" style={{ marginBottom: "0.3rem" }}>
+                      <select
+                        className="form-select flex-1"
+                        value={btn.connectionId}
+                        onChange={(e) => updateBtn(i, { connectionId: e.target.value, endpointId: "" })}
+                      >
+                        <option value="">{t("widgetConfig.button.selectConnection")}</option>
+                        {connections.map((cc) => (
+                          <option key={cc.getId()} value={cc.getId()}>{cc.getLabel()}</option>
+                        ))}
+                      </select>
+                      <select
+                        className="form-select flex-1"
+                        value={btn.endpointId}
+                        onChange={(e) => updateBtn(i, { endpointId: e.target.value })}
+                        disabled={!btnConn}
+                      >
+                        <option value="">{t("widgetConfig.button.selectEndpoint")}</option>
+                        {btnEps.map((ep) => (
+                          <option key={ep.getId()} value={ep.getId()}>{ep.getLabel() || ep.getPath()}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <input
+                      className="form-input"
+                      type="text"
+                      placeholder={t("widgetConfig.button.responseDataPath")}
+                      value={btn.responseDataPath ?? ""}
+                      onChange={(e) => updateBtn(i, { responseDataPath: e.target.value || undefined })}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        );
+      }
+      case "toggle": {
+        const c = config as ToggleConfig;
+        return (
+          <>
+            {/* Read config */}
+            {connEpSelector(
+              t("widgetConfig.toggle.readEndpoint"),
+              c.readConnectionId, c.readEndpointId,
+              (cId) => setConfig({ ...c, readConnectionId: cId, readEndpointId: "" }),
+              (eId) => setConfig({ ...c, readEndpointId: eId }),
+            )}
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.toggle.readDataPath")}</label>
+              <input
+                className="form-input font-mono"
+                type="text"
+                placeholder="$.enabled  or  $.status"
+                value={c.readDataPath}
+                onChange={(e) => setConfig({ ...c, readDataPath: e.target.value })}
+              />
+              <span className="form-hint">{t("widgetConfig.toggle.readDataPathHint")}</span>
+            </div>
+
+            {/* Write config */}
+            {connEpSelector(
+              t("widgetConfig.toggle.writeEndpoint"),
+              c.writeConnectionId, c.writeEndpointId,
+              (cId) => setConfig({ ...c, writeConnectionId: cId, writeEndpointId: "" }),
+              (eId) => setConfig({ ...c, writeEndpointId: eId }),
+            )}
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.toggle.writeKey")}</label>
+              <input
+                className="form-input"
+                type="text"
+                placeholder={t("widgetConfig.toggle.writeKeyPlaceholder")}
+                value={c.writeKey}
+                onChange={(e) => setConfig({ ...c, writeKey: e.target.value })}
+              />
+              <span className="form-hint">{t("widgetConfig.toggle.writeKeyHint")}</span>
+            </div>
+
+            {/* Display labels */}
+            <div className="d-flex gap-2">
+              <div className="form-group flex-1">
+                <label className="form-label">{t("widgetConfig.toggle.labelOn")}</label>
+                <input
+                  className="form-input"
+                  type="text"
+                  placeholder="ON"
+                  value={c.labelOn ?? ""}
+                  onChange={(e) => setConfig({ ...c, labelOn: e.target.value || undefined })}
+                />
+              </div>
+              <div className="form-group flex-1">
+                <label className="form-label">{t("widgetConfig.toggle.labelOff")}</label>
+                <input
+                  className="form-input"
+                  type="text"
+                  placeholder="OFF"
+                  value={c.labelOff ?? ""}
+                  onChange={(e) => setConfig({ ...c, labelOff: e.target.value || undefined })}
+                />
+              </div>
+            </div>
+          </>
+        );
+      }
+      case "slider": {
+        const c = config as SliderConfig;
+        return (
+          <>
+            {/* Optional read */}
+            {connEpSelector(
+              t("widgetConfig.slider.readEndpoint"),
+              c.readConnectionId ?? "", c.readEndpointId ?? "",
+              (cId) => setConfig({ ...c, readConnectionId: cId, readEndpointId: "" }),
+              (eId) => setConfig({ ...c, readEndpointId: eId }),
+            )}
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.slider.readDataPath")}</label>
+              <input
+                className="form-input font-mono"
+                type="text"
+                placeholder="$.value"
+                value={c.readDataPath ?? ""}
+                onChange={(e) => setConfig({ ...c, readDataPath: e.target.value })}
+              />
+              <span className="form-hint">{t("widgetConfig.slider.readDataPathHint")}</span>
+            </div>
+
+            {/* Write */}
+            {connEpSelector(
+              t("widgetConfig.slider.writeEndpoint"),
+              c.writeConnectionId, c.writeEndpointId,
+              (cId) => setConfig({ ...c, writeConnectionId: cId, writeEndpointId: "" }),
+              (eId) => setConfig({ ...c, writeEndpointId: eId }),
+            )}
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.slider.writeKey")}</label>
+              <input
+                className="form-input"
+                type="text"
+                placeholder={t("widgetConfig.slider.writeKeyPlaceholder")}
+                value={c.writeKey}
+                onChange={(e) => setConfig({ ...c, writeKey: e.target.value })}
+              />
+              <span className="form-hint">{t("widgetConfig.slider.writeKeyHint")}</span>
+            </div>
+
+            {/* Range */}
+            <div className="d-flex gap-2">
+              <div className="form-group flex-1">
+                <label className="form-label">{t("widgetConfig.slider.min")}</label>
+                <input
+                  className="form-input"
+                  type="number"
+                  value={c.min ?? 0}
+                  onChange={(e) => setConfig({ ...c, min: Number(e.target.value) })}
+                />
+              </div>
+              <div className="form-group flex-1">
+                <label className="form-label">{t("widgetConfig.slider.max")}</label>
+                <input
+                  className="form-input"
+                  type="number"
+                  value={c.max ?? 100}
+                  onChange={(e) => setConfig({ ...c, max: Number(e.target.value) })}
+                />
+              </div>
+              <div className="form-group flex-1">
+                <label className="form-label">{t("widgetConfig.slider.step")}</label>
+                <input
+                  className="form-input"
+                  type="number"
+                  min={0.01}
+                  step={0.01}
+                  value={c.step ?? 1}
+                  onChange={(e) => setConfig({ ...c, step: Number(e.target.value) })}
+                />
+              </div>
+            </div>
+
+            {/* Unit */}
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.slider.unit")}</label>
+              <input
+                className="form-input"
+                type="text"
+                placeholder={t("widgetConfig.slider.unitPlaceholder")}
+                value={c.unit ?? ""}
+                onChange={(e) => setConfig({ ...c, unit: e.target.value || undefined })}
+              />
+            </div>
+          </>
+        );
+      }
+      case "select": {
+        const c = config as SelectConfig;
+        const updateOpt = (i: number, patch: Partial<SelectOptionConfig>) => {
+          const opts = (c.staticOptions ?? []).map((o, idx) => idx === i ? { ...o, ...patch } : o);
+          setConfig({ ...c, staticOptions: opts });
+        };
+        const removeOpt = (i: number) =>
+          setConfig({ ...c, staticOptions: (c.staticOptions ?? []).filter((_, idx) => idx !== i) });
+        const addOpt = () =>
+          setConfig({ ...c, staticOptions: [...(c.staticOptions ?? []), { label: "", value: "" }] });
+        return (
+          <>
+            {/* Options source */}
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.select.optionsSource")}</label>
+              <select
+                className="form-select"
+                value={c.optionsSource}
+                onChange={(e) => setConfig({ ...c, optionsSource: e.target.value as SelectConfig["optionsSource"] })}
+              >
+                <option value="static">{t("widgetConfig.select.static")}</option>
+                <option value="dynamic">{t("widgetConfig.select.dynamic")}</option>
+              </select>
+            </div>
+
+            {/* Static options */}
+            {c.optionsSource === "static" && (
+              <div className="form-group">
+                <div className="d-flex justify-between align-center" style={{ marginBottom: "0.4rem" }}>
+                  <label className="form-label" style={{ margin: 0 }}>{t("widgetConfig.select.options")}</label>
+                  <button type="button" className="btn btn--ghost btn--sm" onClick={addOpt}>
+                    {t("widgetConfig.select.addOption")}
+                  </button>
+                </div>
+                {(c.staticOptions ?? []).length === 0 && (
+                  <span className="form-hint">{t("widgetConfig.select.noOptions")}</span>
+                )}
+                {(c.staticOptions ?? []).map((opt, i) => (
+                  <div key={i} className="d-flex gap-2 align-center" style={{ marginBottom: "0.3rem" }}>
+                    <input
+                      className="form-input flex-1"
+                      type="text"
+                      placeholder={t("widgetConfig.select.optionLabel")}
+                      value={opt.label}
+                      onChange={(e) => updateOpt(i, { label: e.target.value })}
+                    />
+                    <input
+                      className="form-input flex-1"
+                      type="text"
+                      placeholder={t("widgetConfig.select.optionValue")}
+                      value={opt.value}
+                      onChange={(e) => updateOpt(i, { value: e.target.value })}
+                    />
+                    <button
+                      type="button"
+                      className="btn btn--ghost btn--sm"
+                      style={{ color: "var(--danger-color)" }}
+                      onClick={() => removeOpt(i)}
+                    >✕</button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Dynamic options */}
+            {c.optionsSource === "dynamic" && (
+              <>
+                {connEpSelector(
+                  t("widgetConfig.select.optionsEndpoint"),
+                  c.optionsConnectionId ?? "", c.optionsEndpointId ?? "",
+                  (cId) => setConfig({ ...c, optionsConnectionId: cId, optionsEndpointId: "" }),
+                  (eId) => setConfig({ ...c, optionsEndpointId: eId }),
+                )}
+                <div className="form-group">
+                  <label className="form-label">{t("widgetConfig.select.optionsDataPath")}</label>
+                  <input
+                    className="form-input font-mono"
+                    type="text"
+                    placeholder="$.items"
+                    value={c.optionsDataPath ?? ""}
+                    onChange={(e) => setConfig({ ...c, optionsDataPath: e.target.value })}
+                  />
+                </div>
+                <div className="d-flex gap-2">
+                  <div className="form-group flex-1">
+                    <label className="form-label">{t("widgetConfig.select.optionsLabelKey")}</label>
+                    <input
+                      className="form-input"
+                      type="text"
+                      placeholder="name"
+                      value={c.optionsLabelKey ?? ""}
+                      onChange={(e) => setConfig({ ...c, optionsLabelKey: e.target.value })}
+                    />
+                  </div>
+                  <div className="form-group flex-1">
+                    <label className="form-label">{t("widgetConfig.select.optionsValueKey")}</label>
+                    <input
+                      className="form-input"
+                      type="text"
+                      placeholder="id"
+                      value={c.optionsValueKey ?? ""}
+                      onChange={(e) => setConfig({ ...c, optionsValueKey: e.target.value })}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
+            {/* Read current value (optional) */}
+            {connEpSelector(
+              t("widgetConfig.select.readEndpoint"),
+              c.readConnectionId ?? "", c.readEndpointId ?? "",
+              (cId) => setConfig({ ...c, readConnectionId: cId, readEndpointId: "" }),
+              (eId) => setConfig({ ...c, readEndpointId: eId }),
+            )}
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.select.readDataPath")}</label>
+              <input
+                className="form-input font-mono"
+                type="text"
+                placeholder="$.value"
+                value={c.readDataPath ?? ""}
+                onChange={(e) => setConfig({ ...c, readDataPath: e.target.value })}
+              />
+              <span className="form-hint">{t("widgetConfig.select.readDataPathHint")}</span>
+            </div>
+
+            {/* Write */}
+            {connEpSelector(
+              t("widgetConfig.select.writeEndpoint"),
+              c.writeConnectionId, c.writeEndpointId,
+              (cId) => setConfig({ ...c, writeConnectionId: cId, writeEndpointId: "" }),
+              (eId) => setConfig({ ...c, writeEndpointId: eId }),
+            )}
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.select.writeKey")}</label>
+              <input
+                className="form-input"
+                type="text"
+                placeholder={t("widgetConfig.select.writeKeyPlaceholder")}
+                value={c.writeKey}
+                onChange={(e) => setConfig({ ...c, writeKey: e.target.value })}
+              />
+              <span className="form-hint">{t("widgetConfig.select.writeKeyHint")}</span>
+            </div>
+          </>
+        );
+      }
+      case "search": {
+        const c = config as SearchConfig;
+        return (
+          <>
+            {/* Endpoint */}
+            {connEpSelector(
+              t("widgetConfig.search.endpoint"),
+              c.connectionId, c.endpointId,
+              (cId) => setConfig({ ...c, connectionId: cId, endpointId: "" }),
+              (eId) => setConfig({ ...c, endpointId: eId }),
+            )}
+
+            {/* Query param name */}
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.search.queryParam")}</label>
+              <input
+                className="form-input"
+                type="text"
+                placeholder={t("widgetConfig.search.queryParamPlaceholder")}
+                value={c.queryParam}
+                onChange={(e) => setConfig({ ...c, queryParam: e.target.value })}
+              />
+              <span className="form-hint">{t("widgetConfig.search.queryParamHint")}</span>
+            </div>
+
+            {/* Data path */}
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.search.dataPath")}</label>
+              <input
+                className="form-input font-mono"
+                type="text"
+                placeholder="$.results  or  $.items"
+                value={c.dataPath ?? ""}
+                onChange={(e) => setConfig({ ...c, dataPath: e.target.value })}
+              />
+              <span className="form-hint">{t("widgetConfig.search.dataPathHint")}</span>
+            </div>
+
+            {/* Placeholder */}
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.search.placeholder")}</label>
+              <input
+                className="form-input"
+                type="text"
+                placeholder={t("widgetConfig.search.placeholderPlaceholder")}
+                value={c.placeholder ?? ""}
+                onChange={(e) => setConfig({ ...c, placeholder: e.target.value || undefined })}
+              />
+            </div>
+
+            {/* Min chars */}
+            <div className="form-group">
+              <label className="form-label">{t("widgetConfig.search.minChars")}</label>
+              <input
+                className="form-input"
+                type="number"
+                min={1}
+                value={c.minChars ?? 1}
+                onChange={(e) => setConfig({ ...c, minChars: Math.max(1, Number(e.target.value)) })}
+              />
+              <span className="form-hint">{t("widgetConfig.search.minCharsHint")}</span>
+            </div>
+          </>
+        );
+      }
     }
   }
 
@@ -851,8 +1486,8 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
           </select>
         </div>
 
-        {/* Endpoint selector — hidden for static widgets */}
-        {!isStatic && (
+        {/* Endpoint selector — hidden for static and self-managed widgets */}
+        {!isStatic && !isSelfManaged && (
           <>
             <EndpointSelector
               connectionId={connectionId}
@@ -905,8 +1540,8 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
         {/* Type-specific config */}
         {renderConfigFields()}
 
-        {/* Fetch interval — hidden for static widgets */}
-        {!isStatic && (
+        {/* Fetch interval — hidden for static, form and self-managed widgets */}
+        {!isStatic && !isForm && !isSelfManaged && (
           <div className="form-group">
             <label className="form-label">{t("widgetConfig.fetchInterval")}</label>
             <input
@@ -921,6 +1556,36 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
             />
             <span className="form-hint">{t("widgetConfig.fetchIntervalHint")}</span>
           </div>
+        )}
+
+        {/* Alert config — only for widget types that support thresholds */}
+        {supportsAlerts && (
+          <>
+            <div className="form-group" style={{ borderTop: "1px solid var(--border-color)", paddingTop: "0.75rem", marginTop: "0.25rem" }}>
+              <label className="d-flex align-center gap-2" style={{ cursor: "pointer" }}>
+                <input
+                  type="checkbox"
+                  checked={alertEnabled}
+                  onChange={(e) => setAlertEnabled(e.target.checked)}
+                />
+                <span style={{ marginLeft: "0.4rem" }}>{t("widgetConfig.alertEnabled")}</span>
+              </label>
+              <span className="form-hint">{t("widgetConfig.alertEnabledHint")}</span>
+            </div>
+            {alertEnabled && (
+              <div className="form-group">
+                <label className="form-label">{t("widgetConfig.alertCooldown")}</label>
+                <input
+                  className="form-input"
+                  type="number"
+                  min={5}
+                  value={alertCooldown}
+                  onChange={(e) => setAlertCooldown(Math.max(5, Number(e.target.value)))}
+                />
+                <span className="form-hint">{t("widgetConfig.alertCooldownHint")}</span>
+              </div>
+            )}
+          </>
         )}
       </div>
 
