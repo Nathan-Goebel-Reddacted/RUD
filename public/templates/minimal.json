@@ -1,0 +1,50 @@
+{
+  "version": "2.0",
+  "exportedAt": "2026-04-18T00:00:00.000Z",
+  "profile": {
+    "profileName": "Minimal",
+    "language": "en",
+    "backgroundColor": "#0d0d0d",
+    "borderColor": "#333333",
+    "textColor": "#ffffff",
+    "textHoverColor": "#cccccc",
+    "displayMode": "disabled",
+    "displayInterval": 30,
+    "scrollSpeed": 0,
+    "loopPauseMs": 2000,
+    "variables": {},
+    "animationsEnabled": true
+  },
+  "connections": [],
+  "dashboards": [
+    {
+      "id": "d3000000-0000-0000-0000-000000000001",
+      "title": "Minimal",
+      "refreshInterval": 30,
+      "showInDisplay": true,
+      "widgets": [
+        {
+          "id": "w3000000-0000-0000-0000-000000000001",
+          "label": "",
+          "connectionId": "",
+          "endpointId": "",
+          "dataPath": "",
+          "position": { "x": 0, "y": 0, "w": 4, "h": 4 },
+          "config": { "type": "clock", "format": "24h", "showSeconds": true }
+        },
+        {
+          "id": "w3000000-0000-0000-0000-000000000002",
+          "label": "Welcome",
+          "connectionId": "",
+          "endpointId": "",
+          "dataPath": "",
+          "position": { "x": 4, "y": 0, "w": 8, "h": 4 },
+          "config": {
+            "type": "text",
+            "content": "# API Dashboard Builder\n\nConnect your APIs, build custom dashboards, display them fullscreen.\n\nEdit this dashboard to get started."
+          }
+        }
+      ]
+    }
+  ]
+}

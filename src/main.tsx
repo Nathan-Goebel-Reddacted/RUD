@@ -8,6 +8,8 @@ import NoProfile from '@/pages/noProfile.tsx'
 import Dashboard from '@/pages/dashboard.tsx'
 import ApiConfig from '@/pages/apiConfig.tsx'
 import DisplayDashboard from '@/pages/displayDashboard.tsx'
+import OAuth2Callback from '@/pages/oauth2Callback.tsx'
+import Templates from '@/pages/templates.tsx'
 import "@/translations/i18n";
 import '@/assets/Color.css'
 import '@/assets/global.css'
@@ -28,6 +30,8 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard/></ProtectedRoute>}/>
         <Route path="/api-config" element={<ProtectedRoute><ApiConfig/></ProtectedRoute>}/>
         <Route path="/display" element={<ProtectedRoute><DisplayDashboard/></ProtectedRoute>}/>
+        <Route path="/oauth2/callback" element={<OAuth2Callback/>}/>
+        <Route path="/templates" element={<Templates/>}/>
       </Routes>
     </BrowserRouter>
   </StrictMode>,

@@ -1,4 +1,15 @@
 {
+    "templates": {
+        "title": "Galerie de templates",
+        "subtitle": "Dashboards prêts à l'emploi — cliquez sur Importer pour les charger dans votre navigateur.",
+        "loading": "Chargement des templates…",
+        "loadError": "Échec du chargement des templates.",
+        "import": "Importer",
+        "importing": "Import en cours…",
+        "importError": "Échec de l'import",
+        "contribute": "Envie de contribuer un template ? Ouvrez une PR sur GitHub et ajoutez votre JSON dans public/templates/."
+    },
+
     "noProfile": {
         "importProfile": "Importer un profil",
         "createProfile": "Créer un profil"
@@ -180,7 +191,19 @@
             "none": "Sans auth",
             "bearer": "Bearer token",
             "apiKey": "Clé API",
-            "basic": "Auth basique (utilisateur:mot-de-passe)"
+            "basic": "Auth basique (utilisateur:mot-de-passe)",
+            "oauth2Pkce": "OAuth2 PKCE"
+        },
+        "oauth2": {
+            "authorizationUrl": "URL d'autorisation",
+            "tokenUrl": "URL du token",
+            "clientId": "Client ID",
+            "scope": "Scope (séparé par des espaces)",
+            "redirectUri": "URI de redirection",
+            "authorize": "Autoriser",
+            "connected": "Connecté",
+            "notConnected": "Non connecté",
+            "disconnect": "Déconnecter"
         },
         "authValue": {
             "bearer": "Bearer token",
@@ -224,6 +247,9 @@
         "body": "Corps de la requête",
         "bodyJsonPlaceholder": "{\n  \"key\": \"value\"\n}",
         "bodyFormPlaceholder": "key=value&key2=value2",
+        "wsSubscribeMessage": "Message d'abonnement (JSON, optionnel)",
+        "wsSubscribeMessagePlaceholder": "{\"action\": \"subscribe\", \"channel\": \"prices\"}",
+        "wsSubscribeMessageHint": "Envoyé une fois à l'ouverture de la connexion. Laisser vide si non requis.",
         "save": "Enregistrer",
         "addRoute": "Ajouter la route",
         "cancel": "Annuler",

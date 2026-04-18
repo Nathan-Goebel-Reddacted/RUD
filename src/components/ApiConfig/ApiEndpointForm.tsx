@@ -36,10 +36,11 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
   const [method,           setMethod]           = useState<HttpMethodValue>(initialEndpoint?.getMethod() ?? HttpMethod.GET);
   const [pathParams,       setPathParams]       = useState<PathParam[]>(initialEndpoint?.getPathParams()   ?? []);
   const [queryParams,      setQueryParams]      = useState<QueryParam[]>(initialEndpoint?.getQueryParams() ?? []);
-  const [responseDataPath, setResponseDataPath] = useState(initialEndpoint?.getResponseDataPath() ?? "");
-  const [body,             setBody]             = useState(initialEndpoint?.getBody()             ?? "");
-  const [bodyContentType,  setBodyContentType]  = useState(initialEndpoint?.getBodyContentType()  ?? BodyContentType.JSON);
-  const [errors,           setErrors]           = useState<Record<string, string>>({});
+  const [responseDataPath,   setResponseDataPath]   = useState(initialEndpoint?.getResponseDataPath()   ?? "");
+  const [body,               setBody]               = useState(initialEndpoint?.getBody()               ?? "");
+  const [bodyContentType,    setBodyContentType]    = useState(initialEndpoint?.getBodyContentType()    ?? BodyContentType.JSON);
+  const [wsSubscribeMessage, setWsSubscribeMessage] = useState(initialEndpoint?.getWsSubscribeMessage() ?? "");
+  const [errors,             setErrors]             = useState<Record<string, string>>({});
 
   // Re-sync path params when path changes
   useEffect(() => {
@@ -74,6 +75,9 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
     if (METHODS_WITH_BODY.includes(method)) {
       endpoint.setBody(body);
       endpoint.setBodyContentType(bodyContentType);
+    }
+    if (method === HttpMethod.WS && wsSubscribeMessage.trim()) {
+      endpoint.setWsSubscribeMessage(wsSubscribeMessage.trim());
     }
 
     const result = endpoint.isApiEndpointValid();
@@ -236,6 +240,21 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
               style={{ boxSizing: "border-box" }}
             />
           </div>
+
+          {/* WebSocket — subscribe message */}
+          {method === HttpMethod.WS && (
+            <div className="endpoint-form__section">
+              <div className="form-section-label">{t("apiEndpoint.wsSubscribeMessage")}</div>
+              <textarea
+                className="endpoint-form__body-editor"
+                rows={3}
+                placeholder={t("apiEndpoint.wsSubscribeMessagePlaceholder")}
+                value={wsSubscribeMessage}
+                onChange={(e) => setWsSubscribeMessage(e.target.value)}
+              />
+              <span className="form-hint">{t("apiEndpoint.wsSubscribeMessageHint")}</span>
+            </div>
+          )}
 
           {/* Body — POST / PUT / PATCH only */}
           {METHODS_WITH_BODY.includes(method) && (

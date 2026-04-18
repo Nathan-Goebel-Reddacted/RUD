@@ -1,0 +1,22 @@
+{
+  "name": "rud-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for API Dashboard Builder (RUD) — configure dashboards via AI agents",
+  "type": "module",
+  "bin": {
+    "rud-mcp": "./src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "fflate": "^0.8.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": ["mcp", "dashboard", "api", "claude"],
+  "license": "MIT"
+}

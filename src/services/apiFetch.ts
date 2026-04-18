@@ -2,6 +2,7 @@ import ApiConnection from "@/class/ApiConnection";
 import ApiEndpoint from "@/class/ApiEndpoint";
 import { AuthType } from "@/enum/authType";
 import { substituteVars } from "@/services/substituteVars";
+import { getOAuth2Token } from "@/services/oauth2Pkce";
 
 export type FetchStatus = "unknown" | "loading" | "ok" | "error";
 
@@ -29,6 +30,11 @@ function buildFetchHeaders(conn: ApiConnection, vars: Record<string, string>): R
     case AuthType.BASIC:
       headers["Authorization"] = `Basic ${btoa(authValue)}`;
       break;
+    case AuthType.OAUTH2_PKCE: {
+      const token = getOAuth2Token(conn.getId());
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+      break;
+    }
   }
   return headers;
 }

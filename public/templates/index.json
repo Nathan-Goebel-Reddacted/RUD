@@ -1,0 +1,26 @@
+[
+  {
+    "id": "meteo",
+    "file": "meteo.json",
+    "name": "Météo en temps réel",
+    "description": "Température, vent, humidité et précipitations via Open-Meteo (gratuit, sans clé API, CORS ok). Personnalisable via variables {{lat}} / {{lon}}.",
+    "tags": ["weather", "demo", "no-auth"],
+    "apis": ["open-meteo.com"]
+  },
+  {
+    "id": "jsonplaceholder",
+    "file": "jsonplaceholder.json",
+    "name": "API Demo — JSONPlaceholder",
+    "description": "Tableau de bord de démonstration avec l'API JSONPlaceholder. Todos, utilisateurs et posts avec compteurs, table et health check. Idéal pour découvrir les widgets.",
+    "tags": ["demo", "no-auth", "tables"],
+    "apis": ["jsonplaceholder.typicode.com"]
+  },
+  {
+    "id": "minimal",
+    "file": "minimal.json",
+    "name": "Minimal — Point de départ",
+    "description": "Dashboard vierge avec une horloge et un widget texte. Sert de base pour construire son propre dashboard.",
+    "tags": ["starter", "no-api"],
+    "apis": []
+  }
+]

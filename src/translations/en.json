@@ -1,4 +1,15 @@
 {
+    "templates": {
+        "title": "Template Gallery",
+        "subtitle": "Ready-to-use dashboards — click Import to load one into your browser.",
+        "loading": "Loading templates…",
+        "loadError": "Failed to load templates.",
+        "import": "Import",
+        "importing": "Importing…",
+        "importError": "Import failed",
+        "contribute": "Want to contribute a template? Open a PR on GitHub and add your JSON to public/templates/."
+    },
+
     "noProfile": {
         "importProfile": "Import a profile",
         "createProfile": "Create a profile"
@@ -180,7 +191,19 @@
             "none": "No auth",
             "bearer": "Bearer token",
             "apiKey": "API Key",
-            "basic": "Basic auth (user:password)"
+            "basic": "Basic auth (user:password)",
+            "oauth2Pkce": "OAuth2 PKCE"
+        },
+        "oauth2": {
+            "authorizationUrl": "Authorization URL",
+            "tokenUrl": "Token URL",
+            "clientId": "Client ID",
+            "scope": "Scope (space-separated)",
+            "redirectUri": "Redirect URI",
+            "authorize": "Authorize",
+            "connected": "Connected",
+            "notConnected": "Not connected",
+            "disconnect": "Disconnect"
         },
         "authValue": {
             "bearer": "Bearer token",
@@ -224,6 +247,9 @@
         "body": "Request body",
         "bodyJsonPlaceholder": "{\n  \"key\": \"value\"\n}",
         "bodyFormPlaceholder": "key=value&key2=value2",
+        "wsSubscribeMessage": "Subscribe message (JSON, optional)",
+        "wsSubscribeMessagePlaceholder": "{\"action\": \"subscribe\", \"channel\": \"prices\"}",
+        "wsSubscribeMessageHint": "Sent once after the connection opens. Leave empty if not required.",
         "save": "Save",
         "addRoute": "Add route",
         "cancel": "Cancel",

@@ -2,11 +2,13 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import Modal from "@/components/tool/Modal";
 import ApiConnection from "@/class/ApiConnection";
+import type { OAuth2Config } from "@/class/ApiConnection";
 import { AuthType } from "@/enum/authType";
 import type { AuthType as AuthTypeValue } from "@/enum/authType";
 import { useApiStore } from "@/stores/apiStore";
 import ConfirmDeleteButton from "@/components/tool/ConfirmDeleteButton";
 import FormField from "@/components/tool/FormField";
+import { startOAuth2Flow, hasOAuth2Token, clearOAuth2Token } from "@/services/oauth2Pkce";
 
 export const MODAL_CREATE_ID = "ApiConnectionCreate";
 export const MODAL_EDIT_ID   = "ApiConnectionEdit";
@@ -32,7 +34,17 @@ function ApiConnectionForm({ onClose, initialConnection }: Props) {
   const [authType,  setAuthType]  = useState<AuthTypeValue>(
     initialConnection?.getAuthType() ?? AuthType.NONE
   );
-  const [authValue, setAuthValue] = useState(initialConnection?.getAuthValue() ?? "");
+  const [authValue,   setAuthValue]   = useState(initialConnection?.getAuthValue() ?? "");
+  const [oauth2,      setOAuth2]      = useState<OAuth2Config>(
+    initialConnection?.getOAuth2Config() ?? {
+      authorizationUrl: "",
+      tokenUrl:         "",
+      clientId:         "",
+      scope:            "",
+      redirectUri:      `${window.location.origin}/oauth2/callback`,
+    }
+  );
+  const [, forceUpdate] = useState(0);
   const [headers,   setHeaders]   = useState<HeaderRow[]>(
     initialConnection
       ? Object.entries(initialConnection.getHeaders()).map(([key, value]) => ({ key, value }))
@@ -66,7 +78,8 @@ function ApiConnectionForm({ onClose, initialConnection }: Props) {
       isEdit ? initialConnection!.getId() : undefined
     );
     connection.setAuthType(authType);
-    if (authType !== AuthType.NONE) connection.setAuthValue(authValue);
+    if (authType !== AuthType.NONE && authType !== AuthType.OAUTH2_PKCE) connection.setAuthValue(authValue);
+    if (authType === AuthType.OAUTH2_PKCE) connection.setOAuth2Config(oauth2);
     for (const row of headers) {
       if (row.key.trim()) connection.setHeader(row.key.trim(), row.value);
     }
@@ -104,10 +117,31 @@ function ApiConnectionForm({ onClose, initialConnection }: Props) {
   };
 
   const authValuePlaceholder: Record<AuthTypeValue, string> = {
-    [AuthType.NONE]:    "",
-    [AuthType.BEARER]:  t("apiConnection.authValue.bearer"),
-    [AuthType.API_KEY]: t("apiConnection.authValue.apiKey"),
-    [AuthType.BASIC]:   t("apiConnection.authValue.basic"),
+    [AuthType.NONE]:        "",
+    [AuthType.BEARER]:      t("apiConnection.authValue.bearer"),
+    [AuthType.API_KEY]:     t("apiConnection.authValue.apiKey"),
+    [AuthType.BASIC]:       t("apiConnection.authValue.basic"),
+    [AuthType.OAUTH2_PKCE]: "",
+  };
+
+  const handleAuthorize = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    // Save the connection first, then start the OAuth2 flow
+    const connection = new ApiConnection();
+    connection.createAnApiConnection(label, baseUrl, isEdit ? initialConnection!.getId() : undefined);
+    connection.setAuthType(AuthType.OAUTH2_PKCE);
+    connection.setOAuth2Config(oauth2);
+    for (const row of headers) {
+      if (row.key.trim()) connection.setHeader(row.key.trim(), row.value);
+    }
+    if (isEdit) {
+      for (const ep of initialConnection!.getEndpoints()) connection.addEndpoint(ep);
+      connection.setHealthCheckEndpointId(healthCheckEndpointId);
+      updateConnection(connection);
+    } else {
+      addConnection(connection);
+    }
+    await startOAuth2Flow(connection);
   };
 
   return (
@@ -149,15 +183,56 @@ function ApiConnectionForm({ onClose, initialConnection }: Props) {
             <option value={AuthType.BEARER}>{t("apiConnection.auth.bearer")}</option>
             <option value={AuthType.API_KEY}>{t("apiConnection.auth.apiKey")}</option>
             <option value={AuthType.BASIC}>{t("apiConnection.auth.basic")}</option>
+            <option value={AuthType.OAUTH2_PKCE}>{t("apiConnection.auth.oauth2Pkce")}</option>
           </select>
 
-          {authType !== AuthType.NONE && (
+          {authType !== AuthType.NONE && authType !== AuthType.OAUTH2_PKCE && (
             <input
               className="d-block w-full m-2"
               placeholder={authValuePlaceholder[authType]}
               value={authValue}
               onChange={(e) => setAuthValue(e.target.value)}
             />
+          )}
+
+          {authType === AuthType.OAUTH2_PKCE && (
+            <div className="m-2" style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+              {(["authorizationUrl", "tokenUrl", "clientId", "scope", "redirectUri"] as const).map((field) => (
+                <input
+                  key={field}
+                  className="d-block w-full"
+                  placeholder={t(`apiConnection.oauth2.${field}`)}
+                  value={oauth2[field]}
+                  onChange={(e) => setOAuth2((prev) => ({ ...prev, [field]: e.target.value }))}
+                />
+              ))}
+              <div className="d-flex align-center gap-2" style={{ marginTop: "0.25rem" }}>
+                <button type="button" className="btn btn--primary" onClick={handleAuthorize}>
+                  {t("apiConnection.oauth2.authorize")}
+                </button>
+                {isEdit && initialConnection && (
+                  hasOAuth2Token(initialConnection.getId())
+                    ? (
+                      <span style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.85rem" }}>
+                        <span style={{ color: "#4caf50" }}>●</span>
+                        {t("apiConnection.oauth2.connected")}
+                        <button
+                          type="button"
+                          className="btn btn--ghost btn--sm"
+                          onClick={() => { clearOAuth2Token(initialConnection.getId()); forceUpdate((n) => n + 1); }}
+                        >
+                          {t("apiConnection.oauth2.disconnect")}
+                        </button>
+                      </span>
+                    ) : (
+                      <span style={{ display: "flex", alignItems: "center", gap: "0.4rem", fontSize: "0.85rem" }}>
+                        <span style={{ color: "var(--danger-color)" }}>●</span>
+                        {t("apiConnection.oauth2.notConnected")}
+                      </span>
+                    )
+                )}
+              </div>
+            </div>
           )}
 
           <div className="m-2">

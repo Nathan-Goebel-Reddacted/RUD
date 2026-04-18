@@ -1,0 +1,113 @@
+{
+  "version": "2.0",
+  "exportedAt": "2026-04-18T00:00:00.000Z",
+  "profile": {
+    "profileName": "Météo Dashboard",
+    "language": "fr",
+    "backgroundColor": "#1a1a2e",
+    "borderColor": "#4a9eff",
+    "textColor": "#4a9eff",
+    "textHoverColor": "#74b9ff",
+    "displayMode": "disabled",
+    "displayInterval": 30,
+    "scrollSpeed": 0,
+    "loopPauseMs": 2000,
+    "variables": {
+      "lat": "48.85",
+      "lon": "2.35"
+    },
+    "animationsEnabled": true
+  },
+  "connections": [
+    {
+      "id": "c1000000-0000-0000-0000-000000000001",
+      "label": "Open-Meteo (Paris)",
+      "baseUrl": "https://api.open-meteo.com",
+      "authType": "NONE",
+      "authValue": "",
+      "headers": {},
+      "healthCheckEndpointId": null,
+      "endpoints": [
+        {
+          "id": "e1000000-0000-0000-0000-000000000001",
+          "label": "Météo actuelle",
+          "path": "/v1/forecast",
+          "method": "GET",
+          "pathParams": [],
+          "queryParams": [
+            { "name": "latitude",  "type": "string", "required": true, "defaultValue": "{{lat}}" },
+            { "name": "longitude", "type": "string", "required": true, "defaultValue": "{{lon}}" },
+            { "name": "current",   "type": "string", "required": true, "defaultValue": "temperature_2m,wind_speed_10m,relative_humidity_2m,precipitation,weather_code" }
+          ],
+          "responseDataPath": "",
+          "body": "",
+          "bodyContentType": "application/json"
+        }
+      ]
+    }
+  ],
+  "dashboards": [
+    {
+      "id": "d1000000-0000-0000-0000-000000000001",
+      "title": "Météo Paris",
+      "refreshInterval": 60,
+      "showInDisplay": true,
+      "widgets": [
+        {
+          "id": "w1000000-0000-0000-0000-000000000001",
+          "label": "Température",
+          "connectionId": "c1000000-0000-0000-0000-000000000001",
+          "endpointId": "e1000000-0000-0000-0000-000000000001",
+          "dataPath": "$.current.temperature_2m",
+          "position": { "x": 0, "y": 0, "w": 3, "h": 3 },
+          "config": { "type": "number-card", "unit": "°C", "decimalPlaces": 1 }
+        },
+        {
+          "id": "w1000000-0000-0000-0000-000000000002",
+          "label": "Vent",
+          "connectionId": "c1000000-0000-0000-0000-000000000001",
+          "endpointId": "e1000000-0000-0000-0000-000000000001",
+          "dataPath": "$.current.wind_speed_10m",
+          "position": { "x": 3, "y": 0, "w": 3, "h": 3 },
+          "config": { "type": "number-card", "unit": "km/h", "decimalPlaces": 0 }
+        },
+        {
+          "id": "w1000000-0000-0000-0000-000000000003",
+          "label": "Humidité",
+          "connectionId": "c1000000-0000-0000-0000-000000000001",
+          "endpointId": "e1000000-0000-0000-0000-000000000001",
+          "dataPath": "$.current.relative_humidity_2m",
+          "position": { "x": 6, "y": 0, "w": 6, "h": 3 },
+          "config": { "type": "progress", "min": 0, "max": 100, "unit": "%", "showPercent": true, "color": "#4a9eff" }
+        },
+        {
+          "id": "w1000000-0000-0000-0000-000000000004",
+          "label": "Précipitations",
+          "connectionId": "c1000000-0000-0000-0000-000000000001",
+          "endpointId": "e1000000-0000-0000-0000-000000000001",
+          "dataPath": "$.current.precipitation",
+          "position": { "x": 0, "y": 3, "w": 3, "h": 3 },
+          "config": { "type": "number-card", "unit": "mm", "decimalPlaces": 1 }
+        },
+        {
+          "id": "w1000000-0000-0000-0000-000000000005",
+          "label": "Dernière mise à jour",
+          "connectionId": "c1000000-0000-0000-0000-000000000001",
+          "endpointId": "e1000000-0000-0000-0000-000000000001",
+          "dataPath": "",
+          "position": { "x": 3, "y": 3, "w": 3, "h": 3 },
+          "config": { "type": "last-update" }
+        },
+        {
+          "id": "w1000000-0000-0000-0000-000000000006",
+          "label": "",
+          "connectionId": "",
+          "endpointId": "",
+          "dataPath": "",
+          "position": { "x": 6, "y": 3, "w": 6, "h": 3 },
+          "config": { "type": "clock", "format": "24h", "showSeconds": true }
+        }
+      ]
+    }
+  ]
+}

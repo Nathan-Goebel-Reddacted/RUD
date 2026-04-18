@@ -1,0 +1,131 @@
+{
+  "version": "2.0",
+  "exportedAt": "2026-04-18T00:00:00.000Z",
+  "profile": {
+    "profileName": "API Demo",
+    "language": "en",
+    "backgroundColor": "#242424",
+    "borderColor": "#888888",
+    "textColor": "#646cff",
+    "textHoverColor": "#535bf2",
+    "displayMode": "disabled",
+    "displayInterval": 30,
+    "scrollSpeed": 0,
+    "loopPauseMs": 2000,
+    "variables": {},
+    "animationsEnabled": true
+  },
+  "connections": [
+    {
+      "id": "c2000000-0000-0000-0000-000000000001",
+      "label": "JSONPlaceholder",
+      "baseUrl": "https://jsonplaceholder.typicode.com",
+      "authType": "NONE",
+      "authValue": "",
+      "headers": {},
+      "healthCheckEndpointId": "e2000000-0000-0000-0000-000000000001",
+      "endpoints": [
+        {
+          "id": "e2000000-0000-0000-0000-000000000001",
+          "label": "Todos",
+          "path": "/todos",
+          "method": "GET",
+          "pathParams": [],
+          "queryParams": [],
+          "responseDataPath": "",
+          "body": "",
+          "bodyContentType": "application/json"
+        },
+        {
+          "id": "e2000000-0000-0000-0000-000000000002",
+          "label": "Users",
+          "path": "/users",
+          "method": "GET",
+          "pathParams": [],
+          "queryParams": [],
+          "responseDataPath": "",
+          "body": "",
+          "bodyContentType": "application/json"
+        },
+        {
+          "id": "e2000000-0000-0000-0000-000000000003",
+          "label": "Posts",
+          "path": "/posts",
+          "method": "GET",
+          "pathParams": [],
+          "queryParams": [],
+          "responseDataPath": "",
+          "body": "",
+          "bodyContentType": "application/json"
+        }
+      ]
+    }
+  ],
+  "dashboards": [
+    {
+      "id": "d2000000-0000-0000-0000-000000000001",
+      "title": "API Demo",
+      "refreshInterval": 30,
+      "showInDisplay": true,
+      "widgets": [
+        {
+          "id": "w2000000-0000-0000-0000-000000000001",
+          "label": "Total todos",
+          "connectionId": "c2000000-0000-0000-0000-000000000001",
+          "endpointId": "e2000000-0000-0000-0000-000000000001",
+          "dataPath": "$",
+          "transform": "Array.isArray(value) ? value.length : 0",
+          "position": { "x": 0, "y": 0, "w": 3, "h": 3 },
+          "config": { "type": "number-card", "unit": "items" }
+        },
+        {
+          "id": "w2000000-0000-0000-0000-000000000002",
+          "label": "Completed todos",
+          "connectionId": "c2000000-0000-0000-0000-000000000001",
+          "endpointId": "e2000000-0000-0000-0000-000000000001",
+          "dataPath": "$[?(@.completed==true)]",
+          "transform": "Array.isArray(value) ? value.length : 0",
+          "position": { "x": 3, "y": 0, "w": 3, "h": 3 },
+          "config": { "type": "stat", "deltaFormat": "absolute", "positiveColor": "#4caf50", "negativeColor": "#f44336" }
+        },
+        {
+          "id": "w2000000-0000-0000-0000-000000000003",
+          "label": "Users",
+          "connectionId": "c2000000-0000-0000-0000-000000000001",
+          "endpointId": "e2000000-0000-0000-0000-000000000002",
+          "dataPath": "$",
+          "transform": "Array.isArray(value) ? value.length : 0",
+          "position": { "x": 6, "y": 0, "w": 3, "h": 3 },
+          "config": { "type": "number-card", "unit": "users" }
+        },
+        {
+          "id": "w2000000-0000-0000-0000-000000000004",
+          "label": "API status",
+          "connectionId": "c2000000-0000-0000-0000-000000000001",
+          "endpointId": "e2000000-0000-0000-0000-000000000001",
+          "dataPath": "",
+          "position": { "x": 9, "y": 0, "w": 3, "h": 3 },
+          "config": { "type": "health-check" }
+        },
+        {
+          "id": "w2000000-0000-0000-0000-000000000005",
+          "label": "Todos list",
+          "connectionId": "c2000000-0000-0000-0000-000000000001",
+          "endpointId": "e2000000-0000-0000-0000-000000000001",
+          "dataPath": "$",
+          "position": { "x": 0, "y": 3, "w": 6, "h": 5 },
+          "config": { "type": "table", "maxRows": 10, "columns": [] }
+        },
+        {
+          "id": "w2000000-0000-0000-0000-000000000006",
+          "label": "Posts",
+          "connectionId": "c2000000-0000-0000-0000-000000000001",
+          "endpointId": "e2000000-0000-0000-0000-000000000003",
+          "dataPath": "$",
+          "position": { "x": 6, "y": 3, "w": 6, "h": 5 },
+          "config": { "type": "table", "maxRows": 10, "columns": [] }
+        }
+      ]
+    }
+  ]
+}

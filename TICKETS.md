@@ -256,13 +256,13 @@ RUD044 (PWA) dépend de RUD043 (build display-only comme cible PWA prioritaire).
 **✅ RUD046 — Widget Gauge / Donut**
 Nouveau type `gauge` : affiche une valeur numérique sous forme de jauge semi-circulaire ou donut (recharts `RadialBarChart` ou `PieChart` en mode semi-cercle). Config : valeur min/max, unité, couleur, seuils visuels (intégration RUD040). Idéal pour CPU, mémoire, taux d'occupation.
 
-**RUD047 — Widget Stat + tendance**
+**✅ RUD047 — Widget Stat + tendance**
 Nouveau type `stat` : valeur principale + delta vs valeur précédente (`+12%`, `-3 pts`). La valeur précédente est conservée en mémoire runtime (même mécanisme que RUD041). Config : format du delta (absolu ou pourcentage), couleur positive/négative. Très lisible sur écran mural pour les KPIs.
 
-**RUD048 — Widget Progress bar**
+**✅ RUD048 — Widget Progress bar**
 Nouveau type `progress` : barre de progression horizontale avec valeur texte optionnelle. Config : valeur min/max, label, couleur, affichage du pourcentage. Supporte les seuils RUD040 pour changer la couleur de la barre.
 
-**RUD049 — Widget Pie chart**
+**✅ RUD049 — Widget Pie chart**
 Nouveau type `pie` : camembert via `recharts PieChart`. Config : clé de label, clé de valeur, palette de couleurs personnalisable par slice. Agrégation `count` (comme RUD027) disponible pour distribution.
 
 **~~RUD050 — Widget Status grid~~** ❌ Annulé — redondant avec health-check (1×1) + contradictions architecturales (N fetches par widget).
@@ -275,13 +275,13 @@ Nouveau type `pie` : camembert via `recharts PieChart`. Config : clé de label, 
 
 ## Données & fetch
 
-**RUD052 — Transformations de données**
+**✅ RUD052 — Transformations de données**
 Dans `WidgetConfigPanel`, ajouter un champ optionnel "Transform" (expression JS sandboxée ou formule simple) appliqué après l'extraction JSONPath. Exemples : `value / 1024` (bytes → KB), `Math.round(value * 100) / 100`, `value + " °C"`. Évaluation via `new Function` avec timeout de sécurité ou un parseur d'expressions minimal. Prévisualisation live dans le panel.
 
-**RUD053 — Variables globales de profil**
+**✅ RUD053 — Variables globales de profil**
 Définir des variables nommées `{{nom}}` dans les settings du profil (onglet dédié). Utilisables dans les champs URL base, headers, path params, query params de tous les endpoints. Exemple : `{{env}}` = `prod` ou `staging`, `{{token}}` pour un token partagé entre plusieurs connexions. Substitution à la volée au moment du fetch, sans modifier le modèle stocké.
 
-**RUD054 — Support WebSocket**
+**✅ RUD054 — Support WebSocket**
 Nouveau type de source `websocket` dans `ApiEndpoint` (en plus de GET/POST/…). Un endpoint WebSocket maintient une connexion persistante et pousse les messages reçus dans le cache du widget (même interface `WidgetDataState` que le polling). Config : URL `ws://` ou `wss://`, message d'abonnement JSON optionnel, JSONPath d'extraction. `useWidgetData` adapté pour gérer les deux modes (polling et ws).
 
 **✅ RUD055 — Alertes visuelles sur seuil**
@@ -298,14 +298,14 @@ Sur les widgets NumberCard, Stat et HealthCheck : déclencher une animation cour
 
 ## Partage & collaboration
 
-**RUD057 — Marketplace de templates (GitHub)**
+**✅ RUD057 — Marketplace de templates (GitHub)**
 Repo ou dossier `templates/` dans le projet contenant des profils JSON de démonstration (Server monitoring, API publique, etc.). Page statique listant les templates avec preview (screenshot ou description). Import en un clic via le mécanisme QR/URL existant (RUD042). Contribution communautaire via PR.
 
 ---
 
 ## MCP
 
-**RUD058 — MCP server (configuration par agent IA)**
+**✅ RUD058 — MCP server (configuration par agent IA)**
 Companion Node.js MCP server (`packages/rud-mcp/`) exposant les outils de configuration de l'app. L'agent manipule le même format JSON que localStorage — aucun backend permanent requis. Output : URL d'import `/#/import?data=<lzstring>` que l'utilisateur ouvre dans le navigateur (même mécanisme que RUD042).
 
 Outils MCP exposés :
@@ -323,7 +323,7 @@ Usage : `npx rud-mcp` dans Claude Desktop → dire "crée un dashboard avec un w
 
 ## Technique
 
-**RUD059 — OAuth2 PKCE (auth frontend-only)**
+**✅ RUD059 — OAuth2 PKCE (auth frontend-only)**
 Support d'un nouveau type d'auth `oauth2-pkce` dans `ApiConnection`. Flow : redirect vers l'authorization server, callback avec code, échange PKCE pour access token (stocké en sessionStorage, jamais en localStorage). Rafraîchissement automatique via refresh token si disponible. Ouvre l'accès aux APIs OAuth2 standard (GitHub, Google, etc.) sans backend.
 
 ---

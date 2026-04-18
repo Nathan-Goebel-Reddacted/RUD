@@ -58,6 +58,13 @@ export function buildQRUrl(compressedData: string): string {
   return `${base}/no-profile#import?data=${compressedData}`;
 }
 
+export function encodeObjectToImportUrl(payload: unknown): string {
+  const json       = shortenUUIDs(JSON.stringify(payload));
+  const compressed = deflateSync(strToU8(json), { level: 9 });
+  const data       = toBase64Url(compressed);
+  return buildQRUrl(data);
+}
+
 export function decodeProfileFromQR(encoded: string): ImportResult {
   if (encoded.length > 100_000) return { ok: false, error: "backup.parseError" };
   try {

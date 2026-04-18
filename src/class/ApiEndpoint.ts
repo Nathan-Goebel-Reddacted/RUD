@@ -13,11 +13,12 @@ class ApiEndpoint {
   private path: string       = "";
   private method: HttpMethod = HttpMethod.GET;
 
-  private pathParams:       PathParam[]    = [];
-  private queryParams:      QueryParam[]   = [];
-  private responseDataPath: string         = "";
-  private body:             string         = "";
-  private bodyContentType:  BodyContentType = BodyContentType.JSON;
+  private pathParams:          PathParam[]    = [];
+  private queryParams:         QueryParam[]   = [];
+  private responseDataPath:    string         = "";
+  private body:                string         = "";
+  private bodyContentType:     BodyContentType = BodyContentType.JSON;
+  private wsSubscribeMessage?: string;
 
   constructor() {}
 
@@ -75,8 +76,10 @@ class ApiEndpoint {
   public setPathParams(params: PathParam[]): void        { this.pathParams = params; }
   public setQueryParams(params: QueryParam[]): void      { this.queryParams = params; }
   public setResponseDataPath(path: string): void         { this.responseDataPath = path; }
-  public setBody(body: string): void                     { this.body = body; }
-  public setBodyContentType(ct: BodyContentType): void   { this.bodyContentType = ct; }
+  public setBody(body: string): void                              { this.body = body; }
+  public setBodyContentType(ct: BodyContentType): void            { this.bodyContentType = ct; }
+  public getWsSubscribeMessage(): string | undefined              { return this.wsSubscribeMessage; }
+  public setWsSubscribeMessage(msg: string | undefined): void     { this.wsSubscribeMessage = msg; }
 
   public clone(copySuffix = ""): ApiEndpoint {
     const copy = new ApiEndpoint();
@@ -90,21 +93,26 @@ class ApiEndpoint {
     return copy;
   }
 
+  public isWebSocket(): boolean {
+    return this.method === "WS";
+  }
+
   public hasBody(): boolean {
     return (["POST", "PUT", "PATCH"] as string[]).includes(this.method);
   }
 
   public toJSON(): object {
     return {
-      id:               this.id,
-      label:            this.label,
-      path:             this.path,
-      method:           this.method,
-      pathParams:       this.pathParams,
-      queryParams:      this.queryParams,
-      responseDataPath: this.responseDataPath,
-      body:             this.body,
-      bodyContentType:  this.bodyContentType,
+      id:                  this.id,
+      label:               this.label,
+      path:                this.path,
+      method:              this.method,
+      pathParams:          this.pathParams,
+      queryParams:         this.queryParams,
+      responseDataPath:    this.responseDataPath,
+      body:                this.body,
+      bodyContentType:     this.bodyContentType,
+      wsSubscribeMessage:  this.wsSubscribeMessage,
     };
   }
 
@@ -128,6 +136,7 @@ class ApiEndpoint {
       if (Object.values(BodyContentType).includes(d.bodyContentType as BodyContentType)) {
         e.setBodyContentType(d.bodyContentType as BodyContentType);
       }
+      if (typeof d.wsSubscribeMessage === "string") e.setWsSubscribeMessage(d.wsSubscribeMessage);
       if (!e.isApiEndpointValid().isSuccess()) return null;
       return e;
     } catch {

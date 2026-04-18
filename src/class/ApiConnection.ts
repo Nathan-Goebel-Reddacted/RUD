@@ -2,13 +2,22 @@ import { AuthType } from "@/enum/authType";
 import ActionResult from "@/services/resultAction";
 import ApiEndpoint from "@/class/ApiEndpoint";
 
+export type OAuth2Config = {
+  authorizationUrl: string;
+  tokenUrl:         string;
+  clientId:         string;
+  scope:            string;
+  redirectUri:      string;
+};
+
 class ApiConnection {
   private id: string        = "";
   private label: string     = "";
   private baseUrl: string   = "";
   private headers: Record<string, string> = {};
-  private authType: AuthType  = AuthType.NONE;
-  private authValue: string   = "";
+  private authType: AuthType    = AuthType.NONE;
+  private authValue: string     = "";
+  private oauth2Config?: OAuth2Config;
   private endpoints: ApiEndpoint[] = [];
   private healthCheckEndpointId: string | null = null;
 
@@ -57,8 +66,10 @@ class ApiConnection {
 
   public setLabel(label: string): void     { this.label = label; }
   public setBaseUrl(baseUrl: string): void { this.baseUrl = baseUrl; }
-  public setAuthType(authType: AuthType): void   { this.authType = authType; }
-  public setAuthValue(authValue: string): void   { this.authValue = authValue; }
+  public setAuthType(authType: AuthType): void        { this.authType = authType; }
+  public setAuthValue(authValue: string): void        { this.authValue = authValue; }
+  public getOAuth2Config(): OAuth2Config | undefined  { return this.oauth2Config ? { ...this.oauth2Config } : undefined; }
+  public setOAuth2Config(cfg: OAuth2Config | undefined): void { this.oauth2Config = cfg ? { ...cfg } : undefined; }
   public getHealthCheckEndpointId(): string | null { return this.healthCheckEndpointId; }
   public setHealthCheckEndpointId(id: string | null): void { this.healthCheckEndpointId = id; }
 
@@ -83,6 +94,7 @@ class ApiConnection {
     c.createAnApiConnection(this.label, this.baseUrl, this.id);
     c.setAuthType(this.authType);
     c.setAuthValue(this.authValue);
+    c.setOAuth2Config(this.oauth2Config);
     for (const [k, v] of Object.entries(this.headers)) c.setHeader(k, v);
     for (const ep of this.endpoints) c.addEndpoint(ep);
     c.setHealthCheckEndpointId(this.healthCheckEndpointId);
@@ -91,13 +103,14 @@ class ApiConnection {
 
   public toJSON(): object {
     return {
-      id:        this.id,
-      label:     this.label,
-      baseUrl:   this.baseUrl,
-      headers:   { ...this.headers },
-      authType:  this.authType,
-      authValue: this.authValue,
-      endpoints: this.endpoints.map((e) => e.toJSON()),
+      id:           this.id,
+      label:        this.label,
+      baseUrl:      this.baseUrl,
+      headers:      { ...this.headers },
+      authType:     this.authType,
+      authValue:    this.authValue,
+      oauth2Config: this.oauth2Config,
+      endpoints:    this.endpoints.map((e) => e.toJSON()),
       healthCheckEndpointId: this.healthCheckEndpointId,
     };
   }
@@ -117,6 +130,24 @@ class ApiConnection {
       }
       if (typeof d.authValue === "string") {
         c.setAuthValue(d.authValue);
+      }
+      if (d.oauth2Config && typeof d.oauth2Config === "object") {
+        const o = d.oauth2Config as Record<string, unknown>;
+        if (
+          typeof o.authorizationUrl === "string" &&
+          typeof o.tokenUrl === "string" &&
+          typeof o.clientId === "string" &&
+          typeof o.scope === "string" &&
+          typeof o.redirectUri === "string"
+        ) {
+          c.setOAuth2Config({
+            authorizationUrl: o.authorizationUrl,
+            tokenUrl:         o.tokenUrl,
+            clientId:         o.clientId,
+            scope:            o.scope,
+            redirectUri:      o.redirectUri,
+          });
+        }
       }
       if (d.headers && typeof d.headers === "object") {
         for (const [k, v] of Object.entries(d.headers as Record<string, unknown>)) {

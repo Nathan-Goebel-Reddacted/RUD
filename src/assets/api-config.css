@@ -244,6 +244,7 @@
   --method-put:    #fca130;
   --method-delete: #f93e3e;
   --method-patch:  #50e3c2;
+  --method-ws:     #b57bee;
 }
 
 [class^="method--"],
@@ -255,6 +256,7 @@
 .method--put    { --method-color: var(--method-put);    }
 .method--delete { --method-color: var(--method-delete); }
 .method--patch  { --method-color: var(--method-patch);  }
+.method--ws     { --method-color: var(--method-ws);     }
 
 /* Route bar */
 .endpoint-form__route-bar {

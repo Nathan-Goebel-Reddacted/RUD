@@ -4,6 +4,7 @@ import ApiEndpoint from "@/class/ApiEndpoint";
 import { AuthType } from "@/enum/authType";
 import type { WidgetDataError } from "@/types/widget";
 import { substituteVars } from "@/services/substituteVars";
+import { getOAuth2Token, refreshOAuth2Token } from "@/services/oauth2Pkce";
 
 export type WidgetFetchResult = {
   raw:      unknown;
@@ -29,6 +30,11 @@ function buildHeaders(conn: ApiConnection, vars: Record<string, string>): Record
     case AuthType.BASIC:
       headers["Authorization"] = `Basic ${btoa(authValue)}`;
       break;
+    case AuthType.OAUTH2_PKCE: {
+      const token = getOAuth2Token(conn.getId());
+      if (token) headers["Authorization"] = `Bearer ${token}`;
+      break;
+    }
   }
   return headers;
 }
@@ -45,6 +51,23 @@ function buildUrl(conn: ApiConnection, ep: ApiEndpoint, vars: Record<string, str
     .filter((p) => p.defaultValue)
     .map((p) => `${encodeURIComponent(p.name)}=${encodeURIComponent(substituteVars(p.defaultValue, vars))}`);
   const base = substituteVars(conn.getBaseUrl(), vars).replace(/\/$/, "");
+  return `${base}${path}${queryParts.length ? "?" + queryParts.join("&") : ""}`;
+}
+
+export function buildWsUrl(conn: ApiConnection, ep: ApiEndpoint, vars: Record<string, string>): string {
+  const base = substituteVars(conn.getBaseUrl(), vars)
+    .replace(/\/$/, "")
+    .replace(/^http:\/\//, "ws://")
+    .replace(/^https:\/\//, "wss://");
+  let path = ep.getPath();
+  for (const param of ep.getPathParams()) {
+    if (param.defaultValue) {
+      path = path.replace(`{${param.name}}`, encodeURIComponent(substituteVars(param.defaultValue, vars)));
+    }
+  }
+  const queryParts = ep.getQueryParams()
+    .filter((p) => p.defaultValue)
+    .map((p) => `${encodeURIComponent(p.name)}=${encodeURIComponent(substituteVars(p.defaultValue, vars))}`);
   return `${base}${path}${queryParts.length ? "?" + queryParts.join("&") : ""}`;
 }
 
@@ -110,20 +133,34 @@ export async function fetchWidgetData(
   }
   console.debug("[widgetFetch] →", ep.getMethod(), url);
 
-  try {
-    const res = await fetch(url, options);
+  const doFetch = async (hdrs: Record<string, string>): ReturnType<typeof fetchWidgetData> => {
+    const opts: RequestInit = { method: ep.getMethod(), headers: hdrs, signal };
+    if (ep.hasBody() && ep.getBody()) {
+      opts.body = ep.getBody();
+      hdrs["Content-Type"] = ep.getBodyContentType();
+    }
+    const res = await fetch(url, opts);
     let raw: unknown;
     const text = await res.text();
-    try {
-      raw = JSON.parse(text);
-    } catch {
+    try { raw = JSON.parse(text); } catch {
       return { raw: null, data: null, httpCode: res.status, error: "parse_error" };
     }
-    if (!res.ok) {
-      return { raw, data: null, httpCode: res.status, error: "http_error" };
-    }
+    if (!res.ok) return { raw, data: null, httpCode: res.status, error: "http_error" };
     const { value, error } = extractData(raw, dataPath);
     return { raw, data: value, httpCode: res.status, error };
+  };
+
+  try {
+    const res1 = await doFetch(headers);
+    // On 401 with OAuth2 PKCE, attempt token refresh and retry once
+    if (res1.httpCode === 401 && conn.getAuthType() === "OAUTH2_PKCE") {
+      const newToken = await refreshOAuth2Token(conn);
+      if (newToken) {
+        const refreshedHeaders = buildHeaders(conn, vars);
+        return doFetch(refreshedHeaders);
+      }
+    }
+    return res1;
   } catch (err) {
     if (err instanceof DOMException && err.name === "AbortError") {
       throw err; // re-throw to let the hook handle cleanup
