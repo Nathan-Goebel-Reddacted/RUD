@@ -25,7 +25,6 @@ export default function OAuth2Callback() {
     handleOAuth2Callback(code, state)
       .then(() => navigate("/api-config", { replace: true }))
       .catch((e: unknown) => setError(e instanceof Error ? e.message : String(e)));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (error) {

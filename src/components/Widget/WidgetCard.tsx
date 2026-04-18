@@ -51,25 +51,23 @@ function ErrorMessage({ error }: { error: string }) {
 }
 
 function WidgetBody({ widget, dataState }: { widget: Widget; dataState: WidgetDataState }) {
-  // Interactive widgets — manage their own fetch state
   if (widget.config.type === "form")   return <FormWidget widget={widget} />;
   if (widget.config.type === "button") return <ButtonWidget widget={widget} />;
   if (widget.config.type === "toggle") return <ToggleWidget widget={widget} />;
   if (widget.config.type === "slider") return <SliderWidget widget={widget} />;
   if (widget.config.type === "select") return <SelectWidget widget={widget} />;
   if (widget.config.type === "search") return <SearchWidget widget={widget} />;
-  // Static widgets — no fetch needed
+
   if (widget.config.type === "text") {
     return <TextWidget config={widget.config} />;
   }
   if (widget.config.type === "clock") {
     return <ClockWidget config={widget.config} />;
   }
-  // HealthCheck uses httpCode — render before error check so http_error doesn't block it
+
   if (widget.config.type === "health-check") {
     return <HealthCheckWidget config={widget.config} dataState={dataState} />;
   }
-  // LastUpdate uses fetchedAt — render before error check
   if (widget.config.type === "last-update") {
     return <LastUpdateWidget config={widget.config} fetchedAt={dataState.fetchedAt} />;
   }
@@ -104,7 +102,6 @@ export default function WidgetCard({ widget, dataState, onEdit, onDelete, onDupl
 
   return (
     <div className="widget-card">
-      {/* Edit/duplicate/delete overlay — appears on hover, full top strip */}
       {!readonly && (onEdit || onDuplicate || onDelete) && (
         <div className="widget-card__overlay">
           <span className="widget-card__overlay-label">{widget.label}</span>
@@ -143,7 +140,6 @@ export default function WidgetCard({ widget, dataState, onEdit, onDelete, onDupl
         </div>
       )}
 
-      {/* Readonly label (display mode) */}
       {readonly && widget.label && (
         <div className="widget-card__header">
           <span className="widget-card__label">{widget.label}</span>

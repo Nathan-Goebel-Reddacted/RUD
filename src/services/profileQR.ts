@@ -53,8 +53,10 @@ export function encodeProfileToQR(
 }
 
 export function buildQRUrl(compressedData: string): string {
-  const base = (import.meta.env.VITE_QR_BASE_URL as string | undefined)?.replace(/\/$/, "")
-    ?? (window.location.origin + import.meta.env.BASE_URL.replace(/\/$/, ""));
+  const envBase = import.meta.env.VITE_QR_BASE_URL as string | undefined;
+  const base = envBase?.trim()
+    ? envBase.replace(/\/$/, "")
+    : window.location.origin + import.meta.env.BASE_URL.replace(/\/$/, "");
   return `${base}/no-profile#import?data=${compressedData}`;
 }
 

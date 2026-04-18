@@ -30,7 +30,6 @@ export default function SliderWidget({ widget }: Props) {
   const [writing,  setWriting]  = useState<boolean>(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Read initial value from API
   useEffect(() => {
     if (!readConn || !readEp) return;
     setLoading(true);
@@ -41,7 +40,6 @@ export default function SliderWidget({ widget }: Props) {
       }
       setLoading(false);
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config.readConnectionId, config.readEndpointId, config.readDataPath]);
 
   const sendWrite = async (newValue: number) => {

@@ -6,7 +6,7 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 const DISMISSED_KEY = 'rud-install-dismissed'
-const DISMISSED_TTL_MS = 30 * 24 * 60 * 60 * 1000 // 30 days
+const DISMISSED_TTL_MS = 30 * 24 * 60 * 60 * 1000
 
 function isStandalone(): boolean {
   if ((navigator as Navigator & { standalone?: boolean }).standalone === true) return true

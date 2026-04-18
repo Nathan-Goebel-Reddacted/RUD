@@ -56,13 +56,11 @@ function widthPercent(w: number)  { return `calc(${(w / COLS) * 100}% - ${COL_GA
 export default function DisplayDashboard() {
   const { t } = useTranslation();
 
-  // DOM refs
   const containerRef = useRef<HTMLDivElement | null>(null);
   const gridRef      = useRef<HTMLDivElement | null>(null);
   const slideRef     = useRef<HTMLDivElement | null>(null); // handles translateX slide animation
   const innerGridRef = useRef<HTMLDivElement | null>(null); // handles translateY scroll
 
-  // rAF scroll refs
   const rafIdRef           = useRef<number>(0);
   const scrollPosRef       = useRef<number>(0);
   const maxScrollRef       = useRef<number>(0);
@@ -73,15 +71,12 @@ export default function DisplayDashboard() {
   const atBottomSinceRef   = useRef<number | null>(null);
   const isScrollingBackRef = useRef<boolean>(false);
 
-  // Rotation refs
   const displayModeRef    = useRef<string>("timer");
   const dashboardCountRef = useRef<number>(1);
   const goToNextRef       = useRef<() => void>(() => {});
 
-  // Slide direction tracking
   const prevIndexRef = useRef<number>(0);
 
-  // Store reads
   const dashboards              = useDashboardStore((s) => s.dashboards);
   const activeDashboardIndex    = useDashboardStore((s) => s.activeDashboardIndex);
   const setActiveDashboardIndex = useDashboardStore((s) => s.setActiveDashboardIndex);
@@ -108,29 +103,24 @@ export default function DisplayDashboard() {
     setAlerts((prev) => prev.filter((a) => a.uid !== uid));
   }, []);
 
-  // Cleanup all alert dismiss timeouts on unmount
   useEffect(() => {
     const set = alertTimeoutsRef.current;
     return () => { set.forEach(clearTimeout); set.clear(); };
   }, []);
 
-  // Reset alerts when the active dashboard changes
   useEffect(() => {
     setAlerts([]);
   }, [activeDashboardIndex]);
 
-  // Wake Lock — keep screen on while in display mode
   useEffect(() => {
     if (!("wakeLock" in navigator)) return;
     let lock: WakeLockSentinel | null = null;
     (navigator as Navigator & { wakeLock: { request: (type: string) => Promise<WakeLockSentinel> } })
       .wakeLock.request("screen")
       .then((l) => { lock = l; })
-      .catch(() => { /* not supported or denied — silent fallback */ });
+      .catch(() => { });
     return () => { lock?.release(); };
   }, []);
-
-  // Orientation lock — force landscape on mobile, show rotate message if unsupported
   useEffect(() => {
     const isMobileDevice = /Mobi|Android/i.test(navigator.userAgent);
     if (!isMobileDevice) return;
@@ -139,7 +129,6 @@ export default function DisplayDashboard() {
       try {
         await (screen.orientation as ScreenOrientation & { lock: (o: string) => Promise<void> }).lock("landscape");
       } catch {
-        // Not supported (iOS Safari without PWA) — show rotate message if portrait
         const mq = window.matchMedia("(orientation: portrait)");
         if (mounted) setShowRotateMsg(mq.matches);
         const handler = (e: MediaQueryListEvent) => { if (mounted) setShowRotateMsg(e.matches); };
@@ -154,8 +143,6 @@ export default function DisplayDashboard() {
       screen.orientation.unlock();
     };
   }, []);
-
-  // Measure grid container height via ResizeObserver
   useEffect(() => {
     const el = gridRef.current;
     if (!el) return;
@@ -164,13 +151,11 @@ export default function DisplayDashboard() {
     return () => ro.disconnect();
   }, []);
 
-  // Initial pause on mount before scrolling starts
   useEffect(() => {
     pauseTimerRef.current = setTimeout(() => { isPausedRef.current = false; }, loopPauseMsRef.current);
     return () => { if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current); };
   }, []);
 
-  // Pause auto-scroll for 2s on mousemove or click
   useEffect(() => {
     const pause = () => {
       isPausedRef.current = true;
@@ -186,7 +171,6 @@ export default function DisplayDashboard() {
     };
   }, []);
 
-  // Manual scroll via mouse wheel
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
       if (!innerGridRef.current || maxScrollRef.current <= 0) return;
@@ -206,7 +190,6 @@ export default function DisplayDashboard() {
     return () => window.removeEventListener("wheel", onWheel);
   }, []);
 
-  // Manual scroll via touch (mobile)
   useEffect(() => {
     let lastTouchY = 0;
     const onTouchStart = (e: TouchEvent) => {
@@ -241,7 +224,6 @@ export default function DisplayDashboard() {
     };
   }, []);
 
-  // rAF scroll loop
   useEffect(() => {
     let prevTime: number | null = null;
 
@@ -296,7 +278,6 @@ export default function DisplayDashboard() {
     return () => cancelAnimationFrame(rafIdRef.current);
   }, []);
 
-  // Timer rotation
   const displayMode     = profile?.getDisplayMode()     ?? "timer";
   const displayInterval = profile?.getDisplayInterval() ?? 30;
 
@@ -311,30 +292,25 @@ export default function DisplayDashboard() {
       }
     };
 
-    // scroll-end mode: content fits → use loopPauseMs as fallback timer
     if (displayMode === "scroll-end" && maxScrollRef.current === 0 && loopPauseMsRef.current > 0) {
       const timer = setTimeout(goNext, loopPauseMsRef.current);
       return () => clearTimeout(timer);
     }
 
-    // timer mode
     if (displayMode !== "timer" || displayInterval <= 0) return;
     const timer = setTimeout(goNext, displayInterval * 1000);
     return () => clearTimeout(timer);
   }, [activeDashboardIndex, displayMode, displayInterval, dashboards.length, gridPixelHeight, setActiveDashboardIndex]);
 
-  // Slide animation + scroll reset on dashboard change
   useEffect(() => {
     const el = slideRef.current;
 
-    // Determine slide direction: next → from right, prev → from left
     const isNext = dashboards.length > 1 && (
       activeDashboardIndex > prevIndexRef.current ||
       (activeDashboardIndex === 0 && prevIndexRef.current === dashboards.length - 1)
     );
     prevIndexRef.current = activeDashboardIndex;
 
-    // Apply slide class and remove after animation
     if (el && dashboards.length > 1) {
       const cls = isNext ? "display-dashboard__slide--from-right" : "display-dashboard__slide--from-left";
       el.classList.add(cls);
@@ -342,7 +318,6 @@ export default function DisplayDashboard() {
       el.addEventListener("animationend", onEnd, { once: true });
     }
 
-    // Reset scroll
     isScrollingBackRef.current = false;
     atBottomSinceRef.current   = null;
     scrollPosRef.current       = 0;
@@ -351,7 +326,6 @@ export default function DisplayDashboard() {
       innerGridRef.current.style.transform  = "translateY(0)";
     }
 
-    // Pause before starting to scroll on the new dashboard
     isPausedRef.current = true;
     if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
     pauseTimerRef.current = setTimeout(() => { isPausedRef.current = false; }, loopPauseMsRef.current);
@@ -374,7 +348,6 @@ export default function DisplayDashboard() {
   const totalContentHeight = maxRow * rowHeight + maxRow * COL_GAP;
   const maxScroll = Math.max(0, totalContentHeight - gridPixelHeight);
 
-  // Sync refs inline
   maxScrollRef.current      = maxScroll;
   scrollSpeedRef.current    = scrollSpeed;
   loopPauseMsRef.current    = profile?.getLoopPauseMs() ?? 2000;
@@ -389,7 +362,6 @@ export default function DisplayDashboard() {
         return;
       }
     }
-    // All others disabled — stay on current
   };
 
   return (

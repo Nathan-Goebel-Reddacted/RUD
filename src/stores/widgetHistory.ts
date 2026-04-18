@@ -1,8 +1,3 @@
-/**
- * Runtime-only widget history store (module-level, not persisted).
- * Used by NumberCard (scalar sparkline) and LineChart (entry history).
- */
-
 const scalars = new Map<string, number[]>();
 const entries = new Map<string, Record<string, unknown>[]>();
 

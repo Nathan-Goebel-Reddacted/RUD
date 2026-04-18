@@ -75,10 +75,6 @@ export async function sendEndpoint(
   }
 }
 
-/**
- * Sends a form widget submission: injects formData as a JSON body, overriding
- * any body configured on the endpoint. Used by FormWidget (RUD060).
- */
 export async function sendFormEndpoint(
   conn: ApiConnection,
   ep: ApiEndpoint,
@@ -103,7 +99,6 @@ export async function sendFormEndpoint(
   }
 }
 
-// Any HTTP response = server reachable (ok). Network/CORS error = error.
 export async function testConnection(conn: ApiConnection, vars: Record<string, string> = {}): Promise<"ok" | "error"> {
   const headers = buildFetchHeaders(conn, vars);
   try {

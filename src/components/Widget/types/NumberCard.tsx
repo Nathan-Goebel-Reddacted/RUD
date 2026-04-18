@@ -15,16 +15,9 @@ type Props = {
 export default function NumberCard({ data, config, widgetId, fetchedAt }: Props) {
   const { unit, decimalPlaces, thresholds, keepHistory, maxPoints = 50 } = config;
 
-  if (Array.isArray(data) || (typeof data === "object" && data !== null)) {
-    return (
-      <div className="widget-card__error">
-        <span className="widget-card__error-icon">⚠</span>
-        <span>Data path returns an object or array — use a path pointing to a scalar value (e.g. <code>$.total</code> or <code>$[0].id</code>)</span>
-      </div>
-    );
-  }
+  const isInvalidType = Array.isArray(data) || (typeof data === "object" && data !== null);
+  const num = !isInvalidType && data !== null && data !== undefined ? Number(data) : NaN;
 
-  const num = data !== null && data !== undefined ? Number(data) : NaN;
   const [, forceUpdate] = useState(0);
 
   useEffect(() => {
@@ -32,7 +25,6 @@ export default function NumberCard({ data, config, widgetId, fetchedAt }: Props)
       appendScalar(widgetId, num, maxPoints);
       forceUpdate((n) => n + 1);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchedAt]);
 
   let display = "—";
@@ -44,6 +36,15 @@ export default function NumberCard({ data, config, widgetId, fetchedAt }: Props)
     ? resolveThresholdColor(num, thresholds)
     : undefined;
   const changed = useValueChange(display, fetchedAt);
+
+  if (isInvalidType) {
+    return (
+      <div className="widget-card__error">
+        <span className="widget-card__error-icon">⚠</span>
+        <span>Data path returns an object or array — use a path pointing to a scalar value (e.g. <code>$.total</code> or <code>$[0].id</code>)</span>
+      </div>
+    );
+  }
 
   const history   = keepHistory ? getScalars(widgetId) : [];
   const sparkData = history.map((v) => ({ v }));

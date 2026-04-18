@@ -2,10 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { createPortal } from "react-dom";
 
-/**
- * open/close.
- */
-type Listener = (payload?: any) => void;
+type Listener = (payload?: string) => void;
 const listeners = new Map<string, Set<Listener>>();
 
 function on(event: string, cb: Listener) {
@@ -13,17 +10,16 @@ function on(event: string, cb: Listener) {
   listeners.get(event)!.add(cb);
   return () => listeners.get(event)!.delete(cb);
 }
-function emit(event: string, payload?: any) {
+function emit(event: string, payload?: string) {
   listeners.get(event)?.forEach((cb) => cb(payload));
 }
 
-/**
- * API
- */
+// eslint-disable-next-line react-refresh/only-export-components
 export function openModal(id: string) {
   emit("modal:closeAll");
   emit("modal:open", id);
 }
+// eslint-disable-next-line react-refresh/only-export-components
 export function closeModal(id: string) {
   emit("modal:close", id);
 }
@@ -192,7 +188,7 @@ const contentStyles: React.CSSProperties = {
     borderRadius: "10px",
   };
 
-const overlayStyles: React.CSSProperties & { [key: string]: any } = {
+const overlayStyles: React.CSSProperties = {
   position: "fixed",
   inset: 0,
   backdropFilter: "blur(2px)",

@@ -7,10 +7,6 @@ type Props = {
   widgetId:  string;
   fetchedAt: number | null;
 };
-
-// SVG semi-circle gauge
-// viewBox: 0 0 200 110, cx=100, cy=100, r=80
-// Arc spans 180° from left (180°) to right (0°)
 const CX = 100;
 const CY = 100;
 const R  = 80;
@@ -48,8 +44,6 @@ export default function GaugeWidget({ data, config }: Props) {
   const clamped   = isNaN(num) ? 0 : Math.min(Math.max(num, min), max);
   const range     = max - min || 1;
   const normalized = (clamped - min) / range;
-
-  // Arc goes from 180° (left) sweeping to 0° (right) — so value arc ends at 180° - normalized*180°
   const bgStart    = 180;
   const bgEnd      = 0;
   const valueEnd   = 180 - normalized * 180;
@@ -73,7 +67,6 @@ export default function GaugeWidget({ data, config }: Props) {
         style={{ width: "100%", maxWidth: "220px", overflow: "visible" }}
         aria-hidden="true"
       >
-        {/* Background arc */}
         <path
           d={arcPath(CX, CY, R, bgStart, bgEnd)}
           fill="none"
@@ -81,7 +74,6 @@ export default function GaugeWidget({ data, config }: Props) {
           strokeWidth={STROKE}
           strokeLinecap="round"
         />
-        {/* Value arc — only render if there's a value */}
         {!isNaN(num) && normalized > 0 && (
           <path
             d={arcPath(CX, CY, R, bgStart, valueEnd)}
@@ -91,7 +83,6 @@ export default function GaugeWidget({ data, config }: Props) {
             strokeLinecap="round"
           />
         )}
-        {/* Min label */}
         <text
           x={leftPt.x - 6}
           y={leftPt.y + 14}
@@ -102,7 +93,6 @@ export default function GaugeWidget({ data, config }: Props) {
         >
           {min}
         </text>
-        {/* Max label */}
         <text
           x={rightPt.x + 6}
           y={rightPt.y + 14}
@@ -113,7 +103,6 @@ export default function GaugeWidget({ data, config }: Props) {
         >
           {max}
         </text>
-        {/* Center value */}
         <text
           x={CX}
           y={CY - 4}

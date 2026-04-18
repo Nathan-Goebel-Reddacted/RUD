@@ -56,7 +56,6 @@ function ApiConfig() {
   const [endpointLoading,    setEndpointLoading]    = useState<Record<string, boolean>>({});
   const [connectionStatuses, setConnectionStatuses] = useState<Record<string, FetchStatus>>({});
 
-  // Auto-connect health check endpoints on mount
   useEffect(() => {
     let mounted = true;
     connections.forEach((conn) => {
@@ -70,7 +69,6 @@ function ApiConfig() {
       });
     });
     return () => { mounted = false; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const toggleOpen = (id: string) =>

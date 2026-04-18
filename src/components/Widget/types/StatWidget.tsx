@@ -24,23 +24,14 @@ export default function StatWidget({ data, config, widgetId, fetchedAt }: Props)
 
   const [, forceUpdate] = useState(0);
 
-  if (Array.isArray(data) || (typeof data === "object" && data !== null)) {
-    return (
-      <div className="widget-card__error">
-        <span className="widget-card__error-icon">⚠</span>
-        <span>Data path returns an object or array — use a path pointing to a scalar value (e.g. <code>$.total</code>)</span>
-      </div>
-    );
-  }
-
-  const num = data !== null && data !== undefined ? Number(data) : NaN;
+  const isInvalidType = Array.isArray(data) || (typeof data === "object" && data !== null);
+  const num = !isInvalidType && data !== null && data !== undefined ? Number(data) : NaN;
 
   useEffect(() => {
     if (!isNaN(num) && fetchedAt !== null) {
       appendScalar(widgetId, num, 2);
       forceUpdate((n) => n + 1);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fetchedAt]);
 
   const history  = getScalars(widgetId);
@@ -65,6 +56,15 @@ export default function StatWidget({ data, config, widgetId, fetchedAt }: Props)
   }
 
   const changed = useValueChange(display, fetchedAt);
+
+  if (isInvalidType) {
+    return (
+      <div className="widget-card__error">
+        <span className="widget-card__error-icon">⚠</span>
+        <span>Data path returns an object or array — use a path pointing to a scalar value (e.g. <code>$.total</code>)</span>
+      </div>
+    );
+  }
 
   let deltaDisplay = "—";
   let deltaColor   = "var(--text-color)";

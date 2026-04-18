@@ -18,6 +18,9 @@ export default function HealthCheckWidget({ config, dataState }: Props) {
   const { t } = useTranslation();
   const { httpCode, loading, error } = dataState;
 
+  const ok      = isOk(httpCode, config.okCodes);
+  const changed = useValueChange(String(ok), dataState.fetchedAt);
+
   if (loading && httpCode === null) {
     return <div className="d-flex align-center gap-2 w-full h-full" style={{ opacity: 0.5 }}>…</div>;
   }
@@ -32,10 +35,6 @@ export default function HealthCheckWidget({ config, dataState }: Props) {
     );
   }
 
-  const ok      = isOk(httpCode, config.okCodes);
-  const changed = useValueChange(String(ok), dataState.fetchedAt);
-
-  // RUD040: threshold color overrides default ok/ko color
   let dotColor = ok ? "#51cf66" : "#ff6b6b";
   if (config.thresholds?.length && httpCode !== null) {
     dotColor = resolveThresholdColor(httpCode, config.thresholds) ?? dotColor;

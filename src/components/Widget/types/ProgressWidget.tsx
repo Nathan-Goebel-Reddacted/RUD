@@ -44,7 +44,6 @@ export default function ProgressWidget({ data, config }: Props) {
 
   return (
     <div className="d-flex flex-col align-stretch" style={{ gap: "0.5rem", width: "100%" }}>
-      {/* Value row */}
       <div className="d-flex justify-between align-baseline" style={{ gap: "0.4rem" }}>
         <div className="d-flex align-baseline" style={{ gap: "0.3rem" }}>
           <span className="widget-number-card__value" style={{ color: barColor }}>
@@ -58,7 +57,6 @@ export default function ProgressWidget({ data, config }: Props) {
           </span>
         )}
       </div>
-      {/* Bar */}
       <div
         style={{
           width: "100%",
@@ -78,7 +76,6 @@ export default function ProgressWidget({ data, config }: Props) {
           }}
         />
       </div>
-      {/* Min/max labels */}
       <div className="d-flex justify-between" style={{ fontSize: "0.72rem", opacity: 0.45 }}>
         <span>{min}{unit ? ` ${unit}` : ""}</span>
         <span>{max}{unit ? ` ${unit}` : ""}</span>

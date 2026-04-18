@@ -26,7 +26,6 @@ export default function SelectWidget({ widget }: Props) {
   const [loading,  setLoading]  = useState<boolean>(false);
   const [writing,  setWriting]  = useState<boolean>(false);
 
-  // Load options (dynamic source)
   useEffect(() => {
     if (config.optionsSource === "static") {
       setOptions(config.staticOptions ?? []);
@@ -47,10 +46,8 @@ export default function SelectWidget({ widget }: Props) {
       });
       setOptions(opts);
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config.optionsSource, config.optionsConnectionId, config.optionsEndpointId, config.optionsDataPath]);
 
-  // Read current value
   useEffect(() => {
     if (!readConn || !readEp) return;
     setLoading(true);
@@ -60,7 +57,6 @@ export default function SelectWidget({ widget }: Props) {
       }
       setLoading(false);
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config.readConnectionId, config.readEndpointId, config.readDataPath]);
 
   const handleChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {

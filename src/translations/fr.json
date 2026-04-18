@@ -15,6 +15,13 @@
         "createProfile": "Créer un profil"
     },
 
+    "backup": {
+        "parseError": "Fichier de profil invalide ou corrompu.",
+        "invalidVersion": "Version de profil non supportée.",
+        "invalidProfile": "Données de profil invalides.",
+        "invalidDashboard": "Un ou plusieurs dashboards sont invalides."
+    },
+
     "profileSettings": {
         "profileName": "Nom du profil",
         "language": "Langue",

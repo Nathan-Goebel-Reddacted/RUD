@@ -8,7 +8,6 @@ import { sendFormEndpoint } from "@/services/apiFetch";
 
 type ToggleStatus = "loading" | "ready" | "error" | "writing";
 
-/** Convert various API response values to boolean */
 function toBoolean(v: unknown): boolean {
   if (typeof v === "boolean") return v;
   if (typeof v === "number")  return v !== 0;
@@ -34,7 +33,6 @@ export default function ToggleWidget({ widget }: Props) {
   const [writeError, setWriteError] = useState<boolean>(false);
   const writeErrorTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Read initial state on mount
   useEffect(() => {
     setStatus("loading");
     if (!readConn || !readEp) {
@@ -51,15 +49,13 @@ export default function ToggleWidget({ widget }: Props) {
     });
 
     return () => { if (writeErrorTimerRef.current) clearTimeout(writeErrorTimerRef.current); };
-  // Re-read if read endpoint config changes
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config.readConnectionId, config.readEndpointId, config.readDataPath]);
 
   const handleToggle = async () => {
     if (status !== "ready" || !writeConn || !writeEp || !config.writeKey) return;
 
     const newValue = !value;
-    setValue(newValue);   // optimistic update
+    setValue(newValue);
     setStatus("writing");
     setWriteError(false);
 
@@ -70,7 +66,7 @@ export default function ToggleWidget({ widget }: Props) {
     );
 
     if (result.status !== "ok") {
-      setValue(!newValue);  // revert on failure
+      setValue(!newValue);
       setWriteError(true);
       if (writeErrorTimerRef.current) clearTimeout(writeErrorTimerRef.current);
       writeErrorTimerRef.current = setTimeout(() => setWriteError(false), 2500);

@@ -14,8 +14,8 @@ import { useWidgetData } from "@/hooks/useWidgetData";
 import WidgetCard from "./WidgetCard";
 
 const COLS       = 12;
-const ROW_HEIGHT = 80; // px
-const COL_GAP    = 8;  // px
+const ROW_HEIGHT = 80;
+const COL_GAP    = 8;
 const MIN_W      = 1;
 const MIN_H      = 1;
 
@@ -26,8 +26,6 @@ function widthPercent(w: number): string {
   return `calc(${(w / COLS) * 100}% - ${COL_GAP}px)`;
 }
 
-// ─── Resize handle ────────────────────────────────────────────────────────────
-
 type ResizeHandleProps = {
   widget:   Widget;
   gridRef:  React.RefObject<HTMLDivElement | null>;
@@ -36,7 +34,7 @@ type ResizeHandleProps = {
 
 function ResizeHandle({ widget, gridRef, onResize }: ResizeHandleProps) {
   function handlePointerDown(e: React.PointerEvent) {
-    e.stopPropagation(); // prevent dnd-kit drag
+    e.stopPropagation();
     e.preventDefault();
 
     const startX  = e.clientX;
@@ -77,8 +75,6 @@ function ResizeHandle({ widget, gridRef, onResize }: ResizeHandleProps) {
   );
 }
 
-// ─── Draggable widget ─────────────────────────────────────────────────────────
-
 const STATIC_DATA_STATE: WidgetDataState = {
   data: null, loading: false, error: null, httpCode: null, fetchedAt: null,
 };
@@ -92,7 +88,6 @@ type DraggableWidgetProps = {
   onResize:     (id: string, position: WidgetPosition) => void;
 };
 
-// Separate component so useWidgetData is only called for non-static widgets
 function FetchingWidgetContent({ widget, onEdit, onDelete, onDuplicate }: Pick<DraggableWidgetProps, "widget" | "onEdit" | "onDelete" | "onDuplicate">) {
   const dataState = useWidgetData(widget);
   return <WidgetCard widget={widget} dataState={dataState} onEdit={onEdit} onDelete={onDelete} onDuplicate={onDuplicate} />;
@@ -127,8 +122,6 @@ function DraggableWidget({ widget, gridRef, onEdit, onDelete, onDuplicate, onRes
     </div>
   );
 }
-
-// ─── Grid ─────────────────────────────────────────────────────────────────────
 
 type Props = {
   widgets:      Widget[];

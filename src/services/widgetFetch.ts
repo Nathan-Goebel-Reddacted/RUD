@@ -86,7 +86,6 @@ export function extractData(
     if (Array.isArray(result) && result.length === 0) {
       return { value: [], error: null };
     }
-    // JSONPath always returns an array — unwrap single values
     if (Array.isArray(result) && result.length === 1) {
       return { value: result[0], error: null };
     }
@@ -101,7 +100,6 @@ export function applyTransform(
   transform: string
 ): { value: unknown; error: "transform_error" | null } {
   try {
-    // eslint-disable-next-line no-new-func
     const result = new Function("value", `"use strict"; return (${transform})`)(value);
     return { value: result, error: null };
   } catch {
@@ -131,7 +129,7 @@ export async function fetchWidgetData(
       .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
       .join("&");
   }
-  console.debug("[widgetFetch] →", ep.getMethod(), url);
+
 
   const doFetch = async (hdrs: Record<string, string>): ReturnType<typeof fetchWidgetData> => {
     const opts: RequestInit = { method: ep.getMethod(), headers: hdrs, signal };
@@ -152,7 +150,6 @@ export async function fetchWidgetData(
 
   try {
     const res1 = await doFetch(headers);
-    // On 401 with OAuth2 PKCE, attempt token refresh and retry once
     if (res1.httpCode === 401 && conn.getAuthType() === "OAUTH2_PKCE") {
       const newToken = await refreshOAuth2Token(conn);
       if (newToken) {
@@ -163,14 +160,12 @@ export async function fetchWidgetData(
     return res1;
   } catch (err) {
     if (err instanceof DOMException && err.name === "AbortError") {
-      throw err; // re-throw to let the hook handle cleanup
+      throw err;
     }
-    // TypeError = network failure (includes CORS, bad URL, no internet)
-    // Log the real error so devtools show the actual cause
     if (err instanceof TypeError) {
       console.error("[widgetFetch] network error:", err.message);
     }
-    const isNetworkError = err instanceof TypeError; // includes CORS, no internet, bad URL
+    const isNetworkError = err instanceof TypeError;
     return { raw: null, data: null, httpCode: null, error: isNetworkError ? "cors" : "http_error" };
   }
 }

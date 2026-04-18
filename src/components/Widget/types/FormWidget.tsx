@@ -20,7 +20,6 @@ export default function FormWidget({ widget }: Props) {
   const conn = connections.find((c) => c.getId() === widget.connectionId) ?? null;
   const ep   = conn?.getEndpoints().find((e) => e.getId() === widget.endpointId) ?? null;
 
-  // Initialise field values from defaultValue
   const [values, setValues] = useState<Record<string, string>>(() => {
     const init: Record<string, string> = {};
     for (const field of config.fields) {
@@ -45,8 +44,6 @@ export default function FormWidget({ widget }: Props) {
     e.preventDefault();
     setStatus("loading");
     setResponse(null);
-
-    // Build payload — cast number fields to Number
     const formData: Record<string, string | number> = {};
     for (const field of config.fields) {
       const raw = values[field.key] ?? "";
@@ -57,7 +54,6 @@ export default function FormWidget({ widget }: Props) {
 
     let displayText = result.rawText ?? "";
 
-    // Optional: extract a specific field from the JSON response
     if (config.responseDataPath && result.rawText) {
       try {
         const parsed   = JSON.parse(result.rawText);
@@ -65,7 +61,7 @@ export default function FormWidget({ widget }: Props) {
         if (Array.isArray(extracted) && extracted.length > 0) {
           displayText = String(extracted[0]);
         }
-      } catch { /* keep raw text */ }
+      } catch { /* ignore JSON parse error */ }
     }
 
     setStatus(result.status === "ok" ? "success" : "error");

@@ -5,7 +5,7 @@ import { extractData } from "@/services/widgetFetch";
 type Props = {
   value:    string;
   onChange: (value: string) => void;
-  preview?: unknown; // raw API response to preview path result
+  preview?: unknown;
 };
 
 export default function DataPathInput({ value, onChange, preview }: Props) {

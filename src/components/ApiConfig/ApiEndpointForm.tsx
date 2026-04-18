@@ -42,7 +42,6 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
   const [wsSubscribeMessage, setWsSubscribeMessage] = useState(initialEndpoint?.getWsSubscribeMessage() ?? "");
   const [errors,             setErrors]             = useState<Record<string, string>>({});
 
-  // Re-sync path params when path changes
   useEffect(() => {
     const matches = [...path.matchAll(/\{(\w+)\}/g)].map((m) => m[1]);
     setPathParams((prev) =>
@@ -110,7 +109,6 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
         </h2>
         <form onSubmit={handleSubmit}>
 
-          {/* Label (optional) */}
           <div className="endpoint-form__section">
             <input
               className="d-block w-full"
@@ -121,9 +119,7 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
             />
           </div>
 
-          {/* Route bar — method badge + path */}
           <div className={`endpoint-form__route-bar method--${method.toLowerCase()}`}>
-            {/* Path input first in DOM for correct focus order */}
             <input
               className="endpoint-form__path-input"
               placeholder={t("apiEndpoint.pathPlaceholder")}
@@ -146,7 +142,6 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
           </div>
           {pathError && <span className="form-error" style={{ marginTop: "-0.25rem", display: "block" }}>{pathError}</span>}
 
-          {/* Path params — auto-detected from {param} in path */}
           {pathParams.length > 0 && (
             <div className="endpoint-form__section">
               <div className="form-section-label">{t("apiEndpoint.pathParams")}</div>
@@ -176,7 +171,6 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
             </div>
           )}
 
-          {/* Query params */}
           <div className="endpoint-form__section">
             <div className="d-flex justify-between align-center">
               <span className="form-section-label">{t("apiEndpoint.queryParams")}</span>
@@ -229,7 +223,6 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
             )}
           </div>
 
-          {/* Response data path */}
           <div className="endpoint-form__section">
             <div className="form-section-label">{t("apiEndpoint.dataPath")}</div>
             <input
@@ -241,7 +234,6 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
             />
           </div>
 
-          {/* WebSocket — subscribe message */}
           {method === HttpMethod.WS && (
             <div className="endpoint-form__section">
               <div className="form-section-label">{t("apiEndpoint.wsSubscribeMessage")}</div>
@@ -256,7 +248,6 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
             </div>
           )}
 
-          {/* Body — POST / PUT / PATCH only */}
           {METHODS_WITH_BODY.includes(method) && (
             <div className="endpoint-form__section">
               <div className="d-flex justify-between align-center">
@@ -284,7 +275,6 @@ function ApiEndpointForm({ connectionId, onClose, initialEndpoint }: Props) {
             </div>
           )}
 
-          {/* Actions */}
           <div className={`endpoint-form__actions method--${method.toLowerCase()}`}>
             <button
               type="submit"

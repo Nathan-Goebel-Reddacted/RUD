@@ -30,7 +30,7 @@ export default function QRCodeModal({ profile, connections, dashboards, modalId,
     if (openCount === 0) return;
     const { data, sizeBytes } = encodeProfileToQR(profile, connections, dashboards);
     setQrData({ data, sizeBytes, url: buildQRUrl(data) });
-  }, [openCount]); // eslint-disable-line react-hooks/exhaustive-deps -- recalculate only on open
+  }, [openCount]);
 
   useEffect(() => {
     return () => { if (copiedTimerRef.current) clearTimeout(copiedTimerRef.current); };

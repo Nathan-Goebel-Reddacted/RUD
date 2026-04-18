@@ -4,11 +4,9 @@ import type { Widget, WidgetPosition, Dashboard, FetchCacheEntry } from "@/types
 import { clearHistory } from "@/stores/widgetHistory";
 
 type DashboardState = {
-  // Persisté
   dashboards:            Dashboard[];
   activeDashboardIndex:  number;
 
-  // Mutations (ciblent dashboards[activeDashboardIndex])
   setTitle:           (title: string) => void;
   setRefreshInterval: (seconds: number) => void;
   addWidget:          (widget: Widget) => void;
@@ -16,28 +14,23 @@ type DashboardState = {
   removeWidget:       (id: string) => void;
   moveWidget:         (id: string, position: WidgetPosition) => void;
 
-  // Navigation multi-dashboard
   setActiveDashboardIndex: (index: number) => void;
   addDashboard:            (title?: string) => void;
   removeDashboard:         (index: number) => void;
   reorderDashboards:       (fromIndex: number, toIndex: number) => void;
 
-  // Duplication
   duplicateDashboard:       (index: number, titleSuffix?: string) => void;
   renameDashboard:          (index: number, title: string) => void;
   setDashboardShowInDisplay:(index: number, value: boolean) => void;
 
-  // Import / reset
   resetDashboard:  () => void;
   setDashboard:    (d: Dashboard) => void;
   setDashboards:   (dashboards: Dashboard[], activeIndex?: number) => void;
 
-  // Runtime cache (not persisted)
   fetchCache:      Record<string, FetchCacheEntry>;
   setFetchCache:   (key: string, entry: FetchCacheEntry) => void;
   clearFetchCache: () => void;
 
-  // Global clock tick (not persisted) — incremented every second by DashboardClock
   tick:          number;
   incrementTick: () => void;
 };
@@ -123,8 +116,6 @@ export const useDashboardStore = create<DashboardState>()(
         return { dashboards };
       }),
 
-      // Vider fetchCache suffit à forcer un re-fetch immédiat des widgets
-      // (tick++ provoquerait un double fetch avec DashboardClock)
       setActiveDashboardIndex: (index) => set((state) => ({
         activeDashboardIndex: Math.max(0, Math.min(index, state.dashboards.length - 1)),
         fetchCache: {},
@@ -199,13 +190,11 @@ export const useDashboardStore = create<DashboardState>()(
         activeDashboardIndex: Math.max(0, Math.min(activeIndex, dashboards.length - 1)),
       }),
 
-      // Runtime cache
       fetchCache:    {},
       setFetchCache: (key, entry) =>
         set((state) => ({ fetchCache: { ...state.fetchCache, [key]: entry } })),
       clearFetchCache: () => set({ fetchCache: {} }),
 
-      // Global clock
       tick:          0,
       incrementTick: () => set((state) => ({ tick: state.tick + 1 })),
     }),
@@ -221,7 +210,6 @@ export const useDashboardStore = create<DashboardState>()(
         if (version === 0) {
           const old = persistedState as { currentDashboard?: Dashboard };
           const existing = old.currentDashboard;
-          // Valider que le dashboard migré est utilisable (id string requis)
           const dashboards =
             existing && typeof existing.id === "string"
               ? [existing]
@@ -229,7 +217,6 @@ export const useDashboardStore = create<DashboardState>()(
           return { dashboards, activeDashboardIndex: 0 };
         }
         if (version === 1) {
-          // Add showInDisplay field to existing dashboards
           const state = persistedState as { dashboards?: Dashboard[]; activeDashboardIndex?: number };
           return {
             ...state,

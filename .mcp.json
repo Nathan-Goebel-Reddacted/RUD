@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "rud-mcp": {
+      "command": "node",
+      "args": ["packages/rud-mcp/src/index.js"]
+    }
+  }
+}

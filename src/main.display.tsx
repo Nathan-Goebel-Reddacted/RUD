@@ -13,6 +13,7 @@ import '@/assets/global.css'
 import '@/assets/utilities.css'
 import '@/assets/dashboard.css'
 
+// eslint-disable-next-line react-refresh/only-export-components
 function DisplayRoot() {
   const navigate = useNavigate()
   const profile = useProfileStore((state) => state.profile)

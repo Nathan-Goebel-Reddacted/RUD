@@ -39,8 +39,7 @@ function NoProfile() {
     applyColors(result.profile);
     setProfile(result.profile);
     navigate("/display");
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps -- intentional: mount-only hash import
-
+  }, []);
   function handleImportFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -75,7 +74,7 @@ function NoProfile() {
       <button onClick={() => { setImportError(null); fileInputRef.current?.click(); }}>
         {t("noProfile.importProfile")}
       </button>
-      {importError && <span className="form-error">{importError}</span>}
+      {importError && <span className="form-error">{t(importError)}</span>}
       <button onClick={() => openModal("ProfileSetting")}>{t("noProfile.createProfile")}</button>
       <ProfileSettings onClose={() => closeModal("ProfileSetting")} />
     </div>

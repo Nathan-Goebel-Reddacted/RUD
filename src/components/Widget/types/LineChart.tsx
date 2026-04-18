@@ -49,22 +49,20 @@ export default function LineChart({ data, config, widgetId, fetchedAt }: Props) 
   const { xKey, yKeys, xLabel, yLabel, colors, aggregation, keepHistory, maxPoints = 50 } = config;
   const [, forceUpdate] = useState(0);
 
-  // RUD041: append a snapshot to history on each new fetch
   useEffect(() => {
     if (!keepHistory || fetchedAt === null) return;
     const obj: Record<string, unknown> = { _t: fetchedAt };
     if (typeof data === "object" && data !== null && !Array.isArray(data)) {
       Object.assign(obj, data as Record<string, unknown>);
     } else if (!Array.isArray(data) && data !== null && data !== undefined) {
-      // scalar → use first yKey
+
       if (yKeys[0]) obj[yKeys[0]] = data;
     }
     appendEntry(widgetId, obj, maxPoints);
     forceUpdate((n) => n + 1);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
   }, [fetchedAt]);
 
-  // Use history when enabled; otherwise use live data array
   const rawRows: unknown[] = keepHistory
     ? getEntries(widgetId)
     : (Array.isArray(data) ? data : []);

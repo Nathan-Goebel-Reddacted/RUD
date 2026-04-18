@@ -29,10 +29,6 @@ import type { Dashboard } from "@/types/widget";
 
 type Tab = "profile" | "dashboards" | "display" | "variables";
 
-// ---------------------------------------------------------------------------
-// SortableDashboardItem
-// ---------------------------------------------------------------------------
-
 function SortableDashboardItem({
   dashboard,
   index,
@@ -96,10 +92,6 @@ function SortableDashboardItem({
   );
 }
 
-// ---------------------------------------------------------------------------
-// DashboardsTab
-// ---------------------------------------------------------------------------
-
 function DashboardsTab({
   dashboards,
   activeDashboardIndex,
@@ -154,10 +146,6 @@ function DashboardsTab({
   );
 }
 
-// ---------------------------------------------------------------------------
-// ProfileSettings (main component)
-// ---------------------------------------------------------------------------
-
 function ProfileSettings({
   onClose,
   initialProfile,
@@ -170,7 +158,6 @@ function ProfileSettings({
   const { t } = useTranslation();
   const [tab, setTab] = useState<Tab>("profile");
 
-  // Profile tab state
   const [profileName,     setProfileName]     = useState(initialProfile?.getProfileName() ?? "");
   const [errors,          setErrors]          = useState<Record<string, string>>({});
   const [language,        setLanguage]        = useState<LanguageType>(initialProfile?.getLanguage() ?? Language.EN);
@@ -179,10 +166,8 @@ function ProfileSettings({
   const [textColor,       setTextColor]       = useState<string>(initialProfile?.getTextColor()       ?? "#646cff");
   const [textHoverColor,  setTextHoverColor]  = useState<string>(initialProfile?.getTextHoverColor()  ?? "#535bf2");
 
-  // Variables tab state
   const [variables, setVariables] = useState<Record<string, string>>(initialProfile?.getVariables() ?? {});
 
-  // Display tab state
   const [displayMode,     setDisplayMode]     = useState<DisplayMode>(initialProfile?.getDisplayMode()     ?? "timer");
   const [displayInterval, setDisplayInterval] = useState<number>(initialProfile?.getDisplayInterval() ?? 30);
   const [scrollSpeed,     setScrollSpeed]     = useState<number>(initialProfile?.getScrollSpeed()     ?? 0);
@@ -233,7 +218,6 @@ function ProfileSettings({
         errs[r.getReasonCode()] = r.getReasonMessage();
       });
       setErrors(errs);
-      // Switch to profile tab to show errors
       setTab("profile");
     }
   };
@@ -241,7 +225,6 @@ function ProfileSettings({
   return (
     <Modal id={modalId}>
       <div style={{ padding: '1rem', minWidth: '320px' }}>
-        {/* Tabs */}
         <div className="profile-tabs">
           {(["profile", "dashboards", "display", "variables"] as const).map((tabKey) => (
             <button
@@ -256,7 +239,6 @@ function ProfileSettings({
         </div>
 
         <form onSubmit={handleSubmit}>
-          {/* Profile tab */}
           {tab === "profile" && (
             <div className="profile-tab-content">
               <input
@@ -307,7 +289,6 @@ function ProfileSettings({
             </div>
           )}
 
-          {/* Dashboards tab — actions are immediate, no submit needed */}
           {tab === "dashboards" && (
             <div className="profile-tab-content">
               <DashboardsTab
@@ -321,7 +302,6 @@ function ProfileSettings({
             </div>
           )}
 
-          {/* Display tab */}
           {tab === "display" && (
             <div className="profile-tab-content">
               <label className="d-flex align-center justify-between gap-2" style={{ margin: '0.5rem 0' }}>
@@ -383,7 +363,6 @@ function ProfileSettings({
             </div>
           )}
 
-          {/* Variables tab */}
           {tab === "variables" && (
             <div className="profile-tab-content">
               <p className="form-hint" style={{ marginBottom: "0.75rem" }}>
@@ -415,6 +394,7 @@ function ProfileSettings({
                     type="button"
                     className="endpoint-form__row-remove"
                     onClick={() => {
+                      // eslint-disable-next-line @typescript-eslint/no-unused-vars
                       const { [key]: _, ...rest } = variables;
                       setVariables(rest);
                     }}
@@ -434,7 +414,6 @@ function ProfileSettings({
             </div>
           )}
 
-          {/* Submit — hidden on Dashboards tab (actions are immediate) */}
           {tab !== "dashboards" && (
             <button type="submit" className="d-block w-full" style={{ margin: '0.5rem 0' }}>
               {initialProfile ? t("profileSettings.saveProfile") : t("profileSettings.loadProfile")}

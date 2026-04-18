@@ -60,9 +60,7 @@ export default function SearchWidget({ widget }: Props) {
           const arr = Array.isArray(res.data) ? res.data : res.data != null ? [res.data] : [];
           setResults(arr);
         }
-      } catch {
-        // aborted — ignore
-      } finally {
+      } catch { /* ignore fetch error */ } finally {
         setLoading(false);
       }
     }, 300);
@@ -74,7 +72,6 @@ export default function SearchWidget({ widget }: Props) {
     triggerSearch(val);
   }
 
-  // ── Result table ──────────────────────────────────────────────────────────
   const rows = (results ?? []).filter(
     (r): r is Record<string, unknown> => typeof r === "object" && r !== null,
   );

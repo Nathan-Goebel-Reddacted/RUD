@@ -126,7 +126,6 @@ function ApiConnectionForm({ onClose, initialConnection }: Props) {
 
   const handleAuthorize = async (e: React.MouseEvent) => {
     e.preventDefault();
-    // Save the connection first, then start the OAuth2 flow
     const connection = new ApiConnection();
     connection.createAnApiConnection(label, baseUrl, isEdit ? initialConnection!.getId() : undefined);
     connection.setAuthType(AuthType.OAUTH2_PKCE);

@@ -16,8 +16,6 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { useDashboardStore } from "@/stores/dashboardStore";
 
-// ─── Single bubble ─────────────────────────────────────────────────────────────
-
 type BubbleProps = {
   id:             string;
   index:          number;
@@ -82,8 +80,6 @@ function Bubble({ id, index, label, isActive, canDelete, dragStartedRef, copySuf
   );
 }
 
-// ─── Bubbles bar ───────────────────────────────────────────────────────────────
-
 export default function DashboardBubbles() {
   const { t }      = useTranslation();
   const copySuffix = t("bubbles.copySuffix");
@@ -92,7 +88,6 @@ export default function DashboardBubbles() {
   const addDashboard         = useDashboardStore((s) => s.addDashboard);
   const reorderDashboards    = useDashboardStore((s) => s.reorderDashboards);
 
-  // Track drag to prevent click-after-drag triggering setActive
   const dragStartedRef = useRef(false);
 
   const sensors = useSensors(
@@ -112,7 +107,6 @@ export default function DashboardBubbles() {
         reorderDashboards(fromIndex, toIndex);
       }
     }
-    // Defer reset so onClick fires first and sees dragStartedRef = true
     setTimeout(() => { dragStartedRef.current = false; }, 0);
   }
 

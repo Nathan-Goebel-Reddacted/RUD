@@ -22,9 +22,6 @@ export const WidgetType = {
 export type WidgetType = typeof WidgetType[keyof typeof WidgetType];
 
 export type WidgetPosition = { x: number; y: number; w: number; h: number };
-
-// ─── Thresholds (RUD040) ───────────────────────────────────────────────────
-// Sorted ascending by value. The highest threshold whose value ≤ current wins.
 export type Threshold = {
   value: number;
   color: string;
@@ -41,20 +38,19 @@ function resolveThresholdColor(value: number, thresholds: Threshold[]): string |
 }
 export { resolveThresholdColor };
 
-// ─── Widget configs ────────────────────────────────────────────────────────
 export type NumberCardConfig = {
   type:           "number-card";
   unit?:          string;
   decimalPlaces?: number;
   thresholds?:    Threshold[];
   keepHistory?:   boolean;
-  maxPoints?:     number; // default 50
+  maxPoints?:     number;
 };
 export type TableConfig = {
   type:        "table";
   columns:     Array<{ key: string; label: string; width?: number }>;
   maxRows?:    number;
-  showHeader?: boolean; // default true
+  showHeader?: boolean;
 };
 export type BarChartConfig = {
   type:         "bar-chart";
@@ -63,7 +59,7 @@ export type BarChartConfig = {
   xLabel?:      string;
   yLabel?:      string;
   color?:       string;
-  aggregation?: "count"; // group by xKey and count rows
+  aggregation?: "count";
   thresholds?:  Threshold[];
 };
 export type LineChartConfig = {
@@ -75,7 +71,7 @@ export type LineChartConfig = {
   colors?:       string[];
   aggregation?:  "count";
   keepHistory?:  boolean;
-  maxPoints?:    number; // default 50
+  maxPoints?:    number;
 };
 export type TextConfig = {
   type:      "text";
@@ -95,7 +91,7 @@ export type LastUpdateConfig = {
 };
 export type HealthCheckConfig = {
   type:        "health-check";
-  okCodes?:    number[]; // empty = any 2xx
+  okCodes?:    number[];
   thresholds?: Threshold[];
 };
 
@@ -133,26 +129,23 @@ export type StatConfig = {
   type:           "stat";
   unit?:          string;
   decimalPlaces?: number;
-  deltaFormat?:   "absolute" | "percent"; // default "absolute"
-  positiveColor?: string; // default "#4caf50"
-  negativeColor?: string; // default "#f44336"
+  deltaFormat?:   "absolute" | "percent";
+  positiveColor?: string;
+  negativeColor?: string;
   thresholds?:    Threshold[];
 };
 
 export type SliderConfig = {
   type:               "slider";
-  // Read current value (GET, optional)
   readConnectionId?:  string;
   readEndpointId?:    string;
   readDataPath?:      string;
-  // Write value (PUT/PATCH)
   writeConnectionId:  string;
   writeEndpointId:    string;
-  writeKey:           string;  // body: { [writeKey]: number }
-  // Range
-  min?:               number;  // default 0
-  max?:               number;  // default 100
-  step?:              number;  // default 1
+  writeKey:           string;
+  min?:               number;
+  max?:               number;
+  step?:              number;
   unit?:              string;
 };
 
@@ -165,11 +158,11 @@ export type SearchConfig = {
   type:         "search";
   connectionId: string;
   endpointId:   string;
-  queryParam:   string;    // query param name sent on each keystroke, e.g. "q"
-  dataPath?:    string;    // JSONPath to extract the results array
+  queryParam:   string;
+  dataPath?:    string;
   columns?:     Array<{ key: string; label: string; width?: number }>;
   placeholder?: string;
-  minChars?:    number;    // minimum chars before triggering search, default 1
+  minChars?:    number;
 };
 
 export type SelectConfig = {
@@ -181,13 +174,11 @@ export type SelectConfig = {
   optionsConnectionId?:   string;
   optionsEndpointId?:     string;
   optionsDataPath?:       string;
-  optionsLabelKey?:       string;  // key for label in each item
-  optionsValueKey?:       string;  // key for value in each item
-  // Read current value (GET, optional)
+  optionsLabelKey?:       string;
+  optionsValueKey?:       string;
   readConnectionId?:      string;
   readEndpointId?:        string;
   readDataPath?:          string;
-  // Write selected value
   writeConnectionId:      string;
   writeEndpointId:        string;
   writeKey:               string;
@@ -195,17 +186,14 @@ export type SelectConfig = {
 
 export type ToggleConfig = {
   type:              "toggle";
-  // Read state (GET)
   readConnectionId:  string;
   readEndpointId:    string;
-  readDataPath:      string;  // JSONPath to extract the boolean value
-  // Write state (PUT/PATCH)
+  readDataPath:      string;
   writeConnectionId: string;
   writeEndpointId:   string;
-  writeKey:          string;  // body: { [writeKey]: true | false }
-  // Display
-  labelOn?:          string;  // default "ON"
-  labelOff?:         string;  // default "OFF"
+  writeKey:          string;
+  labelOn?:          string;
+  labelOff?:         string;
 };
 
 export type ButtonItemConfig = {
@@ -219,7 +207,7 @@ export type ButtonItemConfig = {
 export type ButtonConfig = {
   type:    "button";
   buttons: ButtonItemConfig[];
-  layout?: "horizontal" | "vertical"; // default "horizontal"
+  layout?: "horizontal" | "vertical";
 };
 
 export type FormFieldConfig = {
@@ -233,8 +221,8 @@ export type FormFieldConfig = {
 export type FormConfig = {
   type:              "form";
   fields:            FormFieldConfig[];
-  submitLabel?:      string;  // default: "Send"
-  responseDataPath?: string;  // JSONPath to extract message from response
+  submitLabel?:      string;
+  responseDataPath?: string;
 };
 
 export type WidgetConfig =
@@ -267,9 +255,9 @@ export type Widget = {
   position:         WidgetPosition;
   config:           WidgetConfig;
   refreshOverride?: number;
-  transform?:       string; // JS expression applied after JSONPath extraction
+  transform?:       string;
   alertEnabled?:    boolean;
-  alertCooldown?:   number; // seconds, default 60
+  alertCooldown?:   number;
 };
 
 export type AlertEvent = {

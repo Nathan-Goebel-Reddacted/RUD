@@ -33,6 +33,7 @@ import EndpointSelector from "./EndpointSelector";
 import DataPathInput from "./DataPathInput";
 import AxisKeySelector from "./AxisKeySelector";
 import ColorPicker from "@/components/tool/ColorPicker";
+import { WIDGET_REGISTRY, getRegistryEntry } from "@/components/Widget/widgetRegistry";
 
 type Props = {
   initial?:      Widget;
@@ -42,27 +43,7 @@ type Props = {
 };
 
 function defaultConfig(type: WidgetType): WidgetConfig {
-  switch (type) {
-    case "number-card":  return { type: "number-card" };
-    case "table":        return { type: "table", columns: [] };
-    case "bar-chart":    return { type: "bar-chart", xKey: "", yKey: "" };
-    case "line-chart":   return { type: "line-chart", xKey: "", yKeys: [] };
-    case "text":         return { type: "text", content: "" };
-    case "raw-response": return { type: "raw-response" };
-    case "clock":        return { type: "clock", format: "24h" };
-    case "last-update":  return { type: "last-update", displayFormat: "relative" };
-    case "health-check": return { type: "health-check" };
-    case "gauge":        return { type: "gauge", min: 0, max: 100 };
-    case "stat":         return { type: "stat", deltaFormat: "absolute" };
-    case "progress":     return { type: "progress", min: 0, max: 100 };
-    case "pie-chart":    return { type: "pie-chart", labelKey: "", valueKey: "" };
-    case "form":         return { type: "form", fields: [] };
-    case "button":       return { type: "button", buttons: [], layout: "horizontal" };
-    case "toggle":       return { type: "toggle", readConnectionId: "", readEndpointId: "", readDataPath: "", writeConnectionId: "", writeEndpointId: "", writeKey: "" };
-    case "slider":       return { type: "slider", writeConnectionId: "", writeEndpointId: "", writeKey: "", min: 0, max: 100, step: 1 };
-    case "select":       return { type: "select", optionsSource: "static", staticOptions: [], writeConnectionId: "", writeEndpointId: "", writeKey: "" };
-    case "search":       return { type: "search", connectionId: "", endpointId: "", queryParam: "q" };
-  }
+  return getRegistryEntry(type).defaultConfig();
 }
 
 function extractKeys(data: unknown): string[] {
@@ -78,27 +59,6 @@ function extractKeys(data: unknown): string[] {
   return [];
 }
 
-const TYPE_LABELS: Record<WidgetType, string> = {
-  "number-card":  "widgetDrawer.types.numberCard",
-  "table":        "widgetDrawer.types.table",
-  "bar-chart":    "widgetDrawer.types.barChart",
-  "line-chart":   "widgetDrawer.types.lineChart",
-  "text":         "widgetDrawer.types.text",
-  "raw-response": "widgetDrawer.types.rawResponse",
-  "clock":        "widgetDrawer.types.clock",
-  "last-update":  "widgetDrawer.types.lastUpdate",
-  "health-check": "widgetDrawer.types.healthCheck",
-  "gauge":        "widgetDrawer.types.gauge",
-  "stat":         "widgetDrawer.types.stat",
-  "progress":     "widgetDrawer.types.progress",
-  "pie-chart":    "widgetDrawer.types.pieChart",
-  "form":         "widgetDrawer.types.form",
-  "button":       "widgetDrawer.types.button",
-  "toggle":       "widgetDrawer.types.toggle",
-  "slider":       "widgetDrawer.types.slider",
-  "select":       "widgetDrawer.types.select",
-  "search":       "widgetDrawer.types.search",
-};
 
 export default function WidgetConfigPanel({ initial, initialType, onSave, onCancel }: Props) {
   const { t } = useTranslation();
@@ -125,7 +85,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
 
   const isStatic       = type === "text" || type === "clock";
   const isForm         = type === "form";
-  // Types that manage their own endpoint selection internally
   const SELF_MANAGED: WidgetType[] = ["button", "toggle", "slider", "select", "search"];
   const isSelfManaged  = SELF_MANAGED.includes(type);
   const needsDataPath  = !isStatic && !isForm && !isSelfManaged && type !== "health-check" && type !== "last-update";
@@ -191,7 +150,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
     });
   }
 
-  // ─── Transform preview (RUD052) ────────────────────────────────────────────
   const transformPreview = useMemo(() => {
     if (!transform.trim() || rawPreview === null) return null;
     const { value } = extractData(rawPreview, dataPath);
@@ -200,7 +158,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
     return { error: false, display: JSON.stringify(result.value) };
   }, [transform, rawPreview, dataPath]);
 
-  // ─── Threshold editor (RUD040) ─────────────────────────────────────────────
   function renderThresholds(thresholds: Threshold[], onChange: (t: Threshold[]) => void) {
     return (
       <div className="form-group">
@@ -252,7 +209,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
     );
   }
 
-  // ─── History config (RUD041) ───────────────────────────────────────────────
   function renderHistoryConfig(keepHistory: boolean, maxPoints: number, onChange: (kh: boolean, mp: number) => void) {
     return (
       <div className="form-group">
@@ -282,9 +238,7 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
     );
   }
 
-  // ─── Per-type config fields ────────────────────────────────────────────────
   function renderConfigFields() {
-    // Shared helper: connection + endpoint selector pair (used by toggle, slider, select)
     const connEpSelector = (
       label: string,
       connId: string, epId: string,
@@ -896,7 +850,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
         const addField    = () => setConfig({ ...c, fields: [...c.fields, { key: "", label: "", type: "text" }] });
         return (
           <>
-            {/* Submit button label */}
             <div className="form-group">
               <label className="form-label">{t("widgetConfig.form.submitLabel")}</label>
               <input
@@ -908,7 +861,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
               />
             </div>
 
-            {/* Fields */}
             <div className="form-group">
               <div className="d-flex justify-between align-center" style={{ marginBottom: "0.4rem" }}>
                 <label className="form-label" style={{ margin: 0 }}>{t("widgetConfig.form.fields")}</label>
@@ -968,8 +920,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
                 </div>
               ))}
             </div>
-
-            {/* Response data path */}
             <div className="form-group">
               <label className="form-label">{t("widgetConfig.form.responseDataPath")}</label>
               <input
@@ -994,7 +944,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
         const addBtn    = () => setConfig({ ...c, buttons: [...c.buttons, { label: "", connectionId: "", endpointId: "", variant: "primary" }] });
         return (
           <>
-            {/* Layout */}
             <div className="form-group">
               <label className="form-label">{t("widgetConfig.button.layout")}</label>
               <select
@@ -1007,7 +956,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
               </select>
             </div>
 
-            {/* Buttons list */}
             <div className="form-group">
               <div className="d-flex justify-between align-center" style={{ marginBottom: "0.4rem" }}>
                 <label className="form-label" style={{ margin: 0 }}>{t("widgetConfig.button.buttons")}</label>
@@ -1084,7 +1032,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
         const c = config as ToggleConfig;
         return (
           <>
-            {/* Read config */}
             {connEpSelector(
               t("widgetConfig.toggle.readEndpoint"),
               c.readConnectionId, c.readEndpointId,
@@ -1102,8 +1049,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
               />
               <span className="form-hint">{t("widgetConfig.toggle.readDataPathHint")}</span>
             </div>
-
-            {/* Write config */}
             {connEpSelector(
               t("widgetConfig.toggle.writeEndpoint"),
               c.writeConnectionId, c.writeEndpointId,
@@ -1121,8 +1066,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
               />
               <span className="form-hint">{t("widgetConfig.toggle.writeKeyHint")}</span>
             </div>
-
-            {/* Display labels */}
             <div className="d-flex gap-2">
               <div className="form-group flex-1">
                 <label className="form-label">{t("widgetConfig.toggle.labelOn")}</label>
@@ -1152,7 +1095,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
         const c = config as SliderConfig;
         return (
           <>
-            {/* Optional read */}
             {connEpSelector(
               t("widgetConfig.slider.readEndpoint"),
               c.readConnectionId ?? "", c.readEndpointId ?? "",
@@ -1170,8 +1112,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
               />
               <span className="form-hint">{t("widgetConfig.slider.readDataPathHint")}</span>
             </div>
-
-            {/* Write */}
             {connEpSelector(
               t("widgetConfig.slider.writeEndpoint"),
               c.writeConnectionId, c.writeEndpointId,
@@ -1189,8 +1129,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
               />
               <span className="form-hint">{t("widgetConfig.slider.writeKeyHint")}</span>
             </div>
-
-            {/* Range */}
             <div className="d-flex gap-2">
               <div className="form-group flex-1">
                 <label className="form-label">{t("widgetConfig.slider.min")}</label>
@@ -1222,8 +1160,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
                 />
               </div>
             </div>
-
-            {/* Unit */}
             <div className="form-group">
               <label className="form-label">{t("widgetConfig.slider.unit")}</label>
               <input
@@ -1249,7 +1185,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
           setConfig({ ...c, staticOptions: [...(c.staticOptions ?? []), { label: "", value: "" }] });
         return (
           <>
-            {/* Options source */}
             <div className="form-group">
               <label className="form-label">{t("widgetConfig.select.optionsSource")}</label>
               <select
@@ -1261,8 +1196,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
                 <option value="dynamic">{t("widgetConfig.select.dynamic")}</option>
               </select>
             </div>
-
-            {/* Static options */}
             {c.optionsSource === "static" && (
               <div className="form-group">
                 <div className="d-flex justify-between align-center" style={{ marginBottom: "0.4rem" }}>
@@ -1300,8 +1233,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
                 ))}
               </div>
             )}
-
-            {/* Dynamic options */}
             {c.optionsSource === "dynamic" && (
               <>
                 {connEpSelector(
@@ -1344,8 +1275,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
                 </div>
               </>
             )}
-
-            {/* Read current value (optional) */}
             {connEpSelector(
               t("widgetConfig.select.readEndpoint"),
               c.readConnectionId ?? "", c.readEndpointId ?? "",
@@ -1363,8 +1292,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
               />
               <span className="form-hint">{t("widgetConfig.select.readDataPathHint")}</span>
             </div>
-
-            {/* Write */}
             {connEpSelector(
               t("widgetConfig.select.writeEndpoint"),
               c.writeConnectionId, c.writeEndpointId,
@@ -1389,15 +1316,12 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
         const c = config as SearchConfig;
         return (
           <>
-            {/* Endpoint */}
             {connEpSelector(
               t("widgetConfig.search.endpoint"),
               c.connectionId, c.endpointId,
               (cId) => setConfig({ ...c, connectionId: cId, endpointId: "" }),
               (eId) => setConfig({ ...c, endpointId: eId }),
             )}
-
-            {/* Query param name */}
             <div className="form-group">
               <label className="form-label">{t("widgetConfig.search.queryParam")}</label>
               <input
@@ -1409,8 +1333,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
               />
               <span className="form-hint">{t("widgetConfig.search.queryParamHint")}</span>
             </div>
-
-            {/* Data path */}
             <div className="form-group">
               <label className="form-label">{t("widgetConfig.search.dataPath")}</label>
               <input
@@ -1422,8 +1344,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
               />
               <span className="form-hint">{t("widgetConfig.search.dataPathHint")}</span>
             </div>
-
-            {/* Placeholder */}
             <div className="form-group">
               <label className="form-label">{t("widgetConfig.search.placeholder")}</label>
               <input
@@ -1434,8 +1354,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
                 onChange={(e) => setConfig({ ...c, placeholder: e.target.value || undefined })}
               />
             </div>
-
-            {/* Min chars */}
             <div className="form-group">
               <label className="form-label">{t("widgetConfig.search.minChars")}</label>
               <input
@@ -1460,7 +1378,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
       </div>
 
       <div className="flex-1 overflow-auto" style={{ padding: '1rem 1.25rem' }}>
-        {/* Label */}
         <div className="form-group">
           <label className="form-label">{t("widgetConfig.labelField")}</label>
           <input
@@ -1471,8 +1388,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
             onChange={(e) => setLabel(e.target.value)}
           />
         </div>
-
-        {/* Widget type */}
         <div className="form-group">
           <label className="form-label">{t("widgetConfig.widgetType")}</label>
           <select
@@ -1480,13 +1395,11 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
             value={type}
             onChange={(e) => handleTypeChange(e.target.value as WidgetType)}
           >
-            {Object.values(WidgetType).map((v) => (
-              <option key={v} value={v}>{t(TYPE_LABELS[v])}</option>
+            {WIDGET_REGISTRY.map(({ type, labelKey }) => (
+              <option key={type} value={type}>{t(labelKey)}</option>
             ))}
           </select>
         </div>
-
-        {/* Endpoint selector — hidden for static and self-managed widgets */}
         {!isStatic && !isSelfManaged && (
           <>
             <EndpointSelector
@@ -1536,11 +1449,7 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
             )}
           </>
         )}
-
-        {/* Type-specific config */}
         {renderConfigFields()}
-
-        {/* Fetch interval — hidden for static, form and self-managed widgets */}
         {!isStatic && !isForm && !isSelfManaged && (
           <div className="form-group">
             <label className="form-label">{t("widgetConfig.fetchInterval")}</label>
@@ -1557,8 +1466,6 @@ export default function WidgetConfigPanel({ initial, initialType, onSave, onCanc
             <span className="form-hint">{t("widgetConfig.fetchIntervalHint")}</span>
           </div>
         )}
-
-        {/* Alert config — only for widget types that support thresholds */}
         {supportsAlerts && (
           <>
             <div className="form-group" style={{ borderTop: "1px solid var(--border-color)", paddingTop: "0.75rem", marginTop: "0.25rem" }}>

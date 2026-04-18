@@ -15,6 +15,13 @@
         "createProfile": "Create a profile"
     },
 
+    "backup": {
+        "parseError": "Invalid or corrupted profile file.",
+        "invalidVersion": "Unsupported profile version.",
+        "invalidProfile": "Invalid profile data.",
+        "invalidDashboard": "One or more dashboards are invalid."
+    },
+
     "profileSettings": {
         "profileName": "Profile name",
         "language": "Language",

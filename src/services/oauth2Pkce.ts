@@ -18,8 +18,6 @@ type PendingFlow = {
 const PENDING_KEY     = "rud-pkce-pending";
 const tokenKey        = (id: string) => `rud-oauth2-${id}`;
 
-// ─── PKCE helpers ─────────────────────────────────────────────────────────────
-
 function base64url(bytes: Uint8Array): string {
   return btoa(String.fromCharCode(...bytes))
     .replace(/\+/g, "-")
@@ -38,8 +36,6 @@ async function generateCodeChallenge(verifier: string): Promise<string> {
   const hash = await crypto.subtle.digest("SHA-256", data);
   return base64url(new Uint8Array(hash));
 }
-
-// ─── Flow ─────────────────────────────────────────────────────────────────────
 
 export async function startOAuth2Flow(conn: ApiConnection): Promise<void> {
   const cfg = conn.getOAuth2Config();
@@ -70,8 +66,6 @@ export async function startOAuth2Flow(conn: ApiConnection): Promise<void> {
   });
   window.location.href = `${cfg.authorizationUrl}?${params.toString()}`;
 }
-
-// ─── Callback ─────────────────────────────────────────────────────────────────
 
 export async function handleOAuth2Callback(
   code: string,
@@ -118,15 +112,13 @@ export async function handleOAuth2Callback(
   return { connectionId: pending.connectionId };
 }
 
-// ─── Token access ─────────────────────────────────────────────────────────────
-
 export function getOAuth2Token(connectionId: string): string | null {
   try {
     const raw = sessionStorage.getItem(tokenKey(connectionId));
     if (!raw) return null;
     const stored: StoredToken = JSON.parse(raw);
     if (Date.now() < stored.expiresAt - 30_000) return stored.accessToken;
-    return null; // expired — caller should refresh
+    return null;
   } catch {
     return null;
   }

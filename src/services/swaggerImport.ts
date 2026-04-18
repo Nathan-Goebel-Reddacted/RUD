@@ -74,7 +74,6 @@ function extractBaseUrl(spec: Spec): string {
         (_, name: string) => server.variables?.[name]?.default ?? name
       );
     }
-    // Relative URLs (e.g. "/api/v3") are not usable as baseUrl — return empty
     return isAbsoluteHttpUrl(url) ? url : "";
   }
 
@@ -183,9 +182,7 @@ export async function importSwaggerFile(file: File): Promise<ImportResult> {
       try {
         const ep = mapOperation(path, method, operation as Operation);
         conn.addEndpoint(ep);
-      } catch {
-        // Skip endpoints that fail mapping
-      }
+      } catch { /* skip malformed operation */ }
     }
   }
 

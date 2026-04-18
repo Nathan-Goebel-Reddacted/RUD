@@ -5,7 +5,7 @@ import { useProfileStore } from "@/stores/profileStore";
 import { fetchWidgetData, applyTransform, extractData, buildWsUrl } from "@/services/widgetFetch";
 import type { Widget, WidgetDataState, FetchCacheEntry } from "@/types/widget";
 
-const DEFAULT_INTERVAL = 30; // seconds
+const DEFAULT_INTERVAL = 30;
 
 function withTransform(
   data: unknown,
@@ -38,14 +38,10 @@ export function useWidgetData(widget: Widget): WidgetDataState {
     fetchedAt: null,
   });
 
-  // fetchingRef tracks an in-flight request for THIS widget instance.
-  // We do NOT use cached.loading for deduplication to avoid the StrictMode
-  // double-invoke bug (abort → cached.loading stays true → fetch never restarts).
   const fetchingRef   = useRef(false);
   const controllerRef = useRef<AbortController | null>(null);
   const wsRef         = useRef<WebSocket | null>(null);
 
-  // Abort / close on unmount
   useEffect(() => {
     return () => {
       controllerRef.current?.abort();
@@ -53,7 +49,6 @@ export function useWidgetData(widget: Widget): WidgetDataState {
     };
   }, []);
 
-  // ─── WebSocket mode ───────────────────────────────────────────────────────
   const varsKey = JSON.stringify(vars);
   useEffect(() => {
     const conn = connections.find((c) => c.getId() === connectionId) ?? null;
@@ -90,10 +85,8 @@ export function useWidgetData(widget: Widget): WidgetDataState {
     ws.onclose = () => setState((prev) => ({ ...prev, loading: false }));
 
     return () => { ws.close(); wsRef.current = null; };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [connectionId, endpointId, dataPath, transform, varsKey]);
 
-  // Driven by the global clock tick (1s base rate from DashboardClock)
   useEffect(() => {
     const conn = connections.find((c) => c.getId() === connectionId) ?? null;
     const ep   = conn?.getEndpoints().find((e) => e.getId() === endpointId) ?? null;
@@ -103,12 +96,10 @@ export function useWidgetData(widget: Widget): WidgetDataState {
       return;
     }
 
-    // WebSocket endpoints are managed by the dedicated WS effect above
     if (ep.isWebSocket()) return;
 
     const cached: FetchCacheEntry | undefined = fetchCache[cacheKey];
 
-    // If cache is fresh → sync state and skip fetch
     if (cached) {
       const age = Date.now() - cached.fetchedAt;
       if (age < intervalMs) {
@@ -124,10 +115,8 @@ export function useWidgetData(widget: Widget): WidgetDataState {
       }
     }
 
-    // Skip if this instance is already fetching
     if (fetchingRef.current) return;
 
-    // Start fetch
     fetchingRef.current = true;
     setState((prev) => ({ ...prev, loading: true }));
 
@@ -154,14 +143,12 @@ export function useWidgetData(widget: Widget): WidgetDataState {
           fetchedAt: entry.fetchedAt,
         });
       })
-      .catch((_err) => {
+      .catch(() => {
         if (controller.signal.aborted) return; // unmount — ignore silently
         setState((prev) => ({ ...prev, loading: false, error: "http_error" }));
       })
       .finally(() => { fetchingRef.current = false; });
 
-  // tick is the only explicit dependency — on each 1s tick we re-evaluate
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tick]);
 
   return state;

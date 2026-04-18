@@ -11,13 +11,10 @@ export function useFullscreen() {
       if (target.requestFullscreen) {
         await target.requestFullscreen();
       } else {
-        // webkit fallback
         const webkitEl = target as HTMLElement & { webkitRequestFullscreen?: () => Promise<void> };
         await webkitEl.webkitRequestFullscreen?.();
       }
-    } catch {
-      // fullscreen denied (no user gesture, or permission denied) — stay windowed
-    }
+    } catch { /* browser may deny fullscreen */ }
   }, []);
 
   const exit = useCallback(async () => {
@@ -25,7 +22,7 @@ export function useFullscreen() {
       if (document.fullscreenElement) {
         await document.exitFullscreen();
       }
-    } catch { /* ignore */ }
+    } catch { /* browser may deny exit */ }
   }, []);
 
   const toggle = useCallback(
